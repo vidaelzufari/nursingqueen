@@ -97,8 +97,6 @@ separate manual step.
 
 ## Known follow-ups
 
-- `extra.eas.projectId` in `app.config.ts` is a placeholder until `eas
-  init` is run against a real Expo account (see `store/CI_CD.md`)
 - RevenueCat product/offering must be created in the RevenueCat dashboard
   matching `QUEEN_UNLOCK_PRODUCT_ID` in `src/config/app.ts`
 - Maestro flows in `maestro/` assume the testIDs already wired into the
