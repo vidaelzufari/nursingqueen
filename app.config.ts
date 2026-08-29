@@ -13,7 +13,7 @@ import type { ExpoConfig, ConfigContext } from "expo/config";
  * __tests__/appConfig.test.ts, not by a runtime import.
  */
 const APP_NAME = "The Nursing Queen";
-const APP_SLUG = "the-nursing-queen";
+const APP_SLUG = "nursing-queen"; // must match the slug EAS registered for extra.eas.projectId
 const APP_SCHEME = "nursingqueen";
 const IOS_BUNDLE_ID = "com.nursingqueen.app";
 const ANDROID_PACKAGE = "com.nursingqueen.app";
