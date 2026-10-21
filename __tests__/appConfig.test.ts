@@ -14,6 +14,10 @@ describe("app.config.ts stays in sync with src/config/app.json", () => {
   // since this project has no app.json (app.config.ts is the only config).
   const resolved = appConfigDefault({ config: {} } as never);
 
+  it("declares the Expo owner required by automation robot tokens", () => {
+    expect(resolved.owner).toBe("vida.elzufari");
+  });
+
   it("matches the app name and slug", () => {
     expect(resolved.name).toBe(appConfigJson.APP_NAME);
     expect(resolved.slug).toBe(appConfigJson.APP_SLUG);

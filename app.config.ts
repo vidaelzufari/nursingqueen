@@ -20,6 +20,7 @@ const ANDROID_PACKAGE = "com.nursingqueen.app";
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? "ce5adcd3-f209-4df0-9709-02ab9fce3323";
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  owner: "vida.elzufari",
   name: APP_NAME,
   slug: APP_SLUG,
   scheme: APP_SCHEME,
