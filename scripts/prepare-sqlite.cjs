@@ -16,7 +16,7 @@ if (process.env.EAS_BUILD_PLATFORM === "android") {
   if (!gradle.includes(`def SQLITE_VERSION = '${version}'`)) {
     throw new Error("SQLite version changed; review/remove the prefetched archive hook.");
   }
-  const directory = path.join(root, "android/build/downloads");
+  const directory = process.env.REACT_NATIVE_DOWNLOADS_DIR || path.join(root, "android/build/downloads");
   const archive = path.join(directory, `sqlite-amalgamation-${version}.zip`);
   fs.mkdirSync(directory, { recursive: true });
   if (!fs.existsSync(archive)) {
@@ -27,5 +27,14 @@ if (process.env.EAS_BUILD_PLATFORM === "android") {
   }
   const digest = createHash("sha256").update(fs.readFileSync(archive)).digest("hex");
   if (digest !== expected) throw new Error("SQLite archive checksum mismatch; refusing to build.");
+  // Gradle's onlyIfNewer performs a HEAD request even for a cached archive.
+  // The verified local file is authoritative for this pinned SQLite version.
+  const original = "  onlyIfNewer(true)";
+  const replacement = "  onlyIf { !dest.exists() }\n  onlyIfNewer(false)";
+  if (gradle.includes(original)) {
+    fs.writeFileSync(path.join(root, "android/build.gradle"), gradle.replace(original, replacement));
+  } else if (!gradle.includes(replacement)) {
+    throw new Error("SQLite download task changed; review/remove the offline Gradle patch.");
+  }
   console.log("Verified official SQLite archive for Android native build.");
 }
