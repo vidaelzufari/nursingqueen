@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 12.0.0",
+    "version": "25.3.0",
     "appVersionSource": "remote",
     "requireCommit": false
   },
@@ -10,68 +10,58 @@
       "distribution": "internal",
       "channel": "development",
       "ios": {
-        "resourceClass": "m-medium",
-        "image": "latest"
+        "resourceClass": "m-medium"
       },
       "android": {
         "buildType": "apk"
       },
       "env": {
         "APP_ENV": "development"
-      }
+      },
+      "environment": "development"
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview",
       "ios": {
         "resourceClass": "m-medium",
-        "simulator": false,
-        "image": "latest"
+        "simulator": false
       },
       "android": {
         "buildType": "apk"
       },
       "env": {
         "APP_ENV": "preview"
-      }
+      },
+      "environment": "preview"
     },
     "production": {
       "distribution": "store",
       "channel": "production",
       "autoIncrement": true,
       "ios": {
-        "resourceClass": "m-medium",
-        "image": "latest"
+        "resourceClass": "m-medium"
       },
       "android": {
         "buildType": "app-bundle"
       },
       "env": {
         "APP_ENV": "production"
-      }
+      },
+      "environment": "production"
     }
   },
   "submit": {
     "internal": {
-      "ios": {
-        "appleId": "APPLE_ID_SET_IN_EAS_ENV",
-        "ascAppId": "ASC_APP_ID_SET_IN_EAS_ENV",
-        "appleTeamId": "APPLE_TEAM_ID_SET_IN_EAS_ENV"
-      },
+      "ios": {},
       "android": {
-        "serviceAccountKeyPath": "./store/google-service-account.json",
         "track": "internal",
         "releaseStatus": "completed"
       }
     },
     "production": {
-      "ios": {
-        "appleId": "APPLE_ID_SET_IN_EAS_ENV",
-        "ascAppId": "ASC_APP_ID_SET_IN_EAS_ENV",
-        "appleTeamId": "APPLE_TEAM_ID_SET_IN_EAS_ENV"
-      },
+      "ios": {},
       "android": {
-        "serviceAccountKeyPath": "./store/google-service-account.json",
         "track": "production",
         "releaseStatus": "draft"
       }

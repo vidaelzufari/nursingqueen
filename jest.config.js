@@ -1,3 +1,6 @@
+// Date fixtures use UTC; set this before Jest starts workers on any developer machine.
+process.env.TZ = "UTC";
+
 module.exports = {
   preset: "jest-expo",
   setupFiles: ["./jest.setup.ts"],

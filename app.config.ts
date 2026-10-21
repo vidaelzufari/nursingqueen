@@ -17,6 +17,7 @@ const APP_SLUG = "nursing-queen"; // must match the slug EAS registered for extr
 const APP_SCHEME = "nursingqueen";
 const IOS_BUNDLE_ID = "com.nursingqueen.app";
 const ANDROID_PACKAGE = "com.nursingqueen.app";
+const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? "ce5adcd3-f209-4df0-9709-02ab9fce3323";
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: APP_NAME,
@@ -102,15 +103,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
   },
   updates: {
-    url: process.env.EAS_UPDATE_URL ?? undefined,
+    url: process.env.EAS_UPDATE_URL ?? `https://u.expo.dev/${EAS_PROJECT_ID}`,
     fallbackToCacheTimeout: 0,
   },
   runtimeVersion: {
-    policy: "appVersion",
+    policy: "fingerprint",
   },
   extra: {
     eas: {
-      projectId: process.env.EAS_PROJECT_ID ?? "ce5adcd3-f209-4df0-9709-02ab9fce3323",
+      projectId: EAS_PROJECT_ID,
     },
   },
 });
