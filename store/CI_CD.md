@@ -1,115 +1,130 @@
-# CI/CD — EAS Build, Submit & Workflows
+# Nursing Queen CI/CD
 
-This documents the full pipeline and the one-time manual setup a human with
-Expo/Apple/Google account access needs to run once. None of these steps can
-be done from inside this repo/session — they need real account credentials.
+Repository: https://github.com/vidaelzufari/nursingqueen
+Expo account supplied by owner: `vida.elzufari`.
+Configured EAS project ID: `ce5adcd3-f209-4df0-9709-02ab9fce3323`.
+Project ownership and the GitHub link were verified in the Expo dashboard.
 
-## Pieces
+## Automated pipeline
 
-1. **GitHub Actions** (`.github/workflows/ci.yml`, repo root) — fast
-   feedback on every push/PR: typecheck, lint, unit tests with coverage.
-   On `release/*` branches it also kicks off an EAS `preview` build for
-   both platforms (`--no-wait`, fire-and-forget) so Android parity is
-   checked continuously even though Android ships later.
-2. **EAS Workflows** (`.eas/workflows/*.yml`) — the actual
-   build → submit pipeline, run by EAS's own infrastructure:
-   - `release-internal.yml` — auto-triggered by pushing a tag matching
-     `v*` (e.g. `v1.2.0`). Runs tests, builds iOS + Android from the
-     `production` build profile, then submits those exact builds to
-     **TestFlight** and the **Play internal testing track** only.
-   - `release-production.yml` — has no automatic trigger at all. It only
-     runs when a human explicitly invokes it (`eas workflow:run ... --input
-     build_id_ios=... --input build_id_android=...`), naming the exact
-     build IDs that already passed internal testing. It **promotes**
-     that already-tested build rather than rebuilding from source, so what
-     testers verified is byte-for-byte what goes public. The Android
-     submit profile it uses (`eas.json` → `submit.production`) additionally
-     sets `releaseStatus: "draft"`, so even this step lands as a draft in
-     Play Console — a second human click ("Publish") is still required
-     there. On iOS, `eas submit` only uploads to App Store Connect; Apple
-     itself requires a separate manual "submit for review" / release step
-     in App Store Connect before a build goes public. **There is no path
-     in this repo that can publish to a public store track without at
-     least two independent human actions.**
-3. **eas.json** build profiles: `development` (dev client, internal
-   distribution), `preview` (internal distribution, ad-hoc testers),
-   `production` (store-distribution binary, auto-incrementing build
-   number via `appVersionSource: "remote"` + `autoIncrement: true`).
-4. **eas.json** submit profiles: `internal` (TestFlight + Play internal
-   track, immediate rollout) and `production` (App Store Connect + Play
-   production track, draft rollout on Android).
+| Trigger | Result |
+| --- | --- |
+| Branch push or pull request | TypeScript, ESLint, Jest coverage, iOS and Android bundle export |
+| Successful push to main or release/* | Wait for preview iOS and Android builds; build failures fail the workflow |
+| v* tag | Repeat checks, validate matching tag/app/package version, build production binaries, enqueue TestFlight and Play internal submissions |
+| Run “Publish OTA update” on main | Check source then publish to selected preview/production channel using the corresponding EAS environment |
+| Run “Submit tested Android build to production draft” on main | Submit the exact supplied build ID to Play production as a draft |
 
-## One-time manual setup (requires your own Expo/Apple/Google accounts)
+GitHub Actions is the single trigger system. The old EAS workflow templates
+were removed to prevent duplicate releases. The Expo GitHub App is optional;
+GitHub Actions authenticates to Expo with EXPO_TOKEN. Do not enable another
+Expo auto-build trigger for the same branches/tags.
 
-Run these from the repo root:
+Pinned Node version: .nvmrc. Pinned EAS CLI: 25.3.0 (also enforced in eas.json).
+Release jobs are serialized per ref and never cancelled by a newer push.
+PR CI has read-only repository permissions and receives no Expo token.
+Build matrix jobs run independently so one platform failure does not cancel
+the other platform. A green build step means EAS Build finished successfully;
+auto-submission is queued by EAS and must be checked in the Expo submission
+page for its final status. It does not mean an app is public.
 
-```bash
-# 1. Log in and create the real EAS project (replaces the placeholder
-#    projectId in app.config.ts's extra.eas.projectId).
-eas login
-eas init
+## One-time account setup
 
-# 2. Connect this GitHub repo to the EAS project so EAS Workflows can be
-#    triggered natively (Expo dashboard → your project → GitHub tab, or):
-eas project:info   # confirms the project, then link via the dashboard
+1. Sign in to Expo as the project owner and confirm the configured project ID
+   belongs to Nursing Queen. Use `npx eas-cli@25.3.0 login` locally, then
+   `npx eas-cli@25.3.0 project:info`. Do not initialize a duplicate project.
+2. Create an Expo automation access token and save it in this repository's
+   Settings → Secrets and variables → Actions as secret `EXPO_TOKEN`.
+   Never put the token in source control, a workflow input, or chat.
+3. In App Store Connect create/select the app `com.nursingqueen.app`. Set
+   repository Actions **variable** `ASC_APP_ID` to its numeric Apple ID.
+   The release preparation script validates and injects this value into
+   eas.json during the release job. The bare ios submit profile is incomplete
+   until that script runs; no fake Apple account values are committed.
+4. Run `npx eas-cli@25.3.0 credentials --platform ios` and configure distribution
+   signing plus an App Store Connect API key for EAS Submit. Register preview
+   test devices with `npx eas-cli@25.3.0 device:create`. Ad-hoc iOS preview builds
+   require a paid Apple Developer account and registered devices.
+5. Run `npx eas-cli@25.3.0 credentials --platform android` to configure the
+   keystore and assign a Google Play service account key to this app on EAS.
+   Submission profiles intentionally omit a local key path so EAS uses the
+   assigned server credential. Google Play requires the first upload manually.
+6. Finish one interactive preview build and a production build/submission per
+   platform to provision signing, accept account agreements, and verify access.
+7. In GitHub create environments `preview` and `production`. Add required
+   reviewers for production if desired. Configure main branch protection to
+   require the CI check before merging. These account settings are not installed
+   merely by committing the workflow files.
 
-# 3. Create an EAS robot access token for the GitHub Actions preview-build
-#    job, and add it as a GitHub Actions secret named EXPO_TOKEN
-#    (repo Settings → Secrets and variables → Actions):
-eas robot:create --name "github-actions-mobile-ci"
+Missing EXPO_TOKEN fails builds with a setup message. Missing/invalid ASC_APP_ID
+fails release preparation before a build is charged. Credentials and account
+agreements cannot be created by a non-interactive release job.
 
-# 4. Create environment variables per EAS environment (development/
-#    preview/production), marking secrets as "sensitive" so they're
-#    write-only and never appear in build logs:
-eas env:create --environment development --name EXPO_PUBLIC_SENTRY_DSN --value "<dsn>" --visibility plaintext
-eas env:create --environment preview     --name EXPO_PUBLIC_SENTRY_DSN --value "<dsn>" --visibility plaintext
-eas env:create --environment production  --name EXPO_PUBLIC_SENTRY_DSN --value "<dsn>" --visibility plaintext
+## Expo environment configuration
 
-eas env:create --environment production  --name EXPO_PUBLIC_REVENUECAT_IOS_KEY     --value "<key>" --visibility sensitive
-eas env:create --environment production  --name EXPO_PUBLIC_REVENUECAT_ANDROID_KEY --value "<key>" --visibility sensitive
-# repeat for development/preview with their own RevenueCat sandbox keys
+Build profiles explicitly select development, preview, or production. OTA jobs
+use `--environment` with the same name to load the same Expo variables.
+Configure the following on Expo for each relevant environment:
 
-eas env:create --environment production  --name SENTRY_AUTH_TOKEN --value "<token>" --visibility secret
-# SENTRY_AUTH_TOKEN is used at build time (sourcemap upload) only, never
-# bundled into the app — "secret" visibility means it can't be read back
-# at all after creation, only used by the build.
+- EXPO_PUBLIC_REVENUECAT_IOS_KEY / EXPO_PUBLIC_REVENUECAT_ANDROID_KEY
+- EXPO_PUBLIC_SENTRY_DSN
+- SENTRY_ORG / SENTRY_PROJECT and build-only SENTRY_AUTH_TOKEN if using Sentry
 
-# 5. Apple + Google submit credentials — set once, used by both the
-#    "internal" and "production" submit profiles:
-eas env:create --environment production --name APPLE_ID_SET_IN_EAS_ENV --value "<apple id email>" --visibility sensitive
-eas env:create --environment production --name ASC_APP_ID_SET_IN_EAS_ENV --value "<App Store Connect app id>" --visibility sensitive
-eas env:create --environment production --name APPLE_TEAM_ID_SET_IN_EAS_ENV --value "<Apple Team ID>" --visibility sensitive
-# Then replace the literal placeholder strings in eas.json's submit.internal
-# / submit.production ios blocks with ${APPLE_ID_SET_IN_EAS_ENV} etc. once
-# EAS env var substitution is confirmed working for your CLI version — see
-# https://docs.expo.dev/eas/environment-variables/ (syntax has changed
-# across EAS CLI versions; verify against the version you're pinned to).
+EXPO_PUBLIC_* values are embedded in the shipped app; use only public SDK keys.
+Private keys and Sentry upload credentials must never use this prefix.
+EAS_PROJECT_ID and EAS_UPDATE_URL have matching defaults in app.config.ts;
+override them only when deliberately moving this app to another EAS project.
+Fingerprint runtime versions separate OTA updates when native dependencies
+change. Existing builds using the former appVersion runtime require a new
+binary before they can receive fingerprint-based updates.
 
-# Google: store/google-service-account.json is a real secret file, never
-# committed (already in .gitignore) — download it from Google Play Console
-# → Setup → API access, and either eas secret:file upload it, or place it
-# locally for local `eas submit` runs.
-eas secret:create --scope project --name GOOGLE_SERVICE_ACCOUNT_KEY --type file --value ./store/google-service-account.json
+## Release
+
+Update version in both package.json (and package-lock.json) and app.config.ts.
+Merge to main, wait for CI and preview builds, then tag that tested commit:
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
-## Cutting a release
+The tag must exactly match both versions. A prerelease tag requires matching
+prerelease app/package versions too. Watch the GitHub Actions build result and
+Expo submissions; verify both store uploads and test on actual devices.
+Do not push release tags on unreviewed commits.
 
-```bash
-# from a clean main/release branch, after CI is green:
-npm version 1.2.0   # or manually bump app.config.ts's version
-git tag v1.2.0
-git push origin v1.2.0   # <-- triggers release-internal.yml automatically
-```
+For iOS public release, select the already uploaded TestFlight build in App
+Store Connect and submit it for review. Re-uploading the same build is not a
+promotion. For Android, use Play Console's promote-release operation, or run
+the production draft workflow with the exact tested EAS build UUID, then
+review/publish the draft in Play Console. Store metadata, privacy answers,
+agreements, policy reviews, and platform account requirements remain applicable.
 
-Watch the EAS dashboard (or `eas build:list` / `eas submit:list`) for the
-build + TestFlight/Play-internal submission to finish, test on real
-devices, then when ready:
+## OTA and recovery
 
-```bash
-eas workflow:run .eas/workflows/release-production.yml \
-  --input build_id_ios=<ios build id> \
-  --input build_id_android=<android build id>
-```
+Use Actions → Publish OTA update → Run workflow on main. Choose preview first,
+verify on an installed compatible preview binary, then select production when
+ready. Native dependency changes require a fresh binary for the new runtime.
+Use the Expo Updates dashboard to roll back a faulty update; submit a new binary
+for a faulty native release. A failed build must be fixed before submitting;
+for a failed store upload inspect Expo submission logs before retrying to avoid
+duplicate uploads. Release signing/billing/account failures need account-owner
+attention.
 
-...then finish the release manually in App Store Connect and Play Console
-as described above.
+## References
+
+- https://docs.expo.dev/build/building-on-ci/
+- https://docs.expo.dev/submit/ios/
+- https://docs.expo.dev/submit/android/
+- https://docs.expo.dev/eas-update/runtime-versions/
+- https://docs.expo.dev/eas/environment-variables/usage/
+
+## Existing iOS build failure
+
+The previous build 8f7513f3 failed in ExpoLocalization with “switch must be
+exhaustive” on iPhoneOS26.5. The postinstall script adds an idempotent unknown
+calendar fallback to the SDK 51 native module (Expo issue 40009). This patch
+fails visibly if the dependency source changes and is covered by regression
+tests. Build profiles retain the current Xcode image for store compatibility.
+A fresh EAS build is still required to verify native compilation end to end;
+JavaScript bundle export alone does not verify Swift compilation.

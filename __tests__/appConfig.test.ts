@@ -27,4 +27,11 @@ describe("app.config.ts stays in sync with src/config/app.json", () => {
   it("matches the Android package", () => {
     expect(resolved.android?.package).toBe(appConfigJson.ANDROID_PACKAGE);
   });
+
+  it("routes updates to the configured EAS project with native compatibility checks", () => {
+    expect(resolved.updates?.url).toBe(
+      process.env.EAS_UPDATE_URL ?? `https://u.expo.dev/${resolved.extra?.eas.projectId}`
+    );
+    expect(resolved.runtimeVersion).toEqual({ policy: "fingerprint" });
+  });
 });

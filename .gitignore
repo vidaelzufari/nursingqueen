@@ -19,3 +19,7 @@ yarn-error.*
 coverage/
 *.tsbuildinfo
 store/google-service-account.json
+dist-ci/
+.env.*
+!.env.example
+credentials.json

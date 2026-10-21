@@ -72,13 +72,15 @@ store/                  # App Store / Play Store readiness: metadata drafts,
 
 ## CI/CD
 
-See [`store/CI_CD.md`](./store/CI_CD.md) for the full EAS Workflows +
-GitHub Actions pipeline, the one-time manual setup (`eas init`, environment
-variables, GitHub connection), and how a release is cut and promoted.
-Short version: pushing a `v*` tag builds both platforms and ships them to
-TestFlight + the Play internal testing track automatically; promoting to
-the public App Store / Play production track always requires an explicit,
-separate manual step.
+GitHub Actions checks every push and pull request. Successful pushes to `main`
+and `release/*` build both platforms for preview distribution. Release tags
+matching the app version (for example `v1.0.0`) build store binaries and submit
+them to TestFlight and Google Play internal testing. OTA updates and Android
+production drafts have separate manual workflows.
+
+See [`store/CI_CD.md`](./store/CI_CD.md) for account setup, release steps,
+required secrets, and verification. Store signing and submission credentials
+must be provisioned once before unattended releases can succeed.
 
 ## App Store readiness
 

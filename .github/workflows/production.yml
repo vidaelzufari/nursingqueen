@@ -1,0 +1,39 @@
+name: Submit tested Android build to production draft
+on:
+  workflow_dispatch:
+    inputs:
+      android_build_id:
+        description: Exact production-profile EAS build ID already tested on Play internal
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: production-store
+  cancel-in-progress: false
+jobs:
+  submit:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: 25.3.0
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Submit exact tested build
+        env:
+          BUILD_ID: ${{ inputs.android_build_id }}
+        run: |
+          if ! [[ "$BUILD_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
+            echo '::error::Expected an EAS build UUID.'
+            exit 1
+          fi
+          eas submit --platform android --id "$BUILD_ID" --profile production --non-interactive --wait
