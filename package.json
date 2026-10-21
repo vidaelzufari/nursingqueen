@@ -17,7 +17,8 @@
     "generate:icons": "node scripts/generate-icons.js",
     "build:preview": "eas build --profile preview --platform all",
     "build:production": "eas build --profile production --platform all",
-    "submit:ios": "eas submit --platform ios --profile production"
+    "submit:ios": "eas submit --platform ios --profile production",
+    "postinstall": "node scripts/patch-expo-localization.cjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",

@@ -3,7 +3,7 @@
 Repository: https://github.com/vidaelzufari/nursingqueen
 Expo account supplied by owner: `vida.elzufari`.
 Configured EAS project ID: `ce5adcd3-f209-4df0-9709-02ab9fce3323`.
-Account access and project ownership must be verified before the first build.
+Project ownership and the GitHub link were verified in the Expo dashboard.
 
 ## Automated pipeline
 
@@ -118,3 +118,13 @@ attention.
 - https://docs.expo.dev/submit/android/
 - https://docs.expo.dev/eas-update/runtime-versions/
 - https://docs.expo.dev/eas/environment-variables/usage/
+
+## Existing iOS build failure
+
+The previous build 8f7513f3 failed in ExpoLocalization with “switch must be
+exhaustive” on iPhoneOS26.5. The postinstall script adds an idempotent unknown
+calendar fallback to the SDK 51 native module (Expo issue 40009). This patch
+fails visibly if the dependency source changes and is covered by regression
+tests. Build profiles retain the current Xcode image for store compatibility.
+A fresh EAS build is still required to verify native compilation end to end;
+JavaScript bundle export alone does not verify Swift compilation.
