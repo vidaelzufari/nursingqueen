@@ -14,7 +14,10 @@
         "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "env": {
+          "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true"
+        }
       },
       "env": {
         "APP_ENV": "development"
@@ -30,7 +33,10 @@
         "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "env": {
+          "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true"
+        }
       },
       "env": {
         "APP_ENV": "preview"
@@ -46,7 +52,10 @@
         "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "env": {
+          "JAVA_TOOL_OPTIONS": "-Djava.net.preferIPv4Stack=true"
+        }
       },
       "env": {
         "APP_ENV": "production"

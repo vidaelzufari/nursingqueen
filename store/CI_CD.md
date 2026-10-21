@@ -138,3 +138,10 @@ Use the “Build and submit to TestFlight” workflow on main for an iOS-only
 production build and automatic submission after ASC_APP_ID and EAS-managed
 Apple signing/submission credentials are configured. This does not publish
 the app publicly. Check Expo submission status and Apple processing afterward.
+
+The SDK 51 postinstall compatibility script also replaces expo-device's
+obsolete TARGET_OS_SIMULATOR macro with Swift targetEnvironment(simulator).
+For Android, the EAS post-install hook prefetches the exact SQLite archive
+over IPv4 with retries and SHA-256 verification before Gradle executes; Java
+networking also prefers IPv4. The hook refuses a changed SQLite source version
+or mismatching archive. These address failures observed in actual EAS runs.
