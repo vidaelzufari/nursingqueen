@@ -80,6 +80,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    ["expo-build-properties", { ios: { deploymentTarget: "15.1" } }],
     // expo-sqlite is intentionally NOT listed here: it has no config plugin
     // (no app.plugin.js) and autolinks natively without one. Listing it
     // makes Expo's resolver import the package to probe whether its main

@@ -4,7 +4,8 @@ const cp = require("node:child_process");
 const tag = process.env.GITHUB_REF_NAME;
 const version = require("../package.json").version;
 const app = JSON.parse(cp.execFileSync("npx", ["expo", "config", "--json"], { encoding: "utf8" }));
-if (tag !== `v${version}` || app.version !== version) {
+const submissionOnly = process.argv.includes("--submission-only");
+if ((!submissionOnly && tag !== `v${version}`) || app.version !== version) {
   throw new Error("Release tag, package.json version and app.config.ts version must match exactly.");
 }
 const appId = process.env.ASC_APP_ID;
@@ -14,4 +15,4 @@ if (!appId || !/^\d+$/.test(appId)) {
 const config = JSON.parse(fs.readFileSync("eas.json", "utf8"));
 for (const profile of Object.values(config.submit)) profile.ios.ascAppId = appId;
 fs.writeFileSync("eas.json", JSON.stringify(config, null, 2) + "\n");
-console.log(`Validated release ${tag}; configured App Store submission.`);
+console.log(`Validated version ${version}; configured App Store submission.`);

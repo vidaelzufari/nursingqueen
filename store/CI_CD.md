@@ -128,3 +128,13 @@ fails visibly if the dependency source changes and is covered by regression
 tests. Build profiles retain the current Xcode image for store compatibility.
 A fresh EAS build is still required to verify native compilation end to end;
 JavaScript bundle export alone does not verify Swift compilation.
+
+## Native build compatibility and TestFlight
+
+Builds pin Xcode 26.2 and use expo-build-properties to target iOS 15.1.
+expo-device is explicitly pinned to the SDK 51 range so sentry-expo's broad
+peer requirement cannot pull an incompatible SDK 57 native module.
+Use the “Build and submit to TestFlight” workflow on main for an iOS-only
+production build and automatic submission after ASC_APP_ID and EAS-managed
+Apple signing/submission credentials are configured. This does not publish
+the app publicly. Check Expo submission status and Apple processing afterward.
