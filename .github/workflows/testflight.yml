@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 120
     env:
       ASC_APP_ID: ${{ vars.ASC_APP_ID }}
+      EXPO_APPLE_TEAM_ID: XR3BKK4C9Y
+      EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

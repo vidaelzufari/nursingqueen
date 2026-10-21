@@ -145,3 +145,9 @@ For Android, the EAS post-install hook prefetches the exact SQLite archive
 over IPv4 with retries and SHA-256 verification before Gradle executes; Java
 networking also prefers IPv4. The hook refuses a changed SQLite source version
 or mismatching archive. These address failures observed in actual EAS runs.
+
+Apple team context is supplied to GitHub jobs as EXPO_APPLE_TEAM_ID and
+EXPO_APPLE_TEAM_TYPE so the existing App Store Connect API key can be used
+non-interactively. Expo's TypeScript path resolver handles @/ imports without
+a Babel alias tied to the working directory. The build hook asserts AppShell
+is included in the EAS source archive before native compilation starts.

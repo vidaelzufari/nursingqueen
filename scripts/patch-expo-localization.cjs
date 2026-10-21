@@ -17,7 +17,14 @@ function patchDevice(source) {
   if (!source.includes(original)) throw new Error("expo-device source changed; review/remove the simulator compatibility patch.");
   return source.replace(original, replacement);
 }
-module.exports = { patch, patchDevice };
+function patchDevMenu(source) {
+  const original = "    let isSimulator = TARGET_IPHONE_SIMULATOR > 0";
+  const replacement = "    #if targetEnvironment(simulator)\n    let isSimulator = true\n    #else\n    let isSimulator = false\n    #endif";
+  if (source.includes(replacement)) return source;
+  if (!source.includes(original)) throw new Error("expo-dev-menu source changed; review/remove the simulator compatibility patch.");
+  return source.replace(original, replacement);
+}
+module.exports = { patch, patchDevice, patchDevMenu };
 if (require.main === module) {
   const target = path.join(path.dirname(require.resolve("expo-localization/package.json")), "ios/LocalizationModule.swift");
   const source = fs.readFileSync(target, "utf8");
@@ -27,5 +34,9 @@ if (require.main === module) {
   const deviceSource = fs.readFileSync(deviceTarget, "utf8");
   const deviceResult = patchDevice(deviceSource);
   if (deviceSource !== deviceResult) fs.writeFileSync(deviceTarget, deviceResult);
+  const menuTarget = path.join(path.dirname(require.resolve("expo-dev-menu/package.json")), "ios/DevMenuViewController.swift");
+  const menuSource = fs.readFileSync(menuTarget, "utf8");
+  const menuResult = patchDevMenu(menuSource);
+  if (menuSource !== menuResult) fs.writeFileSync(menuTarget, menuResult);
   console.log("Verified expo-localization Xcode calendar compatibility.");
 }

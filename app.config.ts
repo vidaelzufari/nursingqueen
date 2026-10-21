@@ -80,7 +80,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
-    ["expo-build-properties", { ios: { deploymentTarget: "15.1" } }],
+    ["expo-build-properties", { ios: { deploymentTarget: "15.1" }, android: { minSdkVersion: 24 } }],
     // expo-sqlite is intentionally NOT listed here: it has no config plugin
     // (no app.plugin.js) and autolinks natively without one. Listing it
     // makes Expo's resolver import the package to probe whether its main
@@ -103,6 +103,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   experiments: {
     typedRoutes: true,
+    tsconfigPaths: true,
   },
   updates: {
     url: process.env.EAS_UPDATE_URL ?? `https://u.expo.dev/${EAS_PROJECT_ID}`,
