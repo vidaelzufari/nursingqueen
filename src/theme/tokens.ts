@@ -28,19 +28,19 @@ export interface ColorTokens {
 }
 
 const light: ColorTokens = {
-  background: "#FBF7F4",
+  background: "#F7F5FA",
   surface: "#FFFFFF",
-  surfaceRaised: "#FFFDFB",
-  border: "#EDE1D8",
-  textPrimary: "#2B2320",
-  textSecondary: "#6B5E56",
-  textMuted: "#A79A90",
-  accent: "#B8875B",
+  surfaceRaised: "#F1EDF7",
+  border: "#E9E3EF",
+  textPrimary: "#30243E",
+  textSecondary: "#71667E",
+  textMuted: "#82758F",
+  accent: "#70528F",
   accentContrast: "#FFFFFF",
-  crown: "#C9A15A",
-  nursing: "#C97B84",
-  pumping: "#7C93A8",
-  bottle: "#8FAE8B",
+  crown: "#AB87C5",
+  nursing: "#B95C80",
+  pumping: "#606D9F",
+  bottle: "#367A65",
   success: "#5E9C76",
   warning: "#D0973F",
   danger: "#C4594F",
@@ -48,15 +48,15 @@ const light: ColorTokens = {
 };
 
 const dark: ColorTokens = {
-  background: "#171310",
-  surface: "#221D19",
-  surfaceRaised: "#2B2521",
-  border: "#3A322C",
+  background: "#17131F",
+  surface: "#221C2C",
+  surfaceRaised: "#2E253B",
+  border: "#41354F",
   textPrimary: "#F3ECE5",
   textSecondary: "#C7B9AE",
   textMuted: "#8B7E74",
-  accent: "#D9AA76",
-  accentContrast: "#241A0F",
+  accent: "#C4A5E0",
+  accentContrast: "#241632",
   crown: "#E0BD7C",
   nursing: "#D992A0",
   pumping: "#93AEC4",
@@ -69,15 +69,15 @@ const dark: ColorTokens = {
 
 /** Extra-dim, warm, low-blue-light variant for overnight feeds. */
 const night: ColorTokens = {
-  background: "#0B0908",
-  surface: "#151110",
-  surfaceRaised: "#1C1715",
+  background: "#0D0A11",
+  surface: "#18121F",
+  surfaceRaised: "#21192B",
   border: "#2A2320",
   textPrimary: "#C9BDB0",
   textSecondary: "#8F8175",
   textMuted: "#5C5249",
-  accent: "#A97B4F",
-  accentContrast: "#0B0908",
+  accent: "#B69BC8",
+  accentContrast: "#0D0A11",
   crown: "#8A6B3D",
   nursing: "#8C5A5F",
   pumping: "#5E6E7C",
@@ -102,9 +102,9 @@ export const spacing = {
 
 export const radii = {
   sm: 8,
-  md: 14,
-  lg: 20,
-  xl: 28,
+  md: 18,
+  lg: 28,
+  xl: 36,
   pill: 999,
 } as const;
 
@@ -123,10 +123,10 @@ export const MIN_TOUCH_TARGET = 60;
 
 export const shadows = {
   card: {
-    shadowColor: "#2B2320",
-    shadowOpacity: 0.08,
+    shadowColor: "#30243E",
+    shadowOpacity: 0.04,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    elevation: 1,
   },
 } as const;

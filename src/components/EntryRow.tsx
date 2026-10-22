@@ -1,9 +1,10 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
+import { Icon } from "./Icon";
 import { Card } from "./Card";
 
-export type EntryKind = "nursing" | "pump" | "bottle";
+export type EntryKind = "nursing" | "pump" | "bottle" | "sleep";
 
 export interface EntryRowProps {
   kind: EntryKind;
@@ -29,7 +30,7 @@ export function EntryRow({
 }: EntryRowProps) {
   const theme = useTheme();
   const dotColor =
-    kind === "nursing" ? theme.colors.nursing : kind === "pump" ? theme.colors.pumping : theme.colors.bottle;
+    kind === "nursing" ? theme.colors.nursing : kind === "pump" ? theme.colors.pumping : kind === "sleep" ? theme.colors.accent : theme.colors.bottle;
 
   return (
     <Pressable testID={testID} onPress={onPress} accessibilityRole="button">
@@ -37,12 +38,14 @@ export function EntryRow({
         <View style={{ flexDirection: "row", alignItems: "center", gap: theme.spacing.sm }}>
           <View
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
-              backgroundColor: dotColor,
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: dotColor + "18",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          ><Icon name={kind === "nursing" ? "heart" : kind === "sleep" ? "moon" : kind} size={21} color={dotColor} /></View>
           <View style={{ flex: 1 }}>
             <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
             <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{timeLabel}</Text>
@@ -65,6 +68,7 @@ export function EntryRow({
               </Text>
             </View>
           ) : null}
+          <Icon name="arrow" size={16} color={theme.colors.textMuted} />
         </View>
       </Card>
     </Pressable>

@@ -17,3 +17,11 @@ export function formatVolume(ml: number, unit: VolumeUnit): string {
   const value = mlToDisplay(ml, unit);
   return `${value} ${unit}`;
 }
+
+export function parseAmount(text: string, unit: VolumeUnit): number | null {
+  const normalized = text.trim().replace(",", ".");
+  if (!/^\d+(?:\.\d+)?$/.test(normalized)) return null;
+  const amount = displayToMl(Number(normalized), unit);
+  return Number.isFinite(amount) && amount > 0 ? amount : null;
+}
+

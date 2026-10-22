@@ -40,3 +40,7 @@ function runMigrations(db: SQLite.SQLiteDatabase): void {
 export function __resetDatabaseForTests(): void {
   dbInstance = null;
 }
+
+export async function initializeDatabase(): Promise<void> {
+  getDatabase();
+}

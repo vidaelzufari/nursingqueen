@@ -1,81 +1,44 @@
-import React, { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { goBackOrHome } from "@/navigation/back";
+import { ScreenBack } from "@/components/ScreenBack";
+import React, { useRef, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components";
+import { QuickAmount } from "@/components/QuickAmount";
 import { useLogStore } from "@/store/useLogStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { displayToMl } from "@/domain/units";
 import { MilkType } from "@/db/types";
 
 export default function BottleEntryModal() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const unit = useSettingsStore((s) => s.unit);
-  const logBottle = useLogStore((s) => s.logBottle);
-
-  const [amountText, setAmountText] = useState("");
-  const [milkType, setMilkType] = useState<MilkType>("breast_milk");
-
-  const commit = (withAmount: boolean) => {
-    const ml = withAmount && amountText.trim() ? displayToMl(Number(amountText), unit) : null;
-    logBottle(ml, milkType);
-    router.back();
+  const unit = useSettingsStore(s => s.unit);
+  const babyId = useLogStore(s => s.babyId);
+  const logBottle = useLogStore(s => s.logBottle);
+  const events = useLogStore(s => s.bottleEvents);
+  const [milkType, setMilkType] = useState<MilkType>(events[0]?.milkType ?? "breast_milk");
+  const committed = useRef(false);
+  const last = events.find(event => event.milkType === milkType && event.ml != null);
+  const commit = (ml: number | null) => {
+    if (!babyId) { router.replace("/profile/edit"); return; }
+    if (committed.current) return;
+    committed.current = true;
+    try { logBottle(ml, milkType); goBackOrHome(router); }
+    catch (error) { committed.current = false; throw error; }
   };
-
-  return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.lg, justifyContent: "center", gap: theme.spacing.md }}>
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("bottleEntry.title")}</Text>
-
-      <View style={{ gap: theme.spacing.xs }}>
-        <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("bottleEntry.amount")} ({unit})</Text>
-        <TextInput
-          testID="bottle-entry-amount-input"
-          value={amountText}
-          onChangeText={setAmountText}
-          keyboardType="decimal-pad"
-          placeholder="0"
-          placeholderTextColor={theme.colors.textMuted}
-          style={{
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            borderRadius: theme.radii.md,
-            padding: theme.spacing.sm,
-            fontSize: 28,
-            textAlign: "center",
-            color: theme.colors.textPrimary,
-          }}
-        />
-      </View>
-
-      <View style={{ gap: theme.spacing.xs }}>
-        <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("bottleEntry.milkType")}</Text>
-        <View style={{ flexDirection: "row", gap: theme.spacing.sm }}>
-          <Button
-            testID="bottle-entry-type-breast-milk"
-            label={t("bottleEntry.milkTypeBreastMilk")}
-            tone="bottle"
-            variant={milkType === "breast_milk" ? "solid" : "outline"}
-            active={milkType === "breast_milk"}
-            onPress={() => setMilkType("breast_milk")}
-            style={{ flex: 1 }}
-          />
-          <Button
-            testID="bottle-entry-type-formula"
-            label={t("bottleEntry.milkTypeFormula")}
-            tone="bottle"
-            variant={milkType === "formula" ? "solid" : "outline"}
-            active={milkType === "formula"}
-            onPress={() => setMilkType("formula")}
-            style={{ flex: 1 }}
-          />
-        </View>
-      </View>
-
-      <Button testID="bottle-entry-save" label={t("bottleEntry.save")} tone="bottle" onPress={() => commit(true)} />
-      <Button label={t("bottleEntry.skipAmount")} tone="neutral" variant="ghost" onPress={() => commit(false)} />
+  return <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled">
+      <ScreenBack />
+    <View style={{ width: 68, height: 68, borderRadius: 34, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="bottle" size={30} color={theme.colors.bottle} /></View>
+    <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("bottleEntry.title")}</Text>
+    <View style={{ flexDirection: "row", gap: 10 }}>
+      {(["breast_milk", "formula"] as const).map(type => <Button key={type} testID={`bottle-entry-type-${type.replace("_", "-")}`} label={t(type === "breast_milk" ? "bottleEntry.milkTypeBreastMilk" : "bottleEntry.milkTypeFormula")} tone="bottle" variant={milkType === type ? "solid" : "outline"} active={milkType === type} icon={milkType === type ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined} onPress={() => setMilkType(type)} style={{ flex: 1, minHeight: 48, paddingHorizontal: 10 }} />)}
     </View>
-  );
+    <QuickAmount unit={unit} color={theme.colors.bottle} lastMl={last?.ml} onSave={commit} />
+    <Button label={t("bottleEntry.skipAmount")} tone="neutral" variant="ghost" onPress={() => commit(null)} />
+    <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
+  </ScrollView>;
 }

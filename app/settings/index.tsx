@@ -4,6 +4,7 @@ import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "@/navigation/AppShell";
 import { useTheme } from "@/theme/ThemeProvider";
+import { Icon } from "@/components/Icon";
 import { Button, Card } from "@/components";
 import { useSettingsStore, ThemePreference, SupportedLanguage } from "@/store/useSettingsStore";
 import { useEntitlementStore } from "@/store/useEntitlementStore";
@@ -46,18 +47,22 @@ export default function SettingsScreen() {
 
   return (
     <AppShell>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.md }}>
+      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
         <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("settings.title")}</Text>
+        <Text style={[theme.type.body, { color: theme.colors.textSecondary, marginTop: -8 }]}>{t("design.preferences")}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 7 }}><Icon name="check" color={theme.colors.success} size={16} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.saved")}</Text></View>
 
         <Section title={t("settings.appearance")}>
           <OptionRow>
             {THEME_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
+                style={{ minHeight: 46, paddingHorizontal: 16 }}
                 label={t(opt.labelKey)}
                 tone="accent"
                 variant={themePreference === opt.value ? "solid" : "outline"}
                 active={themePreference === opt.value}
+                icon={themePreference === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
                 onPress={() => setThemePreference(opt.value)}
               />
             ))}
@@ -69,10 +74,12 @@ export default function SettingsScreen() {
             {UNIT_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
+                style={{ minHeight: 46, paddingHorizontal: 16 }}
                 label={t(opt.labelKey)}
                 tone="accent"
                 variant={unit === opt.value ? "solid" : "outline"}
                 active={unit === opt.value}
+                icon={unit === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
                 onPress={() => setUnit(opt.value)}
               />
             ))}
@@ -84,11 +91,13 @@ export default function SettingsScreen() {
             {LANGUAGE_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
+                style={{ minHeight: 46, paddingHorizontal: 16 }}
                 testID={`settings-language-option-${opt.value}`}
                 label={opt.value === "system" ? t(opt.label) : opt.label}
                 tone="accent"
                 variant={language === opt.value ? "solid" : "outline"}
                 active={language === opt.value}
+                icon={language === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
                 onPress={() => setLanguage(opt.value)}
               />
             ))}

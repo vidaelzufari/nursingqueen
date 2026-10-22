@@ -4,11 +4,11 @@ import { useRouter, usePathname } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
-import { CrownMark } from "@/components/CrownMark";
+import { Icon } from "@/components/Icon";
 
 interface NavItem {
-  key: "home" | "history" | "settings";
-  route: "/" | "/history" | "/settings";
+  key: "home" | "history" | "analytics" | "settings";
+  route: "/" | "/history" | "/analytics" | "/settings";
   labelKey: string;
   testID: string;
 }
@@ -16,6 +16,7 @@ interface NavItem {
 const ITEMS: NavItem[] = [
   { key: "home", route: "/", labelKey: "nav.home", testID: "nav-home" },
   { key: "history", route: "/history", labelKey: "nav.history", testID: "nav-history" },
+  { key: "analytics", route: "/analytics", labelKey: "nav.analytics", testID: "nav-analytics" },
   { key: "settings", route: "/settings", labelKey: "nav.settings", testID: "nav-settings" },
 ];
 
@@ -28,16 +29,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <View style={{ flex: 1 }}>{children}</View>
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.background }}>
+      <View style={{ flex: 1, width: "100%", maxWidth: 580, alignSelf: "center" }}>{children}</View>
       <View
         style={{
           flexDirection: "row",
-          borderTopWidth: 1,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          borderRadius: 36,
+          marginHorizontal: 20,
+          marginBottom: Math.max(insets.bottom, 12),
+          width: "92%",
+          maxWidth: 540,
+          alignSelf: "center",
           borderTopColor: theme.colors.border,
           backgroundColor: theme.colors.surface,
-          paddingBottom: insets.bottom || theme.spacing.sm,
-          paddingTop: theme.spacing.xs,
+          paddingBottom: 6,
+          paddingTop: 6,
         }}
       >
         {ITEMS.map((item) => {
@@ -51,9 +59,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onPress={() => router.push(item.route)}
               style={{ flex: 1, alignItems: "center", paddingVertical: theme.spacing.xs, minHeight: 48 }}
             >
-              {item.key === "home" ? (
-                <CrownMark size={20} color={active ? theme.colors.accent : theme.colors.textMuted} />
-              ) : null}
+              <View style={{ width: 52, height: 30, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.surfaceRaised : "transparent" }}>
+                <Icon name={item.key} size={21} color={active ? theme.colors.accent : theme.colors.textMuted} />
+              </View>
               <Text
                 style={[
                   theme.type.caption,

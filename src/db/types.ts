@@ -70,3 +70,12 @@ export interface StashItem {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface SleepSession {
+  id: string;
+  babyId: string;
+  startedAt: string;
+  endedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

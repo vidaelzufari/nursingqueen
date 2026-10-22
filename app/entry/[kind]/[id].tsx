@@ -1,3 +1,5 @@
+import { goBackOrHome } from "@/navigation/back";
+import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
 import { Alert, ScrollView, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -6,7 +8,7 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { Button, Card } from "@/components";
 import { useLogStore } from "@/store/useLogStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { displayToMl, mlToDisplay } from "@/domain/units";
+import { mlToDisplay, parseAmount } from "@/domain/units";
 import { NursingSide } from "@/db/types";
 
 const SIDES: NursingSide[] = ["left", "right", "both", "unknown"];
@@ -22,6 +24,7 @@ export default function EditEntryScreen() {
   const pumpEvents = useLogStore((s) => s.pumpEvents);
   const bottleEvents = useLogStore((s) => s.bottleEvents);
   const updateNursing = useLogStore((s) => s.updateNursing);
+  const addPumpTotal = useLogStore(s => s.addPumpTotal);
   const updatePump = useLogStore((s) => s.updatePump);
   const updateBottle = useLogStore((s) => s.updateBottle);
   const deleteNursing = useLogStore((s) => s.deleteNursing);
@@ -40,17 +43,20 @@ export default function EditEntryScreen() {
   const [side, setSide] = useState<NursingSide>(nursing?.side ?? "unknown");
 
   const handleSave = () => {
-    const parsed = mlText.trim().length > 0 ? Number(mlText) : null;
-    const ml = parsed != null && !Number.isNaN(parsed) ? displayToMl(parsed, unit) : null;
+    const ml = mlText.trim() ? parseAmount(mlText, unit) : null;
+    if (mlText.trim() && ml === null) return;
 
     if (nursing) {
       updateNursing(nursing.id, { side });
     } else if (pump) {
-      updatePump(pump.id, { leftMl: ml, rightMl: null });
+      if (pump.totalMl !== null && mlText.trim() === String(mlToDisplay(pump.totalMl, unit))) { goBackOrHome(router); return; }
+      if (ml !== null && ml > 0 && Number.isFinite(ml)) addPumpTotal(pump.id, ml);
+      else if (!mlText.trim()) updatePump(pump.id, { leftMl: null, rightMl: null });
+      else return;
     } else if (bottle) {
       updateBottle(bottle.id, { ml });
     }
-    router.back();
+    goBackOrHome(router);
   };
 
   const handleDelete = () => {
@@ -63,7 +69,7 @@ export default function EditEntryScreen() {
           if (nursing) deleteNursing(nursing.id);
           else if (pump) deletePump(pump.id);
           else if (bottle) deleteBottle(bottle.id);
-          router.back();
+          goBackOrHome(router);
         },
       },
     ]);
@@ -72,7 +78,9 @@ export default function EditEntryScreen() {
   const showMlField = Boolean(pump || bottle);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md }}>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
+      <ScreenBack />
+      <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginBottom: 16 }]}>{t("details.edit")}</Text>
       <Card style={{ gap: theme.spacing.sm }}>
         {nursing ? (
           <View style={{ gap: theme.spacing.xs }}>
@@ -117,7 +125,7 @@ export default function EditEntryScreen() {
           </View>
         ) : null}
 
-        <Button testID="entry-edit-save" label={t("common.save")} tone="accent" onPress={handleSave} />
+        <Button testID="entry-edit-save" disabled={showMlField && Boolean(mlText.trim()) && parseAmount(mlText, unit) === null} label={t("common.save")} tone="accent" onPress={handleSave} />
         <Button label={t("history.deleteEntry")} tone="danger" variant="outline" onPress={handleDelete} />
       </Card>
     </ScrollView>

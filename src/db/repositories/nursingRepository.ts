@@ -89,6 +89,7 @@ export const nursingRepository = {
     endedAt: Date = new Date()
   ): NursingSession {
     const db = getDatabase();
+    if (!Number.isFinite(durationSeconds) || durationSeconds <= 0 || !Number.isFinite(endedAt.getTime()) || endedAt.getTime() > Date.now()) throw new Error("Invalid nursing time range");
     const startedAt = new Date(endedAt.getTime() - durationSeconds * 1000);
     const now = new Date().toISOString();
     const session: NursingSession = {

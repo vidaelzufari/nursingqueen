@@ -29,6 +29,14 @@ describe("app.config.ts stays in sync with src/config/app.json", () => {
     expect(resolved.ios?.bundleIdentifier).toBe("nursingqueen");
   });
 
+  it("provides nonempty photo and camera purpose strings without Xcode placeholders", () => {
+    for (const key of ["NSPhotoLibraryUsageDescription", "NSCameraUsageDescription"]) {
+      expect(resolved.ios?.infoPlist?.[key]).toEqual(expect.any(String));
+      expect(String(resolved.ios?.infoPlist?.[key]).length).toBeGreaterThan(30);
+      expect(resolved.ios?.infoPlist?.[key]).not.toContain("$(");
+    }
+  });
+
   it("matches the Android package", () => {
     expect(resolved.android?.package).toBe(appConfigJson.ANDROID_PACKAGE);
     expect(resolved.android?.package).toBe("com.nursingqueen.app");

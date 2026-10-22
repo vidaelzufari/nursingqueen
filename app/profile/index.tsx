@@ -1,9 +1,11 @@
+import { ScreenBack } from "@/components/ScreenBack";
 import React from "react";
 import { Image, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
-import { Button, Card, CrownMark } from "@/components";
+import { Button, Card } from "@/components";
+import { Icon } from "@/components/Icon";
 import { useBabyStore } from "@/store/useBabyStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { computeAge } from "@/domain/dateMath";
@@ -23,7 +25,8 @@ export default function ProfileScreen() {
   const weightEntries = activeBaby ? weightRepository.listByBaby(activeBaby.id) : [];
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, gap: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
+      <ScreenBack />
       <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("profile.title")}</Text>
 
       {activeBaby ? (
@@ -41,7 +44,7 @@ export default function ProfileScreen() {
                 justifyContent: "center",
               }}
             >
-              <CrownMark size={36} />
+              <Icon name="baby" size={36} color={theme.colors.accent} />
             </View>
           )}
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{activeBaby.name}</Text>

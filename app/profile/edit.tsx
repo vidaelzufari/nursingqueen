@@ -1,10 +1,13 @@
+import { goBackOrHome } from "@/navigation/back";
+import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Image, Text, TextInput, View } from "react-native";
+import { Image, ScrollView, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
 import { useTheme } from "@/theme/ThemeProvider";
-import { Button, Card, CrownMark } from "@/components";
+import { Button, Card } from "@/components";
+import { Icon } from "@/components/Icon";
 import { useBabyStore } from "@/store/useBabyStore";
 import { weightRepository } from "@/db/repositories";
 
@@ -45,7 +48,7 @@ export default function EditProfileScreen() {
     } else {
       createBaby({ name: name.trim(), dateOfBirth: dateOfBirth.trim(), photoUri });
     }
-    router.back();
+    goBackOrHome(router);
   };
 
   const handleAddWeight = () => {
@@ -56,29 +59,33 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md, gap: theme.spacing.md }}>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 20, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }}>
+      <ScreenBack />
+      <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("design.babySetup")}</Text>
       <Card style={{ alignItems: "center", gap: theme.spacing.sm }}>
         {photoUri ? (
           <Image source={{ uri: photoUri }} style={{ width: 96, height: 96, borderRadius: 48 }} />
         ) : (
           <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}>
-            <CrownMark size={36} />
+            <Icon name="baby" size={40} color={theme.colors.accent} />
           </View>
         )}
-        <View style={{ flexDirection: "row", gap: theme.spacing.xs }}>
-          <Button label={t("profile.choosePhoto")} tone="neutral" variant="outline" onPress={handlePickPhoto} />
-          <Button label={t("profile.takePhoto")} tone="neutral" variant="outline" onPress={handleTakePhoto} />
+        <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.photoHint")}</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: theme.spacing.xs }}>
+          <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.choosePhoto")} tone="neutral" variant="outline" onPress={handlePickPhoto} />
+          <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.takePhoto")} tone="neutral" variant="outline" onPress={handleTakePhoto} />
         </View>
       </Card>
 
       <Card style={{ gap: theme.spacing.sm }}>
         <View style={{ gap: theme.spacing.xs }}>
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("profile.name")}</Text>
-          <TextInput value={name} onChangeText={setName} placeholderTextColor={theme.colors.textMuted} style={inputStyle(theme)} />
+          <TextInput accessibilityLabel={t("profile.name")} value={name} onChangeText={setName} placeholderTextColor={theme.colors.textMuted} style={inputStyle(theme)} />
         </View>
         <View style={{ gap: theme.spacing.xs }}>
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("profile.dateOfBirth")}</Text>
           <TextInput
+            accessibilityLabel={t("profile.dateOfBirth")}
             value={dateOfBirth}
             onChangeText={setDateOfBirth}
             placeholder="YYYY-MM-DD"
@@ -86,7 +93,7 @@ export default function EditProfileScreen() {
             style={inputStyle(theme)}
           />
         </View>
-        <Button label={t("common.save")} tone="accent" onPress={handleSave} />
+        <Button label={t("design.saveBaby")} disabled={!name.trim() || !dateOfBirth.trim()} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
       </Card>
 
       {existing ? (
@@ -103,7 +110,7 @@ export default function EditProfileScreen() {
           <Button label={t("common.add")} tone="accent" variant="outline" onPress={handleAddWeight} />
         </Card>
       ) : null}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -112,7 +119,9 @@ function inputStyle(theme: ReturnType<typeof useTheme>) {
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.radii.md,
-    padding: theme.spacing.sm,
+    padding: theme.spacing.md,
+    minHeight: 54,
+    backgroundColor: theme.colors.surfaceRaised,
     color: theme.colors.textPrimary,
   } as const;
 }

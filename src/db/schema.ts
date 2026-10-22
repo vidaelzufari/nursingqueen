@@ -81,6 +81,21 @@ export const migrations: Migration[] = [
       `CREATE INDEX IF NOT EXISTS idx_stash_baby_status ON stash_items(baby_id, status, pumped_at);`,
     ],
   },
+  {
+    version: 2,
+    statements: [
+      `CREATE TABLE IF NOT EXISTS sleep_sessions (
+        id TEXT PRIMARY KEY NOT NULL,
+        baby_id TEXT NOT NULL REFERENCES babies(id) ON DELETE CASCADE,
+        started_at TEXT NOT NULL,
+        ended_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_sleep_baby_started ON sleep_sessions(baby_id, started_at);`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_sleep_one_active ON sleep_sessions(baby_id) WHERE ended_at IS NULL;`,
+    ],
+  },
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations[migrations.length - 1]?.version ?? 0;

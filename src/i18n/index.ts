@@ -29,7 +29,7 @@ export function initI18n(preferredLanguage?: SupportedLanguageCode): void {
       resources,
       lng: language,
       fallbackLng: "en",
-      compatibilityJSON: "v3",
+      compatibilityJSON: "v4",
       interpolation: { escapeValue: false },
     });
     initialized = true;

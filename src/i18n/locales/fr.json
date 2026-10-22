@@ -2,7 +2,8 @@
   "nav": {
     "home": "Accueil",
     "history": "Historique",
-    "settings": "Réglages"
+    "settings": "Réglages",
+    "analytics": "Statistiques"
   },
   "common": {
     "appName": "The Nursing Queen",
@@ -167,5 +168,134 @@
   "permissions": {
     "photoLibrary": "The Nursing Queen conserve la photo de votre bébé uniquement sur cet appareil, pour l'afficher sur son profil.",
     "camera": "The Nursing Queen n'utilise l'appareil photo que si vous choisissez de prendre une nouvelle photo pour le profil de votre bébé."
+  },
+  "design": {
+    "brand": "NURSING QUEEN",
+    "today": "Un peu de douceur, chaque jour.",
+    "live": "Allaitement en cours",
+    "yourSpace": "VOTRE COMPAGNON DU QUOTIDIEN",
+    "babyDay": "Une belle journée avec {{name}}.",
+    "welcome": "Petits moments.\nBeaucoup d’amour.",
+    "welcomeBody": "Un espace serein pour suivre les repas de bébé, un instant à la fois.",
+    "quickLog": "Que souhaitez-vous noter ?",
+    "finish": "Terminer",
+    "nurse": "Allaiter",
+    "pump": "Tirer",
+    "atGlance": "Votre journée en bref",
+    "noFeed": "Pas encore",
+    "insights": "Un peu plus de conseils",
+    "insightsBody": "Découvrez les conseils Queen et les réserves",
+    "historyBody": "Vos petits moments, au même endroit.",
+    "historyEmpty": "Votre histoire commence ici",
+    "historyHint": "Enregistrez un repas pour le retrouver ici.",
+    "logFeed": "Noter un repas",
+    "preferences": "Un espace à votre image.",
+    "babySetup": "Faisons connaissance",
+    "photoHint": "Ajouter une photo · facultatif",
+    "saveBaby": "Enregistrer bébé",
+    "saved": "Les modifications sont enregistrées automatiquement",
+    "earlierFeed": "Noter un repas précédent"
+  },
+  "quick": {
+    "repeat": "Comme la dernière fois · {{amount}}",
+    "tapToSave": "Touchez une quantité pour enregistrer.",
+    "saveAmount": "Enregistrer {{amount}}",
+    "custom": "Une autre quantité",
+    "customAmount": "Quantité personnalisée ({{unit}})",
+    "pumpTitle": "Quelle quantité avez-vous tirée ?",
+    "pumpSaved": "Séance enregistrée · ajoutez le total",
+    "bySide": "Séparer gauche / droite",
+    "totalOnly": "Utiliser le total",
+    "doneLater": "Terminer · ajouter la quantité plus tard"
+  },
+  "navigation": {
+    "back": "Retour"
+  },
+  "sleep": {
+    "title": "Sommeil",
+    "today": "Sommeil aujourd’hui",
+    "sleeping": "Sommeil en cours",
+    "ready": "Prêt pour un peu de repos ?",
+    "start": "Démarrer le sommeil",
+    "wake": "Bébé est réveillé",
+    "manual": "Noter un sommeil précédent",
+    "dateHint": "Format AAAA-MM-JJ HH:mm, heure locale.",
+    "from": "Endormi à",
+    "to": "Réveillé à",
+    "invalid": "Vérifiez les heures : la fin doit suivre le début, être passée et ne pas chevaucher un autre sommeil.",
+    "recent": "Sommeil récent",
+    "empty": "Aucun sommeil enregistré.",
+    "confirmDelete": "Confirmer la suppression",
+    "stop": "Terminer le sommeil"
+  },
+  "details": {
+    "editHint": "Touchez une entrée pour la consulter ou la modifier.",
+    "noStash": "Aucune réserve de lait.",
+    "noFeeds": "Aucun repas enregistré ici.",
+    "edit": "Modifier la quantité"
+  },
+  "forecast": {
+    "title": "Et ensuite ?",
+    "feed": "Prochain repas",
+    "pump": "Prochain tirage",
+    "sleep": "Prochain sommeil",
+    "active": "En cours",
+    "moreLogs": "Notez encore quelques séances",
+    "reached": "Créneau atteint",
+    "note": "Estimations basées sur vos notes, sans horaire fixe. Suivez les signes de bébé.",
+    "all": "Voir les statistiques",
+    "learning": "Nous découvrons votre routine",
+    "remaining": "dans {{time}}"
+  },
+  "weekly": {
+    "title": "Les 7 derniers jours",
+    "feeds": "Repas",
+    "pump": "Tirage",
+    "sleep": "Sommeil",
+    "chart": "Activité sur sept jours",
+    "hours": "heures",
+    "logged": "Activité enregistrée"
+  },
+  "analytics": {
+    "title": "Statistiques",
+    "subtitle": "Un aperçu de votre routine.",
+    "today": "Aujourd’hui",
+    "pumpTotal": "Lait tiré aujourd’hui",
+    "bottleTotal": "Biberons aujourd’hui"
+  },
+  "recent": {
+    "title": "Activité récente",
+    "nursing": "Dernière tétée",
+    "pump": "Dernier tirage",
+    "bottle": "Dernier biberon",
+    "sleep": "Dernière sieste",
+    "ago": "Il y a {{time}}"
+  },
+  "feedback": {
+    "undo": "Annuler",
+    "nursingStarted": "Chronomètre de tétée démarré",
+    "nursingSaved": "Tétée enregistrée",
+    "pumpStarted": "Tirage ajouté",
+    "pumpSaved": "Tirage enregistré · {{amount}}",
+    "bottleSaved": "Biberon enregistré · {{amount}}",
+    "bottleNoAmount": "Biberon enregistré · quantité à ajouter",
+    "sleepStarted": "Chronomètre de sommeil démarré",
+    "sleepSaved": "Sommeil enregistré",
+    "updated": "Quantité modifiée"
+  },
+  "manualNursing": {
+    "quickHint": "Enregistrement rapide : une tétée qui vient de finir.",
+    "started": "Début",
+    "ended": "Fin",
+    "hint": "Choisissez les dates et heures locales. Sur mobile : AAAA-MM-JJ HH:mm.",
+    "left": "Gauche",
+    "right": "Droite",
+    "both": "Les deux",
+    "unknown": "Incertain",
+    "duration": "{{minutes}} minutes",
+    "invalid": "La fin doit suivre le début et ne pas être dans le futur.",
+    "failed": "Impossible d’enregistrer. Vérifiez les heures.",
+    "quick": "Durée rapide",
+    "exact": "Choisir le début et la fin"
   }
 }

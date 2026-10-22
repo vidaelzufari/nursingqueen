@@ -2,7 +2,8 @@
   "nav": {
     "home": "Home",
     "history": "History",
-    "settings": "Settings"
+    "settings": "Settings",
+    "analytics": "Analytics"
   },
   "common": {
     "appName": "The Nursing Queen",
@@ -167,5 +168,134 @@
   "permissions": {
     "photoLibrary": "The Nursing Queen stores your baby's photo only on this device, to show it on their profile.",
     "camera": "The Nursing Queen uses the camera only if you choose to take a new photo for your baby's profile."
+  },
+  "design": {
+    "brand": "NURSING QUEEN",
+    "today": "A little care, every day.",
+    "live": "Nursing in progress",
+    "yourSpace": "YOUR DAILY COMPANION",
+    "babyDay": "A lovely day with {{name}}.",
+    "welcome": "Small moments.\nSo much love.",
+    "welcomeBody": "A calmer space to follow your baby’s feeds, one little moment at a time.",
+    "quickLog": "What would you like to log?",
+    "finish": "Finish feed",
+    "nurse": "Nurse",
+    "pump": "Pump",
+    "atGlance": "Today at a glance",
+    "noFeed": "Not yet",
+    "insights": "A little more guidance",
+    "insightsBody": "Discover Queen insights and stash planning",
+    "historyBody": "Your little moments, all in one place.",
+    "historyEmpty": "Your story starts here",
+    "historyHint": "Log a feed and it will appear in your timeline.",
+    "logFeed": "Log a feed",
+    "preferences": "Make this space yours.",
+    "babySetup": "A little introduction",
+    "photoHint": "Add a photo · optional",
+    "saveBaby": "Save baby",
+    "saved": "Changes save automatically",
+    "earlierFeed": "Log an earlier feed"
+  },
+  "quick": {
+    "repeat": "Same as last time · {{amount}}",
+    "tapToSave": "Tap an amount to save.",
+    "saveAmount": "Save {{amount}}",
+    "custom": "A different amount",
+    "customAmount": "Custom amount ({{unit}})",
+    "pumpTitle": "How much did you pump?",
+    "pumpSaved": "Session saved · add your total below",
+    "bySide": "Add left / right separately",
+    "totalOnly": "Use total amount instead",
+    "doneLater": "Done · add amount later"
+  },
+  "navigation": {
+    "back": "Back"
+  },
+  "sleep": {
+    "title": "Sleep",
+    "today": "Sleep today",
+    "sleeping": "Sleep in progress",
+    "ready": "Ready for a little rest?",
+    "start": "Start sleep",
+    "wake": "Baby is awake",
+    "manual": "Log an earlier sleep",
+    "dateHint": "Use YYYY-MM-DD HH:mm, in your local time.",
+    "from": "Fell asleep",
+    "to": "Woke up",
+    "invalid": "Check the times. Sleep must end after it starts, be in the past, and not overlap another sleep.",
+    "recent": "Recent sleep",
+    "empty": "No sleep logged yet.",
+    "confirmDelete": "Confirm delete",
+    "stop": "Stop sleep"
+  },
+  "details": {
+    "editHint": "Tap an entry to view or change it.",
+    "noStash": "No milk in your stash yet.",
+    "noFeeds": "No feeds logged here yet.",
+    "edit": "Edit amount"
+  },
+  "forecast": {
+    "title": "What’s next?",
+    "feed": "Next feed",
+    "pump": "Next pump",
+    "sleep": "Next sleep",
+    "active": "In progress",
+    "moreLogs": "Log a few more sessions",
+    "reached": "Window reached",
+    "note": "Estimates from recent logs, not a fixed schedule. Follow your baby’s cues.",
+    "all": "See analytics",
+    "learning": "Getting to know your routine",
+    "remaining": "in {{time}}"
+  },
+  "weekly": {
+    "title": "The last 7 days",
+    "feeds": "Feeds",
+    "pump": "Pumping",
+    "sleep": "Sleep",
+    "chart": "Seven-day activity chart",
+    "hours": "hours",
+    "logged": "Logged activity"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "A little perspective on your routine.",
+    "today": "Today",
+    "pumpTotal": "Pumped today",
+    "bottleTotal": "Bottle milk today"
+  },
+  "recent": {
+    "title": "Recent activity",
+    "nursing": "Last nursing",
+    "pump": "Last pump",
+    "bottle": "Last bottle",
+    "sleep": "Last nap",
+    "ago": "{{time}} ago"
+  },
+  "feedback": {
+    "undo": "Undo",
+    "nursingStarted": "Nursing timer started",
+    "nursingSaved": "Nursing session saved",
+    "pumpStarted": "Pumping session added",
+    "pumpSaved": "Pumping saved · {{amount}}",
+    "bottleSaved": "Bottle saved · {{amount}}",
+    "bottleNoAmount": "Bottle saved · add amount later",
+    "sleepStarted": "Sleep timer started",
+    "sleepSaved": "Sleep saved",
+    "updated": "Amount updated"
+  },
+  "manualNursing": {
+    "quickHint": "Quick save: a feed that ended just now.",
+    "started": "Started at",
+    "ended": "Ended at",
+    "hint": "Choose local dates and times, including yesterday if needed. On mobile, use YYYY-MM-DD HH:mm.",
+    "left": "Left",
+    "right": "Right",
+    "both": "Both",
+    "unknown": "Not sure",
+    "duration": "{{minutes}} minutes",
+    "invalid": "End time must be after the start and not in the future.",
+    "failed": "Could not save. Please check the times and try again.",
+    "quick": "Use quick duration",
+    "exact": "Set start and end times"
   }
 }

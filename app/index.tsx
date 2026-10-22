@@ -1,18 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { AppShell } from "@/navigation/AppShell";
 import { useTheme } from "@/theme/ThemeProvider";
-import { Button, Card, CrownMark, StatChip, SuggestionCard } from "@/components";
+import { Card } from "@/components";
+import { Icon, IconName } from "@/components/Icon";
+import { RecentActivities } from "@/components/RecentActivities";
+import { WeeklySummary } from "@/components/WeeklySummary";
+import { Forecasts } from "@/components/Forecasts";
+import { useSleepStore } from "@/store/useSleepStore";
+import { sleepSecondsToday } from "@/domain/sleep";
 import { useBabyStore } from "@/store/useBabyStore";
 import { useLogStore, computeStatusStrip } from "@/store/useLogStore";
 import { useStashStore } from "@/store/useStashStore";
-import { useEntitlementStore } from "@/store/useEntitlementStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { computeAge, formatDurationShort, minutesSince, weeksSinceBirth } from "@/domain/dateMath";
-import { computeNextFeedWindow, computeStashForecast, suggestPumpSlots } from "@/domain/recommendations";
+import { computeAge, formatDurationShort, minutesSince } from "@/domain/dateMath";
+import { computeStashForecast } from "@/domain/recommendations";
 import { formatVolume } from "@/domain/units";
 
 export default function HomeScreen() {
@@ -20,14 +25,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const [now, setNow] = useState(() => new Date());
-  const [dismissedFeedSuggestion, setDismissedFeedSuggestion] = useState(false);
-  const [dismissedPumpSuggestion, setDismissedPumpSuggestion] = useState(false);
 
   const activeBaby = useBabyStore((s) => s.activeBaby)();
   const unit = useSettingsStore((s) => s.unit);
-  const returnToWorkDate = useSettingsStore((s) => s.returnToWorkDate);
-  const targetStashMl = useSettingsStore((s) => s.targetStashMl);
-  const isUnlocked = useEntitlementStore((s) => s.isUnlocked);
 
   const nursingSessions = useLogStore((s) => s.nursingSessions);
   const pumpEvents = useLogStore((s) => s.pumpEvents);
@@ -37,47 +37,34 @@ export default function HomeScreen() {
   const stopNursing = useLogStore((s) => s.stopNursing);
   const logPump = useLogStore((s) => s.logPump);
 
+  const sleepSessions = useSleepStore(s => s.sessions);
+  const openSleepSession = sleepSessions.find(s => !s.endedAt);
+  const activeSleep = Boolean(openSleepSession);
+  const startSleep = useSleepStore(s => s.start);
+  const stopSleep = useSleepStore(s => s.stop);
   const stashItems = useStashStore((s) => s.items);
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 30_000);
+    const interval = setInterval(() => setNow(new Date()), 1_000);
     return () => clearInterval(interval);
-  }, []);
+  }, [openNursingSession, activeSleep]);
 
   const statusStrip = useMemo(
     () => computeStatusStrip(nursingSessions, pumpEvents, bottleEvents, now),
     [nursingSessions, pumpEvents, bottleEvents, now]
   );
 
-  const ageWeeks = activeBaby ? weeksSinceBirth(new Date(activeBaby.dateOfBirth), now) : 0;
   const age = activeBaby ? computeAge(new Date(activeBaby.dateOfBirth), now) : null;
-
-  const feedWindow = useMemo(() => {
-    const times = nursingSessions.slice(0, 8).map((s) => new Date(s.startedAt));
-    return computeNextFeedWindow(times, ageWeeks, now);
-  }, [nursingSessions, ageWeeks, now]);
 
   const stashForecast = useMemo(() => {
     const totalTodayMl = statusStrip.todayBottleMl;
     return computeStashForecast(stashItems, now, totalTodayMl > 0 ? totalTodayMl : null);
   }, [stashItems, now, statusStrip.todayBottleMl]);
 
-  const pumpSuggestions = useMemo(
-    () =>
-      suggestPumpSlots({
-        nursingStartTimes: nursingSessions.slice(0, 20).map((s) => new Date(s.startedAt)),
-        pumpHistory: pumpEvents
-          .filter((p) => p.totalMl != null)
-          .map((p) => ({ at: new Date(p.startedAt), totalMl: p.totalMl as number })),
-        now,
-        returnToWorkDate: returnToWorkDate ? new Date(returnToWorkDate) : null,
-        targetStashMl,
-        currentStashMl: stashForecast.totalMl,
-      }),
-    [nursingSessions, pumpEvents, now, returnToWorkDate, targetStashMl, stashForecast.totalMl]
-  );
-
-  const handleStart = () => startNursing();
+  const handleStart = () => {
+    if (!activeBaby) { router.push("/profile/edit"); return; }
+    startNursing();
+  };
   const handleStop = () => {
     if (openNursingSession) {
       stopNursing();
@@ -86,151 +73,87 @@ export default function HomeScreen() {
     }
   };
   const handlePump = () => {
-    logPump();
-    router.push("/modals/pump-details");
+    if (!activeBaby) { router.push("/profile/edit"); return; }
+    const event = logPump();
+    router.push({ pathname: "/modals/pump-details", params: { id: event.id } });
   };
-  const handleBottle = () => router.push("/modals/bottle-entry");
+  const handleSleep = () => {
+    if (!activeBaby) { router.push("/profile/edit"); return; }
+    if (openSleepSession) stopSleep(openSleepSession.id);
+    else startSleep();
+  };
+  const handleBottle = () => router.push(activeBaby ? "/modals/bottle-entry" : "/profile/edit");
 
   return (
     <AppShell>
       <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingBottom: theme.spacing.xl }}>
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: theme.spacing.md }}>
-          <CrownMark size={22} />
-          <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginStart: theme.spacing.xs, flex: 1 }]}>
-            {t("common.appName")}
-          </Text>
-          <Button
-            label={activeBaby?.name.charAt(0).toUpperCase() ?? "+"}
-            tone="neutral"
-            haptic="light"
-            onPress={() => router.push("/profile")}
-            style={{ minHeight: 44, minWidth: 44, paddingHorizontal: 0, borderRadius: 999 }}
-            testID="home-avatar-button"
-          />
-        </View>
-
-        {!activeBaby ? (
-          <Card raised style={{ alignItems: "center", gap: theme.spacing.sm, marginBottom: theme.spacing.md }}>
-            <CrownMark size={32} />
-            <Text style={[theme.type.body, { color: theme.colors.textSecondary, textAlign: "center" }]}>
-              {t("profile.addBaby")}
-            </Text>
-            <Button label={t("profile.addBaby")} tone="accent" onPress={() => router.push("/profile/edit")} testID="home-add-baby-cta" />
-          </Card>
-        ) : null}
-
-        {activeBaby ? (
-          <Text style={[theme.type.caption, { color: theme.colors.textSecondary, marginBottom: theme.spacing.md }]}>
-            {activeBaby.name} · {age && (age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks }))}
-          </Text>
-        ) : null}
-
-        <View style={{ flexDirection: "row", gap: theme.spacing.sm, marginBottom: theme.spacing.sm }}>
-          <Button
-            testID="home-button-start-nursing"
-            label={openNursingSession ? t("home.nursingActive") : t("home.startedNursing")}
-            subLabel={openNursingSession ? formatDurationShort(minutesSince(new Date(openNursingSession.startedAt), now)) : undefined}
-            tone="nursing"
-            active={Boolean(openNursingSession)}
-            large
-            fullWidth
-            haptic="success"
-            onPress={handleStart}
-            disabled={Boolean(openNursingSession)}
-            style={{ flex: 1 }}
-          />
-          <Button
-            testID="home-button-stop-nursing"
-            label={t("home.stoppedNursing")}
-            tone="nursing"
-            variant="outline"
-            large
-            fullWidth
-            haptic="success"
-            onPress={handleStop}
-            style={{ flex: 1 }}
-          />
-        </View>
-        <View style={{ flexDirection: "row", gap: theme.spacing.sm, marginBottom: theme.spacing.md }}>
-          <Button
-            testID="home-button-pump"
-            label={t("home.pumped")}
-            tone="pumping"
-            large
-            fullWidth
-            haptic="success"
-            onPress={handlePump}
-            style={{ flex: 1 }}
-          />
-          <Button
-            testID="home-button-bottle"
-            label={t("home.bottle")}
-            tone="bottle"
-            large
-            fullWidth
-            haptic="success"
-            onPress={handleBottle}
-            style={{ flex: 1 }}
-          />
-        </View>
-
-        <Card style={{ marginBottom: theme.spacing.md }}>
-          <View style={{ flexDirection: "row" }}>
-            <StatChip
-              label={t("statusStrip.lastFeed")}
-              value={statusStrip.lastFeedAt ? formatDurationShort(minutesSince(statusStrip.lastFeedAt, now)) : t("statusStrip.lastFeedNever")}
-            />
-            <StatChip label={t("statusStrip.lastSide")} value={statusStrip.lastNursingSide ?? t("statusStrip.sideUnknown")} />
-            <StatChip label={t("statusStrip.todayFeeds")} value={String(statusStrip.todayNursingCount)} />
-            <StatChip label={t("statusStrip.currentStash")} value={formatVolume(stashForecast.totalMl, unit)} />
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24, marginTop: 8 }}>
+          <View style={{ flex: 1, marginEnd: 12 }}>
+            <Text style={[theme.type.caption, { color: theme.colors.textSecondary, letterSpacing: 1.5 }]}>{t("design.brand")}</Text>
+            <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginTop: 4 }]}>{t("analytics.today")}</Text>
           </View>
+          <Pressable accessibilityRole="button" accessibilityLabel={t("profile.title")} testID="home-avatar-button" onPress={() => router.push("/profile")} style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border }}>
+            {activeBaby ? <Text style={[theme.type.subtitle, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="baby" color={theme.colors.accent} size={27} />}
+          </Pressable>
+        </View>
+
+        <Card style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24, padding: 14 }}>
+          <Icon name="baby" size={28} color={theme.colors.accent} />
+          <View style={{ flex: 1 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>{activeBaby && age ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks })}</Text> : null}</View>
+          {!activeBaby ? <Pressable testID="home-add-baby-cta" accessibilityRole="button" accessibilityLabel={t("profile.addBaby")} onPress={() => router.push("/profile/edit")} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="plus" color={theme.colors.accent} /></Pressable> : null}
         </Card>
 
-        {isUnlocked ? (
-          <View style={{ gap: theme.spacing.sm }}>
-            <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("recommendations.title")}</Text>
-            {!dismissedFeedSuggestion && activeBaby ? (
-              <SuggestionCard
-                title={feedWindow.hasOwnData ? t("recommendations.nextFeed.titleWithName", { name: activeBaby.name }) : t("recommendations.nextFeed.titleGeneric")}
-                body={
-                  feedWindow.hasOwnData
-                    ? t("recommendations.nextFeed.body", { earliest: format(feedWindow.earliestAt, "p"), latest: format(feedWindow.latestAt, "p") })
-                    : t("recommendations.nextFeed.bodyNoData", { name: activeBaby.name })
-                }
-                footnote={t("recommendations.disclaimer")}
-                onDismiss={() => setDismissedFeedSuggestion(true)}
-                dismissLabel={t("common.skip")}
-              />
-            ) : null}
-            {!dismissedPumpSuggestion && pumpSuggestions.slots.length > 0 ? (
-              <SuggestionCard
-                title={
-                  pumpSuggestions.slots[0]!.reason === "morning-surplus"
-                    ? t("recommendations.pumpSuggestion.titleMorning")
-                    : pumpSuggestions.slots[0]!.reason === "stash-goal"
-                      ? t("recommendations.pumpSuggestion.titleStashGoal")
-                      : t("recommendations.pumpSuggestion.titleGap")
-                }
-                body={
-                  pumpSuggestions.slots[0]!.reason === "morning-surplus"
-                    ? t("recommendations.pumpSuggestion.bodyMorning", { time: format(pumpSuggestions.slots[0]!.suggestedAt, "p") })
-                    : t("recommendations.pumpSuggestion.bodyGap", { time: format(pumpSuggestions.slots[0]!.suggestedAt, "p") })
-                }
-                footnote={t("recommendations.disclaimer")}
-                onDismiss={() => setDismissedPumpSuggestion(true)}
-                dismissLabel={t("common.skip")}
-              />
-            ) : null}
-          </View>
-        ) : (
-          <Card raised style={{ alignItems: "center", gap: theme.spacing.xs }}>
-            <Text style={[theme.type.body, { color: theme.colors.textSecondary, textAlign: "center" }]}>
-              {t("recommendations.unlockPrompt")}
-            </Text>
-            <Button label={t("recommendations.unlockCta")} tone="accent" onPress={() => router.push("/paywall")} />
-          </Card>
-        )}
+        <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 20 }]}>{t("design.quickLog")}</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", gap: 20, marginBottom: 16 }}>
+          <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
+          <RoundAction testID="home-button-pump" icon="pump" label={t("design.pump")} color={theme.colors.pumping} onPress={handlePump} />
+          <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
+          <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.accent} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
+        </View>
+        {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : "/profile/edit")} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
+        <Forecasts now={now} compact />
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("design.atGlance")}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name="clock" size={14} color={theme.colors.textMuted} /><Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{format(now, "EEE, d MMM")}</Text></View>
+        </View>
+        <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}>
+          <Metric onPress={() => router.push({ pathname: "/details", params: { kind: "latest" } })} icon="heart" label={t("statusStrip.lastFeed")} value={statusStrip.lastFeedAt ? formatDurationShort(minutesSince(statusStrip.lastFeedAt, now)) : t("design.noFeed")} color={theme.colors.nursing} />
+          <Metric onPress={() => router.push({ pathname: "/details", params: { kind: "feeds" } })} icon="bottle" label={t("statusStrip.todayFeeds")} value={String(statusStrip.todayNursingCount + bottleEvents.filter(event => isSameDay(new Date(event.occurredAt), now)).length)} color={theme.colors.pumping} />
+        </View>
+        <RecentActivities now={now} />
+        <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}><Metric onPress={() => router.push({ pathname: "/details", params: { kind: "sleep" } })} icon="moon" label={t("sleep.today")} value={formatDurationShort(Math.floor(sleepSecondsToday(sleepSessions, now) / 60))} color={theme.colors.accent} /></View>
+        <Pressable accessibilityRole="button" accessibilityLabel={t("statusStrip.currentStash")} onPress={() => router.push({ pathname: "/details", params: { kind: "stash" } })}><Card style={{ marginBottom: 24, flexDirection: "row", alignItems: "center", gap: 14 }}>
+          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="pump" color={theme.colors.bottle} /></View>
+          <View style={{ flex: 1 }}><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("statusStrip.currentStash")}</Text><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{formatVolume(stashForecast.totalMl, unit)}</Text></View>
+          <Icon name="bottle" color={theme.colors.bottle} size={20} />
+        </Card></Pressable>
+
+        <WeeklySummary now={now} />
+
+
       </ScrollView>
     </AppShell>
   );
+}
+
+function RoundAction({ icon, label, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
+  const theme = useTheme();
+  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, alignItems: "center", opacity: pressed ? 0.7 : 1, gap: 10 })}>
+    <View style={{ width: 104, height: 104, borderRadius: 52, borderWidth: active ? 3 : 1, borderColor: active ? color : color + "30", padding: 5 }}>
+      <View style={{ flex: 1, borderRadius: 44, backgroundColor: active ? color : color + "16", alignItems: "center", justifyContent: "center" }}><Icon name={icon} size={36} color={active ? "#FFFFFF" : color} /></View>
+    </View>
+    <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text>
+    {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}
+    {subLabel ? <Text style={[theme.type.subtitle, { color, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
+    {active ? <View style={{ height: 5, width: 5, borderRadius: 3, backgroundColor: color }} /> : null}
+  </Pressable>;
+}
+function Metric({ icon, label, value, color, onPress }: { icon: IconName; label: string; value: string; color: string; onPress: () => void }) {
+  const theme = useTheme();
+  return <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value}`} onPress={onPress} style={{ flex: 1 }}><Card style={{ minHeight: 132, gap: 9 }}><Icon name={icon} size={21} color={color} /><Text style={[theme.type.title, { color: theme.colors.textPrimary, fontSize: 25 }]}>{value}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{label}</Text><View style={{ position: "absolute", end: 14, top: 16 }}><Icon name="arrow" size={16} color={theme.colors.textMuted} /></View></Card></Pressable>;
+}
+
+function elapsedClock(startedAt: string, now: Date): string {
+  const seconds = Math.floor(Math.max(0, now.getTime() - new Date(startedAt).getTime()) / 1000);
+  return [Math.floor(seconds / 3600), Math.floor(seconds % 3600 / 60), seconds % 60].map(n => String(n).padStart(2, "0")).join(":");
 }

@@ -72,6 +72,15 @@ export const pumpRepository = {
     );
   },
 
+  /** A total amount never implies which breast it came from. */
+  addTotal(id: string, totalMl: number): void {
+    if (!Number.isFinite(totalMl) || totalMl <= 0) throw new Error("Invalid pump amount");
+    getDatabase().runSync(
+      "UPDATE pump_events SET left_ml = NULL, right_ml = NULL, total_ml = ?, needs_detail = 0, updated_at = ? WHERE id = ?;",
+      [totalMl, new Date().toISOString(), id]
+    );
+  },
+
   update(
     id: string,
     patch: Partial<Pick<PumpEvent, "startedAt" | "leftMl" | "rightMl" | "note">>
@@ -81,7 +90,10 @@ export const pumpRepository = {
     if (!row) return;
     const current = fromRow(row);
     const next = { ...current, ...patch };
-    const totalMl = next.leftMl !== null || next.rightMl !== null ? (next.leftMl ?? 0) + (next.rightMl ?? 0) : null;
+    const sideChanged = "leftMl" in patch || "rightMl" in patch;
+    const totalMl = next.leftMl !== null || next.rightMl !== null
+      ? (next.leftMl ?? 0) + (next.rightMl ?? 0)
+      : sideChanged ? null : current.totalMl;
     const needsDetail = totalMl === null;
     const updatedAt = new Date().toISOString();
     db.runSync(

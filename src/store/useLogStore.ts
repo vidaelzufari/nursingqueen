@@ -1,3 +1,7 @@
+import i18n from "@/i18n";
+import { useFeedbackStore } from "./useFeedbackStore";
+import { formatVolume } from "@/domain/units";
+import { useSettingsStore } from "./useSettingsStore";
 import { create } from "zustand";
 import { isSameDay } from "date-fns";
 import {
@@ -19,9 +23,11 @@ interface LogState {
   // Zero-friction capture actions — every one saves immediately, no form.
   startNursing: (side?: NursingSide) => void;
   stopNursing: () => void;
+  logNursingAt: (startedAt: Date, endedAt: Date, side?: NursingSide) => void;
   logNursingPreset: (minutes: number, side?: NursingSide) => void;
   logPump: () => PumpEvent;
   addPumpDetail: (id: string, leftMl: number | null, rightMl: number | null) => void;
+  addPumpTotal: (id: string, totalMl: number) => void;
   logBottle: (ml: number | null, milkType: MilkType) => BottleEvent;
 
   updateNursing: (id: string, patch: Partial<Pick<NursingSession, "side" | "startedAt" | "endedAt" | "durationSeconds" | "note">>) => void;
@@ -55,6 +61,7 @@ export const useLogStore = create<LogState>()((set, get) => ({
     if (!babyId) return;
     nursingRepository.startSession(babyId, side);
     get().refresh(babyId);
+    useFeedbackStore.getState().show(i18n.t("feedback.nursingStarted"));
   },
 
   stopNursing: () => {
@@ -63,6 +70,7 @@ export const useLogStore = create<LogState>()((set, get) => ({
     const open = get().openNursingSession();
     if (open) {
       nursingRepository.stopSession(open.id);
+      useFeedbackStore.getState().show(i18n.t("feedback.nursingSaved"));
     }
     get().refresh(babyId);
   },
@@ -71,7 +79,17 @@ export const useLogStore = create<LogState>()((set, get) => ({
     const { babyId } = get();
     if (!babyId) return;
     nursingRepository.logCompletedSession(babyId, minutes * 60, side);
+    useFeedbackStore.getState().show(i18n.t("feedback.nursingSaved"));
     get().refresh(babyId);
+  },
+
+  logNursingAt: (startedAt, endedAt, side = "unknown") => {
+    const { babyId } = get();
+    if (!babyId) throw new Error("No active baby");
+    const duration = (endedAt.getTime() - startedAt.getTime()) / 1000;
+    nursingRepository.logCompletedSession(babyId, duration, side, endedAt);
+    get().refresh(babyId);
+    useFeedbackStore.getState().show(i18n.t("feedback.nursingSaved"));
   },
 
   logPump: () => {
@@ -79,12 +97,21 @@ export const useLogStore = create<LogState>()((set, get) => ({
     if (!babyId) throw new Error("No active baby");
     const event = pumpRepository.logPending(babyId);
     get().refresh(babyId);
+    useFeedbackStore.getState().show(i18n.t("feedback.pumpStarted"), () => get().deletePump(event.id));
     return event;
   },
 
   addPumpDetail: (id, leftMl, rightMl) => {
     const { babyId } = get();
     pumpRepository.addDetail(id, leftMl, rightMl);
+    useFeedbackStore.getState().show(i18n.t("feedback.pumpSaved", { amount: formatVolume((leftMl ?? 0) + (rightMl ?? 0), useSettingsStore.getState().unit) }), () => get().deletePump(id));
+    if (babyId) get().refresh(babyId);
+  },
+
+  addPumpTotal: (id, totalMl) => {
+    const { babyId } = get();
+    pumpRepository.addTotal(id, totalMl);
+    useFeedbackStore.getState().show(i18n.t("feedback.pumpSaved", { amount: formatVolume(totalMl, useSettingsStore.getState().unit) }));
     if (babyId) get().refresh(babyId);
   },
 
@@ -92,6 +119,7 @@ export const useLogStore = create<LogState>()((set, get) => ({
     const { babyId } = get();
     if (!babyId) throw new Error("No active baby");
     const event = bottleRepository.create({ babyId, ml, milkType });
+    useFeedbackStore.getState().show(ml === null ? i18n.t("feedback.bottleNoAmount") : i18n.t("feedback.bottleSaved", { amount: formatVolume(ml, useSettingsStore.getState().unit) }), () => get().deleteBottle(event.id));
     get().refresh(babyId);
     return event;
   },
@@ -109,6 +137,7 @@ export const useLogStore = create<LogState>()((set, get) => ({
   updateBottle: (id, patch) => {
     const { babyId } = get();
     bottleRepository.update(id, patch);
+    useFeedbackStore.getState().show(i18n.t("feedback.updated"));
     if (babyId) get().refresh(babyId);
   },
 

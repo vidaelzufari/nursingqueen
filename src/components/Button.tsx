@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -69,17 +69,19 @@ export function Button({
 
   const handlePress = useCallback(() => {
     if (disabled) return;
-    if (haptic === "light") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    else if (haptic === "medium") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    else if (haptic === "success") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (Platform.OS !== "web") {
+      if (haptic === "light") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      else if (haptic === "medium") void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      else if (haptic === "success") void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    }
     onPress();
   }, [disabled, haptic, onPress]);
 
   const backgroundColor =
     variant === "solid" ? (active ? toneColor.active : toneColor.base) : "transparent";
-  const borderColor = variant === "outline" ? toneColor.base : "transparent";
+  const borderColor = variant === "outline" ? (tone === "neutral" ? theme.colors.border : toneColor.base) : "transparent";
   const textColor =
-    variant === "solid" ? toneColor.contrast : disabled ? theme.colors.textMuted : toneColor.base;
+    variant === "solid" ? toneColor.contrast : disabled ? theme.colors.textMuted : tone === "neutral" ? theme.colors.textPrimary : toneColor.base;
 
   return (
     <AnimatedPressable
@@ -99,10 +101,9 @@ export function Button({
           minHeight: large ? MIN_TOUCH_TARGET * 1.4 : MIN_TOUCH_TARGET,
           width: fullWidth ? "100%" : undefined,
           opacity: disabled ? 0.5 : 1,
-          borderRadius: theme.radii.lg,
+          borderRadius: theme.radii.pill,
           paddingHorizontal: theme.spacing.lg,
         },
-        theme.shadows.card,
         animatedStyle,
         style,
       ]}
@@ -112,7 +113,7 @@ export function Button({
         <View>
           <Text
             style={[
-              theme.type.subtitle,
+              theme.type.bodyStrong,
               { color: textColor, textAlign: "center" },
             ]}
             numberOfLines={1}
@@ -154,7 +155,7 @@ function toneToColor(
       return { base: colors.danger, active: colors.danger, contrast: colors.accentContrast };
     case "accent":
     default:
-      return { base: colors.accent, active: colors.crown, contrast: colors.accentContrast };
+      return { base: colors.accent, active: colors.accent, contrast: colors.accentContrast };
   }
 }
 
@@ -166,6 +167,7 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    flexDirection: "row",
+    gap: 8,
   },
 });

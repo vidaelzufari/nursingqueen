@@ -1,4 +1,4 @@
-import { displayToMl, formatVolume, mlToDisplay } from "@/domain/units";
+import { displayToMl, formatVolume, mlToDisplay, parseAmount } from "@/domain/units";
 
 describe("units", () => {
   describe("mlToDisplay", () => {
@@ -35,5 +35,15 @@ describe("units", () => {
       expect(formatVolume(90, "ml")).toBe("90 ml");
       expect(formatVolume(29.5735, "oz")).toBe("1 oz");
     });
+  });
+});
+
+describe("quick amount input", () => {
+  it("accepts decimal commas and converts the selected unit", () => {
+    expect(parseAmount(" 2,5 ", "oz")).toBe(74);
+    expect(parseAmount("120", "ml")).toBe(120);
+  });
+  it.each(["", "0", "-10", "NaN", "Infinity", "1e9", "1.2.3", "10abc", "0.001"])("rejects invalid or zero ml amounts: %s", text => {
+    expect(parseAmount(text, "ml")).toBeNull();
   });
 });
