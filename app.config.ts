@@ -15,7 +15,7 @@ import type { ExpoConfig, ConfigContext } from "expo/config";
 const APP_NAME = "The Nursing Queen";
 const APP_SLUG = "nursing-queen"; // must match the slug EAS registered for extra.eas.projectId
 const APP_SCHEME = "nursingqueen";
-const IOS_BUNDLE_ID = "com.nursingqueen.app";
+const IOS_BUNDLE_ID = "nursingqueen";
 const ANDROID_PACKAGE = "com.nursingqueen.app";
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? "ce5adcd3-f209-4df0-9709-02ab9fce3323";
 export default ({ config }: ConfigContext): ExpoConfig => ({

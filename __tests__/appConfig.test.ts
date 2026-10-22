@@ -26,10 +26,12 @@ describe("app.config.ts stays in sync with src/config/app.json", () => {
 
   it("matches the iOS bundle identifier", () => {
     expect(resolved.ios?.bundleIdentifier).toBe(appConfigJson.IOS_BUNDLE_ID);
+    expect(resolved.ios?.bundleIdentifier).toBe("nursingqueen");
   });
 
   it("matches the Android package", () => {
     expect(resolved.android?.package).toBe(appConfigJson.ANDROID_PACKAGE);
+    expect(resolved.android?.package).toBe("com.nursingqueen.app");
   });
 
   it("routes updates to the configured EAS project with native compatibility checks", () => {

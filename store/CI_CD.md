@@ -36,8 +36,11 @@ page for its final status. It does not mean an app is public.
 2. Create an Expo automation access token and save it in this repository's
    Settings → Secrets and variables → Actions as secret `EXPO_TOKEN`.
    Never put the token in source control, a workflow input, or chat.
-3. In App Store Connect create/select the app `com.nursingqueen.app`. Set
-   repository Actions **variable** `ASC_APP_ID` to its numeric Apple ID.
+3. In App Store Connect select the existing Nursing Queen app, Apple ID
+   `6806621598`, whose iOS bundle identifier is `nursingqueen`. Keep this
+   identifier: Apple rejects changes with ITMS-90055. Android uses
+   `com.nursingqueen.app`. Set repository Actions **variable** `ASC_APP_ID`
+   to `6806621598`.
    The release preparation script validates and injects this value into
    eas.json during the release job. The bare ios submit profile is incomplete
    until that script runs; no fake Apple account values are committed.
