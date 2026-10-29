@@ -84,3 +84,20 @@ it("rejects invalid and future nursing entries", () => {
   expect(() => nursingRepository.logCompletedSession("baby-a", -60)).toThrow();
   expect(() => nursingRepository.logCompletedSession("baby-a", 60, "unknown", new Date(Date.now() + 86400000))).toThrow();
 });
+
+it("adjusts an active sleep start time without ending or duplicating the session", () => {
+  sleepRepository.start("baby-a");
+  const active = sleepRepository.list("baby-a")[0]!;
+  sleepRepository.adjustStart(active.id, -60);
+  const adjusted = sleepRepository.list("baby-a")[0]!;
+  expect(new Date(adjusted.startedAt).getTime()).toBe(new Date(active.startedAt).getTime() - 60000);
+  expect(adjusted.endedAt).toBeNull();
+  expect(sleepRepository.list("baby-a")).toHaveLength(1);
+  expect(() => sleepRepository.adjustStart(active.id, 120)).toThrow("Invalid sleep range");
+});
+it("rejects a sleep adjustment overlapping a previous session", () => {
+  sleepRepository.save("baby-a", new Date("2026-01-01T10:00Z"), new Date("2026-01-01T11:00Z"));
+  sleepRepository.save("baby-a", new Date("2026-01-01T11:01Z"), new Date("2026-01-01T12:00Z"));
+  const later = sleepRepository.list("baby-a")[0]!;
+  expect(() => sleepRepository.adjustStart(later.id, -120)).toThrow("Overlapping sleep");
+});

@@ -17,7 +17,7 @@ const paths: Partial<Record<IconName, string>> = {
   photo: "M4 6h4l2-3h4l2 3h4v14H4Z",
 };
 export function Icon({ name, size = 24, color = "currentColor" }: { name: IconName; size?: number; color?: string }) {
-  return <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+  return <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" pointerEvents="none">
     {paths[name] ? <Path d={paths[name]} /> : null}
     {name === "settings" || name === "photo" ? <Circle cx={12} cy={12} r={3} /> : null}
     {name === "clock" ? <Circle cx={12} cy={12} r={9} /> : null}

@@ -226,7 +226,10 @@
     "recent": "Sommeil récent",
     "empty": "Aucun sommeil enregistré.",
     "confirmDelete": "Confirmer la suppression",
-    "stop": "Terminer le sommeil"
+    "stop": "Terminer le sommeil",
+    "adjust": "Ajuster le début du sommeil",
+    "timeUpdated": "Début du sommeil modifié",
+    "startedAt": "Début : {{time}}"
   },
   "details": {
     "editHint": "Touchez une entrée pour la consulter ou la modifier.",

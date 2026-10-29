@@ -226,7 +226,10 @@
     "recent": "Recent sleep",
     "empty": "No sleep logged yet.",
     "confirmDelete": "Confirm delete",
-    "stop": "Stop sleep"
+    "stop": "Stop sleep",
+    "adjust": "Adjust sleep start time",
+    "timeUpdated": "Sleep start time updated",
+    "startedAt": "Started {{time}}"
   },
   "details": {
     "editHint": "Tap an entry to view or change it.",

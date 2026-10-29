@@ -110,6 +110,7 @@ export default function HomeScreen() {
           <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
           <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.accent} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
         </View>
+        {activeSleep ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ alignSelf: "center", minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8 }}><Icon name="clock" size={16} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("sleep.adjust")}</Text></Pressable> : null}
         {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : "/profile/edit")} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
         <Forecasts now={now} compact />
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
@@ -140,11 +141,10 @@ function RoundAction({ icon, label, color, onPress, active = false, testID, subL
   const theme = useTheme();
   return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, alignItems: "center", opacity: pressed ? 0.7 : 1, gap: 10 })}>
     <View style={{ width: 104, height: 104, borderRadius: 52, borderWidth: active ? 3 : 1, borderColor: active ? color : color + "30", padding: 5 }}>
-      <View style={{ flex: 1, borderRadius: 44, backgroundColor: active ? color : color + "16", alignItems: "center", justifyContent: "center" }}><Icon name={icon} size={36} color={active ? "#FFFFFF" : color} /></View>
+      <View style={{ flex: 1, borderRadius: 44, backgroundColor: active ? color : color + "16", alignItems: "center", justifyContent: "center", gap: 6 }}><Icon name={icon} size={active && subLabel ? 22 : 36} color={active ? theme.colors.accentContrast : color} />{active && subLabel ? <Text style={[theme.type.bodyStrong, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}</View>
     </View>
     <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text>
     {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}
-    {subLabel ? <Text style={[theme.type.subtitle, { color, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
     {active ? <View style={{ height: 5, width: 5, borderRadius: 3, backgroundColor: color }} /> : null}
   </Pressable>;
 }

@@ -16,6 +16,18 @@ export const sleepRepository = {
     const now = new Date().toISOString();
     getDatabase().runSync("UPDATE sleep_sessions SET ended_at = ?, updated_at = ? WHERE id = ? AND ended_at IS NULL;", [now, now, id]);
   },
+  adjustStart(id: string, offsetSeconds: number): void {
+    if (!Number.isFinite(offsetSeconds)) throw new Error("Invalid sleep adjustment");
+    const db = getDatabase();
+    const row = db.getFirstSync<Row>("SELECT * FROM sleep_sessions WHERE id = ?;", [id]);
+    if (!row) return;
+    const proposed = new Date(new Date(row.started_at).getTime() + offsetSeconds * 1000);
+    const end = row.ended_at ? new Date(row.ended_at) : new Date();
+    if (proposed >= end) throw new Error("Invalid sleep range");
+    const overlap = db.getFirstSync<{ id: string }>("SELECT id FROM sleep_sessions WHERE baby_id = ? AND id != ? AND started_at < ? AND (ended_at IS NULL OR ended_at > ?) LIMIT 1;", [row.baby_id, id, end.toISOString(), proposed.toISOString()]);
+    if (overlap) throw new Error("Overlapping sleep");
+    db.runSync("UPDATE sleep_sessions SET started_at = ?, updated_at = ? WHERE id = ?;", [proposed.toISOString(), new Date().toISOString(), id]);
+  },
   save(babyId: string, start: Date, end: Date, id?: string): void {
     if (!validSleepRange(start, end)) throw new Error("Invalid sleep range");
     const db = getDatabase();
