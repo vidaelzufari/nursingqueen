@@ -12,5 +12,5 @@ export function ScreenBack() {
   const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
-  return <Pressable accessibilityRole="button" accessibilityLabel={t("navigation.back")} onPress={() => goBackOrHome(router)} style={{ minHeight: 48, marginTop: insets.top, alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, paddingEnd: 16, marginBottom: 8 }}><View style={{ transform: [{ rotate: "180deg" }] }}><Icon name="arrow" size={22} color={theme.colors.accent} /></View><Text style={[theme.type.bodyStrong, { color: theme.colors.accent }]}>{t("navigation.back")}</Text></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityLabel={t("navigation.back")} onPress={() => goBackOrHome(router)} style={{ minHeight: 48, marginTop: insets.top, alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, borderRadius: 24, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, marginBottom: 8 }}><View style={{ transform: [{ rotate: "180deg" }] }}><Icon name="arrow" size={22} color={theme.colors.accent} /></View><Text style={[theme.type.bodyStrong, { color: theme.colors.accent }]}>{t("navigation.back")}</Text></Pressable>;
 }

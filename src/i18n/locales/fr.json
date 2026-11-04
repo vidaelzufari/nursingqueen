@@ -300,5 +300,12 @@
     "failed": "Impossible d’enregistrer. Vérifiez les heures.",
     "quick": "Durée rapide",
     "exact": "Choisir le début et la fin"
+  },
+  "modern": {
+    "returnHome": "Revenir à la tétée en cours",
+    "nursingNow": "Tétée en cours",
+    "stopNursing": "Terminer la tétée",
+    "weekRange": "7 derniers jours",
+    "dailyAverage": "Moyenne quotidienne"
   }
 }

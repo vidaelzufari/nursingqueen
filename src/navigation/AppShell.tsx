@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
+import { SessionDock } from "@/components/SessionDock";
 import { Icon } from "@/components/Icon";
 
 interface NavItem {
@@ -31,8 +32,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, minHeight: 0, overflow: "hidden", width: "100%", maxWidth: 580, alignSelf: "center" }}>{children}</View>
+      <SessionDock />
       <View
         style={{
+          ...theme.shadows.card,
           flexDirection: "row",
           height: 76,
           flexShrink: 0,
@@ -62,8 +65,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onPress={() => router.push(item.route)}
               style={{ flexGrow: 1, flexBasis: 0, height: 62, alignItems: "center", justifyContent: "center", paddingVertical: theme.spacing.xs }}
             >
-              <View style={{ width: 52, height: 30, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.surfaceRaised : "transparent" }}>
-                <Icon name={item.key} size={21} color={active ? theme.colors.accent : theme.colors.textMuted} />
+              <View style={{ width: 52, height: 30, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.accent : "transparent" }}>
+                <Icon name={item.key} size={21} color={active ? theme.colors.accentContrast : theme.colors.textMuted} />
               </View>
               <Text
                 style={[

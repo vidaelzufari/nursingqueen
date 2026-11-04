@@ -17,6 +17,7 @@ export function Card({ children, style, raised = false, padded = true }: CardPro
         {
           backgroundColor: raised ? theme.colors.surfaceRaised : theme.colors.surface,
           borderRadius: theme.radii.lg,
+          ...theme.shadows.card,
           borderWidth: 1,
           borderColor: theme.colors.border,
           padding: padded ? theme.spacing.md : 0,

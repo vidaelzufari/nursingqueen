@@ -1,5 +1,6 @@
 import { goBackOrHome } from "@/navigation/back";
 import React, { useEffect, useState } from "react";
+import Svg, { Circle, Line } from "react-native-svg";
 import { ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { format, parse } from "date-fns";
@@ -48,7 +49,11 @@ export default function SleepScreen() {
     <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("sleep.title")}</Text>
     {!manual ? <>
       <Card style={{ alignItems: "center", gap: 20, paddingVertical: 28 }}>
-        <View style={{ width: 220, height: 220, borderRadius: 110, borderWidth: active ? 3 : 1, borderColor: active ? theme.colors.accent : theme.colors.border, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", gap: 12 }}>
+        <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", gap: 12 }}>
+          <Svg pointerEvents="none" width={250} height={250} viewBox="0 0 250 250" style={{ position: "absolute" }}>
+            <Circle cx={125} cy={125} r={119} stroke={theme.colors.border} strokeWidth={2} fill="none" />
+            {Array.from({ length: 60 }, (_, i) => { const angle = i * Math.PI / 30; const inner = i % 5 === 0 ? 105 : 111; return <Line key={i} x1={125 + Math.sin(angle) * inner} y1={125 - Math.cos(angle) * inner} x2={125 + Math.sin(angle) * 115} y2={125 - Math.cos(angle) * 115} stroke={active && i % 5 === 0 ? theme.colors.accent : theme.colors.border} strokeWidth={i % 5 === 0 ? 2 : 1} strokeLinecap="round" />; })}
+          </Svg>
           <Icon name="moon" size={36} color={theme.colors.accent} />
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t(active ? "sleep.sleeping" : "sleep.ready")}</Text>
           <Text style={[theme.type.display, { fontSize: 32, color: theme.colors.textPrimary, fontVariant: ["tabular-nums"] }]}>{timerText}</Text>

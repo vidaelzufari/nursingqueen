@@ -18,7 +18,7 @@ export function QuickAmount({ unit, color, lastMl, onSave, disabled = false }: {
     {lastMl != null && lastMl > 0 ? <Button disabled={disabled} label={t("quick.repeat", { amount: formatVolume(lastMl, unit) })} icon={<Icon name="history" size={18} color={theme.colors.accentContrast} />} onPress={() => onSave(lastMl)} /> : null}
     <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t("quick.tapToSave")}</Text>
     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-      {presets.map(amount => <Pressable key={amount} disabled={disabled} accessibilityRole="button" accessibilityLabel={t("quick.saveAmount", { amount: `${amount} ${unit}` })} accessibilityState={{ disabled }} onPress={() => onSave(displayToMl(amount, unit))} style={({ pressed }) => ({ width: "31%", flexGrow: 1, minHeight: 76, borderRadius: 38, backgroundColor: pressed ? color + "25" : theme.colors.surface, borderWidth: 1, borderColor: color + "40", alignItems: "center", justifyContent: "center", opacity: disabled ? 0.5 : 1 })}>
+      {presets.map(amount => <Pressable key={amount} disabled={disabled} accessibilityRole="button" accessibilityLabel={t("quick.saveAmount", { amount: `${amount} ${unit}` })} accessibilityState={{ disabled }} onPress={() => onSave(displayToMl(amount, unit))} style={({ pressed }) => ({ width: "31%", flexGrow: 1, minHeight: 88, borderRadius: 26, backgroundColor: pressed ? color + "25" : color + "0C", borderWidth: 1, borderColor: color + "40", alignItems: "center", justifyContent: "center", opacity: disabled ? 0.5 : 1 })}>
         <Text style={[theme.type.title, { color }]}>{amount}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{unit}</Text>
       </Pressable>)}
     </View>

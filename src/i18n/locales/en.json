@@ -300,5 +300,12 @@
     "failed": "Could not save. Please check the times and try again.",
     "quick": "Use quick duration",
     "exact": "Set start and end times"
+  },
+  "modern": {
+    "returnHome": "Return to active nursing",
+    "nursingNow": "Nursing in progress",
+    "stopNursing": "Finish nursing",
+    "weekRange": "Last 7 days",
+    "dailyAverage": "Daily average"
   }
 }

@@ -104,7 +104,7 @@ export default function HomeScreen() {
         </Card>
 
         <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 20 }]}>{t("design.quickLog")}</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", gap: 20, marginBottom: 16 }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", gap: 16, marginBottom: 16, padding: 16, borderRadius: 32, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border }}>
           <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
           <RoundAction testID="home-button-pump" icon="pump" label={t("design.pump")} color={theme.colors.pumping} onPress={handlePump} />
           <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
@@ -143,7 +143,7 @@ function RoundAction({ icon, label, color, onPress, active = false, testID, subL
     <View style={{ width: 104, height: 104, borderRadius: 52, borderWidth: active ? 3 : 1, borderColor: active ? color : color + "30", padding: 5 }}>
       <View style={{ flex: 1, borderRadius: 44, backgroundColor: active ? color : color + "16", alignItems: "center", justifyContent: "center", gap: 6 }}><Icon name={icon} size={active && subLabel ? 22 : 36} color={active ? theme.colors.accentContrast : color} />{active && subLabel ? <Text style={[theme.type.bodyStrong, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}</View>
     </View>
-    <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text>
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name={active ? "clock" : "plus"} size={14} color={color} /><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text></View>
     {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}
     {active ? <View style={{ height: 5, width: 5, borderRadius: 3, backgroundColor: color }} /> : null}
   </Pressable>;

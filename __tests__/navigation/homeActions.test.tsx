@@ -2,13 +2,14 @@ import React from "react";
 import { Text } from "react-native";
 import { render, fireEvent } from "@testing-library/react-native";
 import HomeScreen from "../../app/index";
+import { SessionDock } from "@/components/SessionDock";
 import { AppShell } from "@/navigation/AppShell";
 import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
 
 const mockPush = jest.fn();
 const mockStartNursing = jest.fn();
 const mockState = {
-  nursingSessions: [], pumpEvents: [], bottleEvents: [],
+  nursingSessions: [] as { id: string; startedAt: string; endedAt: string | null }[], pumpEvents: [], bottleEvents: [],
   openNursingSession: () => null,
   startNursing: mockStartNursing, stopNursing: jest.fn(), logPump: jest.fn(),
 };
@@ -40,4 +41,16 @@ it("opens Settings only when its own navigation button is pressed", () => {
   const screen = render(<AppShell><Text>Content</Text></AppShell>);
   fireEvent.press(screen.getByTestId("nav-settings"));
   expect(mockPush).toHaveBeenCalledWith("/settings");
+});
+
+it("keeps nursing controls available while browsing and stops the existing session", () => {
+  mockState.nursingSessions = [{ id: "active", startedAt: new Date(Date.now() - 120000).toISOString(), endedAt: null }];
+  try {
+    const screen = render(<SessionDock />);
+    expect(screen.getByText("00:02:00")).toBeTruthy();
+    fireEvent.press(screen.getByTestId("session-stop-nursing"));
+    expect(mockState.stopNursing).toHaveBeenCalledTimes(1);
+    expect(mockStartNursing).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+  } finally { mockState.nursingSessions = []; }
 });
