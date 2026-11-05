@@ -47,3 +47,10 @@ export const useBabyStore = create<BabyState>()((set, get) => ({
     useSettingsStore.getState().setActiveBabyId(id);
   },
 }));
+
+/** Subscribe to both the records and the selected ID, rather than a stable getter. */
+export function useActiveBaby(): Baby | null {
+  const babies = useBabyStore(s => s.babies);
+  const activeBabyId = useSettingsStore(s => s.activeBabyId);
+  return babies.find(baby => baby.id === activeBabyId) ?? babies[0] ?? null;
+}

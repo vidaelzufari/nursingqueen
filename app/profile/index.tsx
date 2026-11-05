@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Button, Card } from "@/components";
 import { Icon } from "@/components/Icon";
-import { useBabyStore } from "@/store/useBabyStore";
+import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { computeAge } from "@/domain/dateMath";
 import { weightRepository } from "@/db/repositories";
@@ -16,7 +16,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const babies = useBabyStore((s) => s.babies);
-  const activeBaby = useBabyStore((s) => s.activeBaby)();
+  const activeBaby = useActiveBaby();
   const switchActiveBaby = useBabyStore((s) => s.switchActiveBaby);
   const activeBabyId = useSettingsStore((s) => s.activeBabyId);
 

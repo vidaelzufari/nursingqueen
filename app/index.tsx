@@ -12,7 +12,7 @@ import { WeeklySummary } from "@/components/WeeklySummary";
 import { Forecasts } from "@/components/Forecasts";
 import { useSleepStore } from "@/store/useSleepStore";
 import { sleepSecondsToday } from "@/domain/sleep";
-import { useBabyStore } from "@/store/useBabyStore";
+import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
 import { useLogStore, computeStatusStrip } from "@/store/useLogStore";
 import { useStashStore } from "@/store/useStashStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const [now, setNow] = useState(() => new Date());
 
-  const activeBaby = useBabyStore((s) => s.activeBaby)();
+  const activeBaby = useActiveBaby();
   const unit = useSettingsStore((s) => s.unit);
 
   const nursingSessions = useLogStore((s) => s.nursingSessions);
@@ -61,8 +61,19 @@ export default function HomeScreen() {
     return computeStashForecast(stashItems, now, totalTodayMl > 0 ? totalTodayMl : null);
   }, [stashItems, now, statusStrip.todayBottleMl]);
 
+  // Resolve at tap time too: Home can remain mounted behind the profile modal.
+  const prepareLogging = () => {
+    const babyStore = useBabyStore.getState();
+    babyStore.refresh();
+    const baby = babyStore.activeBaby();
+    if (baby) {
+      if (useLogStore.getState().babyId !== baby.id) useLogStore.getState().refresh(baby.id);
+      if (useSleepStore.getState().babyId !== baby.id) useSleepStore.getState().refresh(baby.id);
+    }
+    return baby;
+  };
   const handleStart = () => {
-    if (!activeBaby) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push("/profile/edit"); return; }
     startNursing();
   };
   const handleStop = () => {
@@ -73,16 +84,16 @@ export default function HomeScreen() {
     }
   };
   const handlePump = () => {
-    if (!activeBaby) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push("/profile/edit"); return; }
     const event = logPump();
     router.push({ pathname: "/modals/pump-details", params: { id: event.id } });
   };
   const handleSleep = () => {
-    if (!activeBaby) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push("/profile/edit"); return; }
     if (openSleepSession) stopSleep(openSleepSession.id);
     else startSleep();
   };
-  const handleBottle = () => router.push(activeBaby ? "/modals/bottle-entry" : "/profile/edit");
+  const handleBottle = () => router.push(prepareLogging() ? "/modals/bottle-entry" : "/profile/edit");
 
   return (
     <AppShell>
