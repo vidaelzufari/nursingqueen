@@ -100,12 +100,12 @@ export default function HomeScreen() {
   return (
     <AppShell>
       <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingBottom: theme.spacing.xl }}>
-        <View style={{ gap: 10, marginTop: 8, marginBottom: 24, padding: 16, backgroundColor: theme.colors.accent, borderRadius: theme.radii.lg }}>
-          <Text style={[theme.type.micro, { color: theme.colors.accentContrast, letterSpacing: 2 }]}>{t("design.brand")}</Text>
+        <View style={{ gap: 10, marginTop: 8, marginBottom: 24, padding: 16, backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radii.lg }}>
+          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 2 }]}>{t("design.brand")}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <View style={{ flex: 1, gap: 3 }}>
-              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.accentContrast }]}>{t("analytics.today")}</Text>
-              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.accentContrast }]}>
+              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("analytics.today")}</Text>
+              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>
                 {activeBaby.name} · {age ? age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks }) : t("setup.editDate")}
               </Text> : null}
             </View>
