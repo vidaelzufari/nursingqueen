@@ -92,7 +92,9 @@
       "weeks_one": "{{count}} week old",
       "weeks_other": "{{count}} weeks old",
       "months_one": "{{count}} month old",
-      "months_other": "{{count}} months old"
+      "months_other": "{{count}} months old",
+      "months": "{{count}} months old",
+      "weeks": "{{count}} weeks old"
     },
     "photo": "Photo",
     "choosePhoto": "Choose from library",
@@ -307,5 +309,18 @@
     "stopNursing": "Finish nursing",
     "weekRange": "Last 7 days",
     "dailyAverage": "Daily average"
+  },
+  "setup": {
+    "reason": "First, add your baby so this log is saved to the right profile. You only need to do this once on this device. We’ll continue with your chosen activity after saving.",
+    "intro": "A name and birth date are all you need to get started. You can add a photo later.",
+    "homeHint": "New here? Choose an activity below. We’ll help you add your baby once, then continue logging.",
+    "chooseDate": "Choose birth date",
+    "done": "Done",
+    "save_nurse": "Save baby & start nursing",
+    "save_pump": "Save baby & log pump",
+    "save_bottle": "Save baby & log bottle",
+    "save_sleep": "Save baby & start sleep",
+    "save_earlier": "Save baby & log earlier feed",
+    "editDate": "Add a valid birth date to show age"
   }
 }

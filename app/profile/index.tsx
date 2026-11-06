@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Button, Card } from "@/components";
 import { Icon } from "@/components/Icon";
+import { parseBirthDate, validBirthDate } from "@/domain/birthDate";
 import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { computeAge } from "@/domain/dateMath";
@@ -21,7 +22,8 @@ export default function ProfileScreen() {
   const activeBabyId = useSettingsStore((s) => s.activeBabyId);
 
   const now = new Date();
-  const age = activeBaby ? computeAge(new Date(activeBaby.dateOfBirth), now) : null;
+  const birthDate = activeBaby && validBirthDate(activeBaby.dateOfBirth, now) ? parseBirthDate(activeBaby.dateOfBirth) : null;
+  const age = birthDate ? computeAge(birthDate, now) : null;
   const weightEntries = activeBaby ? weightRepository.listByBaby(activeBaby.id) : [];
 
   return (

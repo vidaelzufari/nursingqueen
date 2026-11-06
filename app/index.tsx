@@ -12,6 +12,7 @@ import { WeeklySummary } from "@/components/WeeklySummary";
 import { Forecasts } from "@/components/Forecasts";
 import { useSleepStore } from "@/store/useSleepStore";
 import { sleepSecondsToday } from "@/domain/sleep";
+import { parseBirthDate, validBirthDate } from "@/domain/birthDate";
 import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
 import { useLogStore, computeStatusStrip } from "@/store/useLogStore";
 import { useStashStore } from "@/store/useStashStore";
@@ -54,7 +55,8 @@ export default function HomeScreen() {
     [nursingSessions, pumpEvents, bottleEvents, now]
   );
 
-  const age = activeBaby ? computeAge(new Date(activeBaby.dateOfBirth), now) : null;
+  const birthDate = activeBaby && validBirthDate(activeBaby.dateOfBirth, now) ? parseBirthDate(activeBaby.dateOfBirth) : null;
+  const age = birthDate ? computeAge(birthDate, now) : null;
 
   const stashForecast = useMemo(() => {
     const totalTodayMl = statusStrip.todayBottleMl;
@@ -73,7 +75,7 @@ export default function HomeScreen() {
     return baby;
   };
   const handleStart = () => {
-    if (!prepareLogging()) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push({ pathname: "/profile/edit", params: { intent: "nurse" } }); return; }
     startNursing();
   };
   const handleStop = () => {
@@ -84,16 +86,16 @@ export default function HomeScreen() {
     }
   };
   const handlePump = () => {
-    if (!prepareLogging()) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push({ pathname: "/profile/edit", params: { intent: "pump" } }); return; }
     const event = logPump();
     router.push({ pathname: "/modals/pump-details", params: { id: event.id } });
   };
   const handleSleep = () => {
-    if (!prepareLogging()) { router.push("/profile/edit"); return; }
+    if (!prepareLogging()) { router.push({ pathname: "/profile/edit", params: { intent: "sleep" } }); return; }
     if (openSleepSession) stopSleep(openSleepSession.id);
     else startSleep();
   };
-  const handleBottle = () => router.push(prepareLogging() ? "/modals/bottle-entry" : "/profile/edit");
+  const handleBottle = () => { if (prepareLogging()) router.push("/modals/bottle-entry"); else router.push({ pathname: "/profile/edit", params: { intent: "bottle" } }); };
 
   return (
     <AppShell>
@@ -110,10 +112,11 @@ export default function HomeScreen() {
 
         <Card style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24, padding: 14 }}>
           <Icon name="baby" size={28} color={theme.colors.accent} />
-          <View style={{ flex: 1 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>{activeBaby && age ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks })}</Text> : null}</View>
+          <View style={{ flex: 1 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>{activeBaby && age ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks })}</Text> : activeBaby ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("setup.editDate")}</Text> : null}</View>
           {!activeBaby ? <Pressable testID="home-add-baby-cta" accessibilityRole="button" accessibilityLabel={t("profile.addBaby")} onPress={() => router.push("/profile/edit")} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="plus" color={theme.colors.accent} /></Pressable> : null}
         </Card>
 
+        {!activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary, marginBottom: 20 }]}>{t("setup.homeHint")}</Text> : null}
         <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 20 }]}>{t("design.quickLog")}</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", gap: 16, marginBottom: 16, padding: 16, borderRadius: 32, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border }}>
           <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
@@ -122,7 +125,7 @@ export default function HomeScreen() {
           <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.accent} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
         </View>
         {activeSleep ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ alignSelf: "center", minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8 }}><Icon name="clock" size={16} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("sleep.adjust")}</Text></Pressable> : null}
-        {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : "/profile/edit")} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
+        {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : { pathname: "/profile/edit", params: { intent: "earlier" } })} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
         <Forecasts now={now} compact />
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("design.atGlance")}</Text>

@@ -81,7 +81,7 @@ it("only opens profile setup when no baby exists on this device", () => {
   const screen = render(<HomeScreen />);
   fireEvent.press(screen.getByTestId("home-button-start-nursing"));
   expect(mockStartNursing).not.toHaveBeenCalled();
-  expect(mockPush).toHaveBeenCalledWith("/profile/edit");
+  expect(mockPush).toHaveBeenCalledWith({ pathname: "/profile/edit", params: { intent: "nurse" } });
 });
 
 it("recovers a saved profile before routing Bottle even if the mounted state was empty", () => {

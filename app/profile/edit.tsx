@@ -1,7 +1,7 @@
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Image, ScrollView, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
@@ -9,13 +9,18 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { Button, Card } from "@/components";
 import { Icon } from "@/components/Icon";
 import { useBabyStore } from "@/store/useBabyStore";
+import { BirthDateField } from "@/components/BirthDateField";
+import { validBirthDate } from "@/domain/birthDate";
+import { useLogStore } from "@/store/useLogStore";
+import { useSleepStore } from "@/store/useSleepStore";
 import { weightRepository } from "@/db/repositories";
 
 export default function EditProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, intent } = useLocalSearchParams<{ id?: string; intent?: string }>();
+  const loggingIntent = ["nurse", "pump", "bottle", "sleep", "earlier"].includes(intent ?? "") ? intent : undefined;
   const babies = useBabyStore((s) => s.babies);
   const createBaby = useBabyStore((s) => s.createBaby);
   const updateBaby = useBabyStore((s) => s.updateBaby);
@@ -42,11 +47,22 @@ export default function EditProfileScreen() {
   };
 
   const handleSave = () => {
-    if (!name.trim() || !dateOfBirth.trim()) return;
+    if (!name.trim() || !validBirthDate(dateOfBirth)) return;
+    Keyboard.dismiss();
     if (existing) {
       updateBaby(existing.id, { name: name.trim(), dateOfBirth: dateOfBirth.trim(), photoUri });
     } else {
-      createBaby({ name: name.trim(), dateOfBirth: dateOfBirth.trim(), photoUri });
+      const baby = createBaby({ name: name.trim(), dateOfBirth, photoUri });
+      useLogStore.getState().refresh(baby.id);
+      useSleepStore.getState().refresh(baby.id);
+      if (loggingIntent) {
+        if (loggingIntent === "nurse") { useLogStore.getState().startNursing(); router.replace("/"); }
+        else if (loggingIntent === "sleep") { useSleepStore.getState().start(); router.replace("/"); }
+        else if (loggingIntent === "bottle") router.replace("/modals/bottle-entry");
+        else if (loggingIntent === "earlier") router.replace("/modals/nursing-duration");
+        else { const event = useLogStore.getState().logPump(); router.replace({ pathname: "/modals/pump-details", params: { id: event.id } }); }
+        return;
+      }
     }
     goBackOrHome(router);
   };
@@ -59,10 +75,11 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 20, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.background }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 20, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }}>
       <ScreenBack />
       <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("design.babySetup")}</Text>
-      <Card style={{ alignItems: "center", gap: theme.spacing.sm }}>
+      {!existing ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t(loggingIntent ? "setup.reason" : "setup.intro")}</Text> : null}
+      {!loggingIntent ? <Card style={{ alignItems: "center", gap: theme.spacing.sm }}>
         {photoUri ? (
           <Image source={{ uri: photoUri }} style={{ width: 96, height: 96, borderRadius: 48 }} />
         ) : (
@@ -75,25 +92,15 @@ export default function EditProfileScreen() {
           <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.choosePhoto")} tone="neutral" variant="outline" onPress={handlePickPhoto} />
           <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.takePhoto")} tone="neutral" variant="outline" onPress={handleTakePhoto} />
         </View>
-      </Card>
+      </Card> : null}
 
       <Card style={{ gap: theme.spacing.sm }}>
         <View style={{ gap: theme.spacing.xs }}>
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("profile.name")}</Text>
-          <TextInput accessibilityLabel={t("profile.name")} value={name} onChangeText={setName} placeholderTextColor={theme.colors.textMuted} style={inputStyle(theme)} />
+          <TextInput accessibilityLabel={t("profile.name")} value={name} onChangeText={setName} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()} placeholderTextColor={theme.colors.textMuted} style={inputStyle(theme)} />
         </View>
-        <View style={{ gap: theme.spacing.xs }}>
-          <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("profile.dateOfBirth")}</Text>
-          <TextInput
-            accessibilityLabel={t("profile.dateOfBirth")}
-            value={dateOfBirth}
-            onChangeText={setDateOfBirth}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={theme.colors.textMuted}
-            style={inputStyle(theme)}
-          />
-        </View>
-        <Button label={t("design.saveBaby")} disabled={!name.trim() || !dateOfBirth.trim()} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
+        <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
+        <Button label={t(loggingIntent ? `setup.save_${loggingIntent}` : "design.saveBaby")} disabled={!name.trim() || !validBirthDate(dateOfBirth)} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
       </Card>
 
       {existing ? (
@@ -110,7 +117,7 @@ export default function EditProfileScreen() {
           <Button label={t("common.add")} tone="accent" variant="outline" onPress={handleAddWeight} />
         </Card>
       ) : null}
-    </ScrollView>
+    </ScrollView></KeyboardAvoidingView>
   );
 }
 

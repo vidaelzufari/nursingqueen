@@ -92,7 +92,9 @@
       "weeks_one": "{{count}} semaine",
       "weeks_other": "{{count}} semaines",
       "months_one": "{{count}} mois",
-      "months_other": "{{count}} mois"
+      "months_other": "{{count}} mois",
+      "months": "{{count}} mois",
+      "weeks": "{{count}} semaines"
     },
     "photo": "Photo",
     "choosePhoto": "Choisir dans la photothèque",
@@ -307,5 +309,18 @@
     "stopNursing": "Terminer la tétée",
     "weekRange": "7 derniers jours",
     "dailyAverage": "Moyenne quotidienne"
+  },
+  "setup": {
+    "reason": "Ajoutez d’abord votre bébé pour enregistrer cette activité dans le bon profil. Cette étape ne se fait qu’une fois sur cet appareil. Vous pourrez ensuite continuer votre activité.",
+    "intro": "Un prénom et une date de naissance suffisent. Vous pourrez ajouter une photo plus tard.",
+    "homeHint": "Première visite ? Choisissez une activité. Nous vous aiderons à ajouter votre bébé avant de continuer.",
+    "chooseDate": "Choisir la date de naissance",
+    "done": "Terminé",
+    "save_nurse": "Enregistrer et démarrer la tétée",
+    "save_pump": "Enregistrer et noter le tirage",
+    "save_bottle": "Enregistrer et noter le biberon",
+    "save_sleep": "Enregistrer et démarrer le sommeil",
+    "save_earlier": "Enregistrer et noter une tétée passée",
+    "editDate": "Ajoutez une date de naissance valide pour afficher l’âge"
   }
 }
