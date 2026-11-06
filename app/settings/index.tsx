@@ -1,3 +1,4 @@
+import { DateField } from "@/components/DateField";
 import React from "react";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import Constants from "expo-constants";
@@ -106,20 +107,7 @@ export default function SettingsScreen() {
 
         <Section title={t("settings.returnToWork")}>
           <Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{t("settings.returnToWorkNote")}</Text>
-          <TextInput
-            value={returnToWorkDate ?? ""}
-            onChangeText={(text) => setReturnToWorkDate(text.trim() || null)}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={theme.colors.textMuted}
-            style={{
-              borderWidth: 1,
-              borderColor: theme.colors.border,
-              borderRadius: theme.radii.md,
-              padding: theme.spacing.sm,
-              color: theme.colors.textPrimary,
-              marginTop: theme.spacing.xs,
-            }}
-          />
+          <DateField label={t("datePicker.date")} value={returnToWorkDate ?? ""} onChange={value => setReturnToWorkDate(value || null)} onClear={() => setReturnToWorkDate(null)} />
           <Text style={[theme.type.caption, { color: theme.colors.textMuted, marginTop: theme.spacing.sm }]}>
             {t("settings.targetStash", { unit })}
           </Text>

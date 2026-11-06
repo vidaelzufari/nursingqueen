@@ -100,25 +100,27 @@ export default function HomeScreen() {
   return (
     <AppShell>
       <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingBottom: theme.spacing.xl }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 24, marginTop: 8 }}>
-          <View style={{ flex: 1, marginEnd: 12 }}>
-            <Text style={[theme.type.caption, { color: theme.colors.textSecondary, letterSpacing: 1.5 }]}>{t("design.brand")}</Text>
-            <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginTop: 4 }]}>{t("analytics.today")}</Text>
+        <View style={{ gap: 12, marginTop: 8, marginBottom: 24 }}>
+          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 1.8 }]}>{t("design.brand")}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <View style={{ flex: 1, gap: 3 }}>
+              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("analytics.today")}</Text>
+              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>
+                {activeBaby.name} · {age ? age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks }) : t("setup.editDate")}
+              </Text> : null}
+            </View>
+            <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")}
+              testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"}
+              onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")}
+              style={({ pressed }) => ({ width: 58, height: 58, borderRadius: 24, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
+              {activeBaby ? <Text style={[theme.type.title, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="plus" color={theme.colors.accent} />}
+            </Pressable>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel={t("profile.title")} testID="home-avatar-button" onPress={() => router.push("/profile")} style={{ width: 54, height: 54, borderRadius: 27, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border }}>
-            {activeBaby ? <Text style={[theme.type.subtitle, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="baby" color={theme.colors.accent} size={27} />}
-          </Pressable>
         </View>
 
-        <Card style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 24, padding: 14 }}>
-          <Icon name="baby" size={28} color={theme.colors.accent} />
-          <View style={{ flex: 1 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>{activeBaby && age ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks })}</Text> : activeBaby ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("setup.editDate")}</Text> : null}</View>
-          {!activeBaby ? <Pressable testID="home-add-baby-cta" accessibilityRole="button" accessibilityLabel={t("profile.addBaby")} onPress={() => router.push("/profile/edit")} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="plus" color={theme.colors.accent} /></Pressable> : null}
-        </Card>
-
         {!activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary, marginBottom: 20 }]}>{t("setup.homeHint")}</Text> : null}
-        <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 20 }]}>{t("design.quickLog")}</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", gap: 16, marginBottom: 16, padding: 16, borderRadius: 32, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border }}>
+        <Text accessibilityRole="header" style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 12 }]}>{t("design.quickLog")}</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 8 }}>
           <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
           <RoundAction testID="home-button-pump" icon="pump" label={t("design.pump")} color={theme.colors.pumping} onPress={handlePump} />
           <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
@@ -153,18 +155,18 @@ export default function HomeScreen() {
 
 function RoundAction({ icon, label, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
   const theme = useTheme();
-  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, alignItems: "center", opacity: pressed ? 0.7 : 1, gap: 10 })}>
-    <View style={{ width: 104, height: 104, borderRadius: 52, borderWidth: active ? 3 : 1, borderColor: active ? color : color + "30", padding: 5 }}>
-      <View style={{ flex: 1, borderRadius: 44, backgroundColor: active ? color : color + "16", alignItems: "center", justifyContent: "center", gap: 6 }}><Icon name={icon} size={active && subLabel ? 22 : 36} color={active ? theme.colors.accentContrast : color} />{active && subLabel ? <Text style={[theme.type.bodyStrong, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}</View>
+  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 128, minWidth: 0, padding: 12, borderRadius: 26, borderWidth: 1, borderColor: active ? color : color + "28", backgroundColor: color + (active ? "24" : "0C"), alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1, gap: 8 })}>
+    <View style={{ width: active && subLabel ? 94 : 58, minHeight: 58, borderRadius: 22, backgroundColor: active ? color : color + "1C", alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
+      <Icon name={icon} size={active && subLabel ? 19 : 30} color={active ? theme.colors.accentContrast : color} />
+      {active && subLabel ? <Text style={[theme.type.caption, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
     </View>
     <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name={active ? "clock" : "plus"} size={14} color={color} /><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text></View>
     {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}
-    {active ? <View style={{ height: 5, width: 5, borderRadius: 3, backgroundColor: color }} /> : null}
   </Pressable>;
 }
 function Metric({ icon, label, value, color, onPress }: { icon: IconName; label: string; value: string; color: string; onPress: () => void }) {
   const theme = useTheme();
-  return <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value}`} onPress={onPress} style={{ flex: 1 }}><Card style={{ minHeight: 132, gap: 9 }}><Icon name={icon} size={21} color={color} /><Text style={[theme.type.title, { color: theme.colors.textPrimary, fontSize: 25 }]}>{value}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{label}</Text><View style={{ position: "absolute", end: 14, top: 16 }}><Icon name="arrow" size={16} color={theme.colors.textMuted} /></View></Card></Pressable>;
+  return <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value}`} onPress={onPress} style={{ flex: 1 }}><Card style={{ minHeight: 106, gap: 5 }}><Icon name={icon} size={21} color={color} /><Text style={[theme.type.title, { color: theme.colors.textPrimary, fontSize: 25 }]}>{value}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{label}</Text><View style={{ position: "absolute", end: 14, top: 16 }}><Icon name="arrow" size={16} color={theme.colors.textMuted} /></View></Card></Pressable>;
 }
 
 function elapsedClock(startedAt: string, now: Date): string {

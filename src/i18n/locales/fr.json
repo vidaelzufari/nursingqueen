@@ -322,5 +322,11 @@
     "save_sleep": "Enregistrer et démarrer le sommeil",
     "save_earlier": "Enregistrer et noter une tétée passée",
     "editDate": "Ajoutez une date de naissance valide pour afficher l’âge"
+  },
+  "datePicker": {
+    "date": "Date",
+    "time": "Heure",
+    "choose": "Choisir une date",
+    "clear": "Effacer la date"
   }
 }

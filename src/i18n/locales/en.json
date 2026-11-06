@@ -322,5 +322,11 @@
     "save_sleep": "Save baby & start sleep",
     "save_earlier": "Save baby & log earlier feed",
     "editDate": "Add a valid birth date to show age"
+  },
+  "datePicker": {
+    "date": "Date",
+    "time": "Time",
+    "choose": "Choose a date",
+    "clear": "Clear date"
   }
 }
