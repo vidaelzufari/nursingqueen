@@ -100,19 +100,19 @@ export default function HomeScreen() {
   return (
     <AppShell>
       <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingBottom: theme.spacing.xl }}>
-        <View style={{ gap: 12, marginTop: 8, marginBottom: 24 }}>
-          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 1.8 }]}>{t("design.brand")}</Text>
+        <View style={{ gap: 10, marginTop: 8, marginBottom: 24, padding: 16, backgroundColor: theme.colors.accent, borderRadius: theme.radii.lg }}>
+          <Text style={[theme.type.micro, { color: theme.colors.accentContrast, letterSpacing: 2 }]}>{t("design.brand")}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <View style={{ flex: 1, gap: 3 }}>
-              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("analytics.today")}</Text>
-              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>
+              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.accentContrast }]}>{t("analytics.today")}</Text>
+              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.accentContrast }]}>
                 {activeBaby.name} · {age ? age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks }) : t("setup.editDate")}
               </Text> : null}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")}
               testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"}
               onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")}
-              style={({ pressed }) => ({ width: 58, height: 58, borderRadius: 24, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
+              style={({ pressed }) => ({ width: 58, height: 58, borderRadius: theme.radii.md, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
               {activeBaby ? <Text style={[theme.type.title, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="plus" color={theme.colors.accent} />}
             </Pressable>
           </View>
@@ -124,7 +124,7 @@ export default function HomeScreen() {
           <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
           <RoundAction testID="home-button-pump" icon="pump" label={t("design.pump")} color={theme.colors.pumping} onPress={handlePump} />
           <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
-          <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.accent} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
+          <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
         </View>
         {activeSleep ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ alignSelf: "center", minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8 }}><Icon name="clock" size={16} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("sleep.adjust")}</Text></Pressable> : null}
         {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : { pathname: "/profile/edit", params: { intent: "earlier" } })} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
@@ -138,7 +138,7 @@ export default function HomeScreen() {
           <Metric onPress={() => router.push({ pathname: "/details", params: { kind: "feeds" } })} icon="bottle" label={t("statusStrip.todayFeeds")} value={String(statusStrip.todayNursingCount + bottleEvents.filter(event => isSameDay(new Date(event.occurredAt), now)).length)} color={theme.colors.pumping} />
         </View>
         <RecentActivities now={now} />
-        <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}><Metric onPress={() => router.push({ pathname: "/details", params: { kind: "sleep" } })} icon="moon" label={t("sleep.today")} value={formatDurationShort(Math.floor(sleepSecondsToday(sleepSessions, now) / 60))} color={theme.colors.accent} /></View>
+        <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}><Metric onPress={() => router.push({ pathname: "/details", params: { kind: "sleep" } })} icon="moon" label={t("sleep.today")} value={formatDurationShort(Math.floor(sleepSecondsToday(sleepSessions, now) / 60))} color={theme.colors.sleep} /></View>
         <Pressable accessibilityRole="button" accessibilityLabel={t("statusStrip.currentStash")} onPress={() => router.push({ pathname: "/details", params: { kind: "stash" } })}><Card style={{ marginBottom: 24, flexDirection: "row", alignItems: "center", gap: 14 }}>
           <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="pump" color={theme.colors.bottle} /></View>
           <View style={{ flex: 1 }}><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("statusStrip.currentStash")}</Text><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{formatVolume(stashForecast.totalMl, unit)}</Text></View>
@@ -155,9 +155,9 @@ export default function HomeScreen() {
 
 function RoundAction({ icon, label, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
   const theme = useTheme();
-  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 128, minWidth: 0, padding: 12, borderRadius: 26, borderWidth: 1, borderColor: active ? color : color + "28", backgroundColor: color + (active ? "24" : "0C"), alignItems: "center", justifyContent: "center", opacity: pressed ? 0.7 : 1, gap: 8 })}>
-    <View style={{ width: active && subLabel ? 94 : 58, minHeight: 58, borderRadius: 22, backgroundColor: active ? color : color + "1C", alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
-      <Icon name={icon} size={active && subLabel ? 19 : 30} color={active ? theme.colors.accentContrast : color} />
+  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 128, minWidth: 0, padding: 12, borderRadius: theme.radii.lg, borderWidth: 1, borderColor: active ? color : color + "48", backgroundColor: color + (active ? "2C" : "17"), alignItems: "flex-start", justifyContent: "space-between", opacity: pressed ? 0.7 : 1, gap: 8 })}>
+    <View style={{ width: active && subLabel ? 94 : 58, minHeight: 58, borderRadius: theme.radii.sm, backgroundColor: color, alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
+      <Icon name={icon} size={active && subLabel ? 19 : 30} color={theme.colors.accentContrast} />
       {active && subLabel ? <Text style={[theme.type.caption, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
     </View>
     <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name={active ? "clock" : "plus"} size={14} color={color} /><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text></View>

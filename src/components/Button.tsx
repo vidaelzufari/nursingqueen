@@ -97,11 +97,11 @@ export function Button({
         {
           backgroundColor,
           borderColor,
-          borderWidth: variant === "outline" ? 2 : 0,
+          borderWidth: variant === "outline" ? 1 : 0,
           minHeight: large ? MIN_TOUCH_TARGET * 1.4 : MIN_TOUCH_TARGET,
           width: fullWidth ? "100%" : undefined,
           opacity: disabled ? 0.5 : 1,
-          borderRadius: theme.radii.pill,
+          borderRadius: theme.radii.sm,
           paddingHorizontal: theme.spacing.lg,
         },
         animatedStyle,

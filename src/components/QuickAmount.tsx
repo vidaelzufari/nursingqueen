@@ -18,13 +18,13 @@ export function QuickAmount({ unit, color, lastMl, onSave, disabled = false }: {
     {lastMl != null && lastMl > 0 ? <Button disabled={disabled} label={t("quick.repeat", { amount: formatVolume(lastMl, unit) })} icon={<Icon name="history" size={18} color={theme.colors.accentContrast} />} onPress={() => onSave(lastMl)} /> : null}
     <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t("quick.tapToSave")}</Text>
     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-      {presets.map(amount => <Pressable key={amount} disabled={disabled} accessibilityRole="button" accessibilityLabel={t("quick.saveAmount", { amount: `${amount} ${unit}` })} accessibilityState={{ disabled }} onPress={() => onSave(displayToMl(amount, unit))} style={({ pressed }) => ({ width: "31%", flexGrow: 1, minHeight: 88, borderRadius: 26, backgroundColor: pressed ? color + "25" : color + "0C", borderWidth: 1, borderColor: color + "40", alignItems: "center", justifyContent: "center", opacity: disabled ? 0.5 : 1 })}>
+      {presets.map(amount => <Pressable key={amount} disabled={disabled} accessibilityRole="button" accessibilityLabel={t("quick.saveAmount", { amount: `${amount} ${unit}` })} accessibilityState={{ disabled }} onPress={() => onSave(displayToMl(amount, unit))} style={({ pressed }) => ({ width: "31%", flexGrow: 1, minHeight: 88, borderRadius: theme.radii.md, backgroundColor: pressed ? color + "25" : color + "0C", borderWidth: 1, borderColor: color + "40", alignItems: "center", justifyContent: "center", opacity: disabled ? 0.5 : 1 })}>
         <Text style={[theme.type.title, { color }]}>{amount}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{unit}</Text>
       </Pressable>)}
     </View>
     <Button label={t("quick.custom")} tone="neutral" variant="ghost" onPress={() => setCustom(!custom)} />
     {custom ? <View style={{ gap: 12 }}>
-      <TextInput accessibilityLabel={t("quick.customAmount", { unit })} value={text} onChangeText={setText} keyboardType="decimal-pad" placeholder={`0 ${unit}`} placeholderTextColor={theme.colors.textMuted} style={{ minHeight: 64, borderRadius: 24, padding: 16, fontSize: 28, textAlign: "center", color: theme.colors.textPrimary, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface }} />
+      <TextInput accessibilityLabel={t("quick.customAmount", { unit })} value={text} onChangeText={setText} keyboardType="decimal-pad" placeholder={`0 ${unit}`} placeholderTextColor={theme.colors.textMuted} style={{ minHeight: 64, borderRadius: theme.radii.md, padding: 16, fontSize: 28, textAlign: "center", color: theme.colors.textPrimary, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface }} />
       <Button disabled={disabled || parsed === null} label={t("common.save")} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} onPress={() => { if (parsed !== null) onSave(parsed); }} />
     </View> : null}
   </View>;

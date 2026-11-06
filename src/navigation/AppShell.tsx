@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           overflow: "hidden",
           borderWidth: 1,
           borderColor: theme.colors.border,
-          borderRadius: 36,
+          borderRadius: theme.radii.lg,
           marginHorizontal: 20,
           marginBottom: Math.max(insets.bottom, 12),
           width: "92%",
@@ -65,7 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onPress={() => router.push(item.route)}
               style={{ flexGrow: 1, flexBasis: 0, height: 62, alignItems: "center", justifyContent: "center", paddingVertical: theme.spacing.xs }}
             >
-              <View style={{ width: 52, height: 30, borderRadius: 18, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.accent : "transparent" }}>
+              <View style={{ width: 52, height: 30, borderRadius: theme.radii.sm, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.accent : "transparent" }}>
                 <Icon name={item.key} size={21} color={active ? theme.colors.accentContrast : theme.colors.textMuted} />
               </View>
               <Text

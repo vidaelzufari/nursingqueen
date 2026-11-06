@@ -45,16 +45,16 @@ export default function SleepScreen() {
   const timerText = [Math.floor(elapsed / 3600), Math.floor(elapsed % 3600 / 60), elapsed % 60].map(n => String(n).padStart(2, "0")).join(":");
   return <View style={{ flex: 1, backgroundColor: theme.colors.background }}><ScrollView contentContainerStyle={{ padding: 24, gap: 18, maxWidth: 580, width: "100%", alignSelf: "center", paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
     <ScreenBack />
-    <Icon name="moon" size={36} color={theme.colors.accent} />
+    <Icon name="moon" size={36} color={theme.colors.sleep} />
     <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("sleep.title")}</Text>
     {!manual ? <>
       <Card style={{ alignItems: "center", gap: 20, paddingVertical: 28 }}>
         <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", gap: 12 }}>
           <Svg pointerEvents="none" width={250} height={250} viewBox="0 0 250 250" style={{ position: "absolute" }}>
             <Circle cx={125} cy={125} r={119} stroke={theme.colors.border} strokeWidth={2} fill="none" />
-            {Array.from({ length: 60 }, (_, i) => { const angle = i * Math.PI / 30; const inner = i % 5 === 0 ? 105 : 111; return <Line key={i} x1={125 + Math.sin(angle) * inner} y1={125 - Math.cos(angle) * inner} x2={125 + Math.sin(angle) * 115} y2={125 - Math.cos(angle) * 115} stroke={active && i % 5 === 0 ? theme.colors.accent : theme.colors.border} strokeWidth={i % 5 === 0 ? 2 : 1} strokeLinecap="round" />; })}
+            {Array.from({ length: 60 }, (_, i) => { const angle = i * Math.PI / 30; const inner = i % 5 === 0 ? 105 : 111; return <Line key={i} x1={125 + Math.sin(angle) * inner} y1={125 - Math.cos(angle) * inner} x2={125 + Math.sin(angle) * 115} y2={125 - Math.cos(angle) * 115} stroke={active && i % 5 === 0 ? theme.colors.sleep : theme.colors.border} strokeWidth={i % 5 === 0 ? 2 : 1} strokeLinecap="round" />; })}
           </Svg>
-          <Icon name="moon" size={36} color={theme.colors.accent} />
+          <Icon name="moon" size={36} color={theme.colors.sleep} />
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t(active ? "sleep.sleeping" : "sleep.ready")}</Text>
           <Text style={[theme.type.display, { fontSize: 32, color: theme.colors.textPrimary, fontVariant: ["tabular-nums"] }]}>{timerText}</Text>
         </View>

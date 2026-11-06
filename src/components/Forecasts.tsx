@@ -16,7 +16,7 @@ export function Forecasts({ now, compact = false }: { now: Date; compact?: boole
   const rows = [
     { key: "feed", icon: "heart" as IconName, active: nursingSessions.some(s => !s.endedAt), forecast: forecastNext([...nursingSessions.map(s => new Date(s.startedAt)), ...bottleEvents.map(s => new Date(s.occurredAt))], now), color: theme.colors.nursing },
     { key: "pump", icon: "pump" as IconName, active: false, forecast: forecastNext(pumpEvents.map(s => new Date(s.startedAt)), now), color: theme.colors.pumping },
-    { key: "sleep", icon: "moon" as IconName, active: sessions.some(s => !s.endedAt), forecast: forecastSleep(sessions, now), color: theme.colors.accent },
+    { key: "sleep", icon: "moon" as IconName, active: sessions.some(s => !s.endedAt), forecast: forecastSleep(sessions, now), color: theme.colors.sleep },
   ];
   const active = rows.find(row => row.active);
   const sorted = [...rows].filter(row => row.forecast && !row.active).sort((a,b) => a.forecast!.at.getTime() - b.forecast!.at.getTime());

@@ -15,7 +15,7 @@ export function DateField({ label, value, onChange, maximumDate, withTime, onCle
       type: withTime ? "datetime-local" : "date", "aria-label": label, value: value.replace(" ", "T"),
       max: maximumDate ? format(maximumDate, withTime ? "yyyy-MM-dd'T'HH:mm" : "yyyy-MM-dd") : undefined,
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value.replace("T", " ")),
-      style: { boxSizing: "border-box", width: "100%", minHeight: 56, borderRadius: 18, padding: 12, fontSize: 17, fontFamily: "inherit", border: `1px solid ${theme.colors.border}`, backgroundColor: theme.colors.surfaceRaised, color: theme.colors.textPrimary, colorScheme: theme.mode === "light" ? "light" : "dark" },
+      style: { boxSizing: "border-box", width: "100%", minHeight: 56, borderRadius: theme.radii.md, padding: 12, fontSize: 17, fontFamily: "inherit", border: `1px solid ${theme.colors.border}`, backgroundColor: theme.colors.surfaceRaised, color: theme.colors.textPrimary, colorScheme: theme.mode === "light" ? "light" : "dark" },
     })}
     {onClear && value ? <Button label={t("datePicker.clear")} variant="ghost" onPress={onClear} /> : null}
   </View>;

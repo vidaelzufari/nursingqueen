@@ -43,7 +43,7 @@ export function DateField({ label, value, onChange, maximumDate, withTime, onCle
     <View style={{ flexDirection: "row", gap: 8 }}>
       {(withTime ? ["date", "time"] as const : ["date"] as const).map(part => (
         <Pressable key={part} accessibilityRole="button" accessibilityLabel={`${label} · ${t(`datePicker.${part}`)}`} onPress={() => open(part)}
-          style={({ pressed }) => ({ flex: 1, minHeight: 56, borderRadius: 18, padding: 12, gap: 8, flexDirection: "row", alignItems: "center", backgroundColor: theme.colors.surfaceRaised, opacity: pressed ? 0.7 : 1 })}>
+          style={({ pressed }) => ({ flex: 1, minHeight: 56, borderRadius: theme.radii.md, padding: 12, gap: 8, flexDirection: "row", alignItems: "center", backgroundColor: theme.colors.surfaceRaised, opacity: pressed ? 0.7 : 1 })}>
           <Icon name={part === "date" ? "calendar" : "clock"} size={18} color={theme.colors.accent} />
           <Text style={[theme.type.caption, { color: theme.colors.textPrimary, flexShrink: 1 }]}>{current ? current.toLocaleString(undefined, part === "date" ? { day: "numeric", month: "short", year: "numeric" } : { hour: "numeric", minute: "2-digit" }) : t("datePicker.choose")}</Text>
         </Pressable>
@@ -52,7 +52,7 @@ export function DateField({ label, value, onChange, maximumDate, withTime, onCle
     {onClear && value ? <Button label={t("datePicker.clear")} variant="ghost" onPress={onClear} /> : null}
     {draft && Platform.OS === "ios" ? <Modal transparent animationType="slide" visible onRequestClose={() => setDraft(null)}>
       <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: theme.colors.overlay }}>
-        <View accessibilityViewIsModal style={{ backgroundColor: theme.colors.surface, padding: 20, paddingBottom: Math.max(insets.bottom, 20), borderTopStartRadius: 28, borderTopEndRadius: 28, gap: 12 }}>
+        <View accessibilityViewIsModal style={{ backgroundColor: theme.colors.surface, padding: 20, paddingBottom: Math.max(insets.bottom, 20), borderTopStartRadius: theme.radii.xl, borderTopEndRadius: theme.radii.xl, gap: 12 }}>
           <Text accessibilityRole="header" style={[theme.type.title, { color: theme.colors.textPrimary }]}>{label}</Text>
           <DateTimePicker value={draft} mode={mode} display="spinner" maximumDate={mode === "date" ? maximumDate : undefined}
             themeVariant={theme.mode === "light" ? "light" : "dark"} onChange={(_, selected) => { if (selected) setDraft(selected); }} />
