@@ -1,7 +1,7 @@
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -31,7 +31,7 @@ export default function BottleEntryModal() {
     try { logBottle(ml, milkType); goBackOrHome(router); }
     catch (error) { committed.current = false; throw error; }
   };
-  return <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled">
+  return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <ScreenBack />
     <EntryHeading title={t("bottleEntry.title")} icon="bottle" color={theme.colors.bottle} />
     <View style={{ flexDirection: "row", gap: 10 }}>
@@ -40,5 +40,5 @@ export default function BottleEntryModal() {
     <QuickAmount unit={unit} color={theme.colors.bottle} lastMl={last?.ml} onSave={commit} />
     <Button label={t("bottleEntry.skipAmount")} tone="neutral" variant="ghost" onPress={() => commit(null)} />
     <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
-  </ScrollView>;
+  </ScrollView></KeyboardAvoidingView>;
 }

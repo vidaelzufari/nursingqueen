@@ -1,7 +1,7 @@
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useRef, useState } from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -39,7 +39,7 @@ export default function PumpDetailsModal() {
       goBackOrHome(router);
     } catch (error) { committed.current = false; throw error; }
   };
-  return <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled">
+  return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
       <ScreenBack />
     <EntryHeading title={t("quick.pumpTitle")} icon="pump" color={theme.colors.pumping} at={event?.startedAt} />
     <Text style={[theme.type.caption, { color: theme.colors.textSecondary, textAlign: "center" }]}>{t(event ? "quick.pumpSaved" : "quick.tapToSave")}</Text>
@@ -49,5 +49,5 @@ export default function PumpDetailsModal() {
     </View>}
     <Button label={t(split ? "quick.totalOnly" : "quick.bySide")} tone="neutral" variant="ghost" onPress={() => setSplit(!split)} />
     <Button testID="pump-detail-dismiss" label={t("quick.doneLater")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
-  </ScrollView>;
+  </ScrollView></KeyboardAvoidingView>;
 }
