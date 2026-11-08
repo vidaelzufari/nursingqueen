@@ -31,8 +31,8 @@ export default function BottleEntryModal() {
     try { logBottle(ml, milkType); goBackOrHome(router); }
     catch (error) { committed.current = false; throw error; }
   };
-  return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-      <ScreenBack />
+  return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+      <ScreenBack dismiss />
     <EntryHeading title={t("bottleEntry.title")} icon="bottle" color={theme.colors.bottle} />
     <View style={{ flexDirection: "row", gap: 10 }}>
       {(["breast_milk", "formula"] as const).map(type => <Button key={type} testID={`bottle-entry-type-${type.replace("_", "-")}`} label={t(type === "breast_milk" ? "bottleEntry.milkTypeBreastMilk" : "bottleEntry.milkTypeFormula")} tone="bottle" variant={milkType === type ? "solid" : "outline"} active={milkType === type} icon={milkType === type ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined} onPress={() => setMilkType(type)} style={{ flex: 1, minHeight: 48, paddingHorizontal: 10 }} />)}

@@ -49,7 +49,7 @@ export default function NursingDurationModal() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, gap: 16, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-      <ScreenBack /> 
+      <ScreenBack dismiss /> 
       <View style={{ width: 76, height: 76, borderRadius: 38, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", marginBottom: 8 }}><Icon name="clock" size={32} color={theme.colors.accent} /></View>
       <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("home.chooseDuration")}</Text>
       {!exact ? <><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("manualNursing.quickHint")}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing.sm }}>

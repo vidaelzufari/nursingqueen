@@ -40,7 +40,7 @@ export default function PumpDetailsModal() {
     } catch (error) { committed.current = false; throw error; }
   };
   return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-      <ScreenBack />
+      <ScreenBack dismiss />
     <EntryHeading title={t("quick.pumpTitle")} icon="pump" color={theme.colors.pumping} at={event?.startedAt} />
     <Text style={[theme.type.caption, { color: theme.colors.textSecondary, textAlign: "center" }]}>{t(event ? "quick.pumpSaved" : "quick.tapToSave")}</Text>
     {!split ? <QuickAmount unit={unit} color={theme.colors.pumping} lastMl={last?.totalMl} onSave={save} disabled={!event} /> : <View style={{ gap: 14 }}>
