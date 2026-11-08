@@ -57,7 +57,9 @@ export default function EditEntryScreen() {
   const timeValid = isValid(started) && started <= new Date() && (!nursing || !finish || (isValid(actualEnd) && actualEnd > actualStart && actualEnd <= new Date()));
   const handleSave = () => {
     if (!timeValid) { setError(true); return; }
-    const ml = mlText.trim() ? parseAmount(mlText, unit) : null;
+    const originalMl = nursing?.milkMl ?? pump?.totalMl ?? bottle?.ml;
+    const unchangedAmount = originalMl != null && mlText.trim() === String(mlToDisplay(originalMl, unit));
+    const ml = unchangedAmount ? originalMl : mlText.trim() ? parseAmount(mlText, unit) : null;
     if (mlText.trim() && ml === null) return;
 
     if (nursing) {

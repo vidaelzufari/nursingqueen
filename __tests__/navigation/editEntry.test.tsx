@@ -6,10 +6,11 @@ import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
 const mockTheme = { colors:palettes.light, spacing,radii,type:typeScale,shadows };
 const MockTextInput = TextInput;
 const mockRouter = { back: jest.fn(), canGoBack: () => true, replace: jest.fn() };
+let mockUnit = "ml";
 let mockParams = { kind: "bottle", id: "b" };
 const mockUpdateBottle = jest.fn(); const mockUpdateNursing = jest.fn(); const mockUpdatePump = jest.fn(); const mockTotal = jest.fn();
 const mockState = {
- nursingSessions: [{ id:"n", side:"left", startedAt:"2026-10-20T10:00:25Z", endedAt:null }],
+ nursingSessions: [{ id:"n", side:"left", startedAt:"2026-10-20T10:00:25Z", endedAt:null, milkMl:90 }],
  bottleEvents: [{ id:"b", ml:90, occurredAt:"2026-10-20T10:00:25Z" }],
  pumpEvents: [{ id:"p", totalMl:80, startedAt:"2026-10-20T10:00:25Z" }],
  updateBottle:mockUpdateBottle, updateNursing:mockUpdateNursing, updatePump:mockUpdatePump, addPumpTotal:mockTotal,
@@ -18,11 +19,11 @@ jest.mock("expo-router", () => ({ useRouter: () => mockRouter, useLocalSearchPar
 jest.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key:string) => key }) }));
 jest.mock("@/theme/ThemeProvider", () => ({ useTheme: () => mockTheme }));
 jest.mock("@/store/useLogStore", () => ({ useLogStore: (s:(state:typeof mockState)=>unknown) => s(mockState) }));
-jest.mock("@/store/useSettingsStore", () => ({ useSettingsStore: (s:(state:object)=>unknown) => s({unit:"ml"}) }));
+jest.mock("@/store/useSettingsStore", () => ({ useSettingsStore: (s:(state:object)=>unknown) => s({unit:mockUnit}) }));
 jest.mock("@/components/ScreenBack", () => ({ ScreenBack: () => null }));
 jest.mock("@/components/DateTimeField", () => ({ DateTimeField: ({label,value,onChange}:{label:string;value:string;onChange:(s:string)=>void}) => <MockTextInput testID={label} value={value} onChangeText={onChange} /> }));
 jest.mock("expo-haptics", () => ({ impactAsync: jest.fn(async () => {}), ImpactFeedbackStyle: { Light:"light" } }));
-beforeEach(() => { jest.clearAllMocks(); mockParams={kind:"bottle",id:"b"}; });
+beforeEach(() => { jest.clearAllMocks(); mockUnit="ml"; mockParams={kind:"bottle",id:"b"}; });
 it("edits a bottle amount without rounding its recorded timestamp", () => {
  const screen=render(<EditEntry/>);
  fireEvent.changeText(screen.getByTestId("entry-edit-field-ml"),"125");
@@ -48,4 +49,10 @@ it("allows a caregiver to edit nursing milk volume without ending the session", 
  fireEvent.changeText(screen.getByTestId("entry-edit-field-ml"),"85");
  fireEvent.press(screen.getByTestId("entry-edit-save"));
  expect(mockUpdateNursing).toHaveBeenCalledWith("n",{side:"left",milkMl:85,startedAt:"2026-10-20T10:00:25.000Z"});
+});
+
+it("preserves the stored nursing amount when only viewing its rounded ounce display", () => {
+ mockUnit="oz"; mockParams={kind:"nursing",id:"n"}; const screen=render(<EditEntry/>);
+ fireEvent.press(screen.getByTestId("entry-edit-save"));
+ expect(mockUpdateNursing).toHaveBeenCalledWith("n",expect.objectContaining({milkMl:90}));
 });
