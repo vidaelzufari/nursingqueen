@@ -74,6 +74,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    // Local timer notifications autolink; no remote push entitlement is needed.
+    "expo-live-activity",
     ["expo-build-properties", { ios: { deploymentTarget: "15.1" }, android: { minSdkVersion: 24 } }],
     // expo-sqlite is intentionally NOT listed here: it has no config plugin
     // (no app.plugin.js) and autolinks natively without one. Listing it

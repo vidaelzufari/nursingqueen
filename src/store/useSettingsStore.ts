@@ -8,6 +8,10 @@ export type ThemePreference = ThemeMode | "system";
 export type SupportedLanguage = "en" | "fr" | "ar";
 
 interface SettingsState {
+  timerReminders: boolean;
+  liveActivities: boolean;
+  setTimerReminders: (enabled: boolean) => void;
+  setLiveActivities: (enabled: boolean) => void;
   themePreference: ThemePreference;
   unit: VolumeUnit;
   language: SupportedLanguage | "system";
@@ -33,6 +37,10 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
+      timerReminders: false,
+      liveActivities: false,
+      setTimerReminders: timerReminders => set({ timerReminders }),
+      setLiveActivities: liveActivities => set({ liveActivities }),
       themePreference: "system",
       unit: "ml",
       language: "system",

@@ -1,4 +1,4 @@
-import { countdown, forecastNext, forecastSleep } from "@/domain/forecast";
+import { evaluateForecast, countdown, forecastNext, forecastSleep } from "@/domain/forecast";
 import { sleepSecondsToday, sleepSecondsBetween, validSleepRange } from "@/domain/sleep";
 import { SleepSession } from "@/db/types";
 const now = new Date("2026-10-22T12:00:00Z");
@@ -26,4 +26,25 @@ it("validates manual sleep ranges and never displays a negative countdown", () =
   expect(validSleepRange(now, new Date("2026-10-23T11:00Z"), now)).toBe(false);
   expect(countdown(new Date("2026-10-22T13:02:03Z"), now)).toBe("01:02:03");
   expect(countdown(new Date("2026-10-22T11:00Z"), now)).toBe("00:00:00");
+});
+
+it("ignores duplicate, invalid and future events and exposes the observed range", () => {
+  const dates = [6,8,10].map(hour => new Date(`2026-10-22T${String(hour).padStart(2,"0")}:00Z`));
+  const result = forecastNext([...dates, dates[1]!, new Date("invalid"), new Date("2026-10-23")], now);
+  expect(result?.samples).toBe(2);
+  expect(result?.confidence).toBe("early");
+  expect(result?.earliest.getTime()).toBe(result?.latest.getTime());
+});
+it("withholds a prediction when logs have very inconsistent gaps", () => {
+  expect(forecastNext(["2026-10-21T00:00Z", "2026-10-21T00:05Z", "2026-10-22T10:00Z"].map(t => new Date(t)), now)).toBeNull();
+});
+it("withholds sleep predictions for running or overlapping sessions", () => {
+  expect(forecastSleep([sleep("2026-10-22T10:00Z", null)], now)).toBeNull();
+  expect(forecastSleep([sleep("2026-10-22T04:00Z","2026-10-22T06:00Z"), sleep("2026-10-22T05:00Z","2026-10-22T07:00Z"), sleep("2026-10-22T09:00Z","2026-10-22T10:00Z")],now)).toBeNull();
+});
+
+it("evaluates predictions without letting the target leak into the input", () => {
+  const times = [6,8,10,13].map(h => new Date(2026,9,22,h));
+  expect(evaluateForecast(times)).toEqual({samples:1,attempted:1,meanAbsoluteErrorMinutes:60,withinWindow:0});
+  expect(evaluateForecast(times.slice(0,3)).meanAbsoluteErrorMinutes).toBeNull();
 });

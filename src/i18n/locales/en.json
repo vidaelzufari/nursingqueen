@@ -328,5 +328,31 @@
     "time": "Time",
     "choose": "Choose a date",
     "clear": "Clear date"
+  },
+  "predictions": {
+    "evidence": "Based on {{count}} recorded intervals",
+    "early": "Early estimate",
+    "established": "Observed pattern",
+    "correct": "Not the right data? Edit your history"
+  },
+  "timers": {
+    "title": "Timers & check-ins",
+    "explanation": "A gentle check after 30 minutes of nursing or 2 hours of sleep. These are check-ins, not recommended durations. Sessions keep running until you stop them.",
+    "reminders": "Remind me to check",
+    "live": "iPhone Live Activities",
+    "liveNote": "See elapsed time on your Lock Screen and Dynamic Island on supported iPhones. Tap to adjust or stop the session. Enable Live Activities in iPhone settings if needed.",
+    "nativeOnly": "Timer notifications are available in the mobile app. Live Activities require iOS 16.2 or later.",
+    "permission": "Allow notifications in your phone settings to receive timer check-ins.",
+    "unavailable": "Timer notifications need the latest mobile build.",
+    "check_nursing": "Has feeding finished?",
+    "check_sleep": "Is baby still sleeping?",
+    "body": "Forgot to stop? Open the session to set the actual end time. We have kept your timer running.",
+    "tap": "Tap to adjust or stop",
+    "finished": "Session finished",
+    "edit": "Edit time / duration",
+    "alreadyEnded": "Already finished? Set the end time",
+    "keepRunning": "Keep this session running",
+    "start": "Start time",
+    "end": "End time"
   }
 }

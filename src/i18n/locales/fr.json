@@ -328,5 +328,31 @@
     "time": "Heure",
     "choose": "Choisir une date",
     "clear": "Effacer la date"
+  },
+  "predictions": {
+    "evidence": "Basé sur {{count}} intervalles enregistrés",
+    "early": "Première estimation",
+    "established": "Rythme observé",
+    "correct": "Données incorrectes ? Modifier l’historique"
+  },
+  "timers": {
+    "title": "Minuteurs et rappels",
+    "explanation": "Un petit rappel après 30 minutes de tétée ou 2 heures de sommeil. Ce sont des vérifications, pas des durées recommandées. La session continue jusqu’à votre arrêt.",
+    "reminders": "Me rappeler de vérifier",
+    "live": "Activités en direct sur iPhone",
+    "liveNote": "Le temps écoulé sur l’écran verrouillé et la Dynamic Island des iPhone compatibles. Touchez pour ajuster ou arrêter. Activez les activités en direct dans les réglages iPhone si nécessaire.",
+    "nativeOnly": "Les rappels sont disponibles dans l’application mobile. Les activités en direct nécessitent iOS 16.2 ou ultérieur.",
+    "permission": "Autorisez les notifications dans les réglages du téléphone pour recevoir les rappels.",
+    "unavailable": "Les rappels nécessitent la dernière version mobile.",
+    "check_nursing": "La tétée est-elle terminée ?",
+    "check_sleep": "Bébé dort-il toujours ?",
+    "body": "Oublié d’arrêter ? Ouvrez la session pour indiquer l’heure de fin réelle. Le minuteur continue.",
+    "tap": "Touchez pour ajuster ou arrêter",
+    "finished": "Session terminée",
+    "edit": "Modifier l’heure / la durée",
+    "alreadyEnded": "Déjà terminé ? Choisir l’heure de fin",
+    "keepRunning": "Laisser la session en cours",
+    "start": "Heure de début",
+    "end": "Heure de fin"
   }
 }

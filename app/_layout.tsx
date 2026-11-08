@@ -9,6 +9,7 @@ import { initializeDatabase } from "@/db/client";
 import i18n, { initI18n } from "@/i18n";
 import { initSentry } from "@/services/sentry";
 import { ThemeProvider, useTheme } from "@/theme/ThemeProvider";
+import { TimerIntegrations } from "@/components/TimerIntegrations";
 import { SaveFeedback } from "@/components/SaveFeedback";
 import { useSleepStore } from "@/store/useSleepStore";
 import { useBabyStore } from "@/store/useBabyStore";
@@ -82,6 +83,7 @@ export default function RootLayout() {
           <ThemeProvider>
             <Bootstrap>
               <ThemedStatusBar />
+              <TimerIntegrations />
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="history/index" />

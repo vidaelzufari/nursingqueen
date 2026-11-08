@@ -18,7 +18,7 @@
     "build:preview": "eas build --profile preview --platform all",
     "build:production": "eas build --profile production --platform all",
     "submit:ios": "eas submit --platform ios --profile production",
-    "postinstall": "node scripts/patch-expo-localization.cjs && node scripts/prepare-web.cjs",
+    "postinstall": "node scripts/patch-expo-localization.cjs && node scripts/prepare-web.cjs && node scripts/prepare-live-activity.cjs",
     "eas-build-post-install": "node scripts/prepare-sqlite.cjs"
   },
   "dependencies": {
@@ -36,7 +36,9 @@
     "expo-haptics": "~13.0.1",
     "expo-image-picker": "~15.0.7",
     "expo-linking": "~6.3.1",
+    "expo-live-activity": "0.4.2",
     "expo-localization": "~15.0.3",
+    "expo-notifications": "0.28.19",
     "expo-router": "~3.5.23",
     "expo-splash-screen": "~0.27.5",
     "expo-sqlite": "~14.0.6",

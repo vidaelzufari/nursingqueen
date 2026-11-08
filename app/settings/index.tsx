@@ -1,6 +1,7 @@
 import { DateField } from "@/components/DateField";
 import React from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { Platform, ScrollView, Switch, Text, TextInput, View } from "react-native";
+import { useFeedbackStore } from "@/store/useFeedbackStore";
 import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "@/navigation/AppShell";
@@ -45,6 +46,25 @@ export default function SettingsScreen() {
   const setTargetStashMl = useSettingsStore((s) => s.setTargetStashMl);
   const isUnlocked = useEntitlementStore((s) => s.isUnlocked);
   const restore = useEntitlementStore((s) => s.restore);
+
+  const timers = useSettingsStore(s => s.timerReminders);
+  const live = useSettingsStore(s => s.liveActivities);
+  const setTimers = useSettingsStore(s => s.setTimerReminders);
+  const setLive = useSettingsStore(s => s.setLiveActivities);
+  const [requesting, setRequesting] = React.useState(false);
+  const enableReminders = async (enabled: boolean) => {
+    if (!enabled) { setTimers(false); return; }
+    setRequesting(true);
+    try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires -- Load native modules lazily so older binaries can still log.
+      const n = require("expo-notifications") as typeof import("expo-notifications");
+      if (Platform.OS === "android") await n.setNotificationChannelAsync("default", { name: t("timers.title"), importance: n.AndroidImportance.DEFAULT });
+      const permission = await n.requestPermissionsAsync();
+      setTimers(permission.granted);
+      if (!permission.granted) useFeedbackStore.getState().show(t("timers.permission"));
+    } catch { useFeedbackStore.getState().show(t("timers.unavailable")); }
+    finally { setRequesting(false); }
+  };
 
   return (
     <AppShell>
@@ -103,6 +123,21 @@ export default function SettingsScreen() {
               />
             ))}
           </OptionRow>
+        </Section>
+
+        <Section title={t("timers.title")}>
+          <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("timers.explanation")}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 52 }}>
+            <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, flex: 1 }]}>{t("timers.reminders")}</Text>
+            <Switch accessibilityLabel={t("timers.reminders")} value={timers} disabled={Platform.OS === "web" || requesting} onValueChange={v => void enableReminders(v)} trackColor={{ true: theme.colors.accent }} />
+          </View>
+          {Platform.OS === "ios" && parseFloat(String(Platform.Version)) >= 16.2 ? <>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 52 }}>
+              <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, flex: 1 }]}>{t("timers.live")}</Text>
+              <Switch accessibilityLabel={t("timers.live")} value={live} onValueChange={setLive} trackColor={{ true: theme.colors.accent }} />
+            </View>
+            <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("timers.liveNote")}</Text>
+          </> : <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("timers.nativeOnly")}</Text>}
         </Section>
 
         <Section title={t("settings.returnToWork")}>

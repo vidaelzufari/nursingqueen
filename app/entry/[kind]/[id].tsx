@@ -1,7 +1,7 @@
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -9,6 +9,8 @@ import { Button, Card } from "@/components";
 import { useLogStore } from "@/store/useLogStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { mlToDisplay, parseAmount } from "@/domain/units";
+import { format, parse, isValid } from "date-fns";
+import { DateTimeField } from "@/components/DateTimeField";
 import { NursingSide } from "@/db/types";
 
 const SIDES: NursingSide[] = ["left", "right", "both", "unknown"];
@@ -42,19 +44,31 @@ export default function EditEntryScreen() {
   });
   const [side, setSide] = useState<NursingSide>(nursing?.side ?? "unknown");
 
+  const initialTime = nursing?.startedAt ?? pump?.startedAt ?? bottle?.occurredAt;
+  const [from, setFrom] = useState(() => format(initialTime ? new Date(initialTime) : new Date(), "yyyy-MM-dd HH:mm"));
+  const [to, setTo] = useState(() => format(nursing?.endedAt ? new Date(nursing.endedAt) : new Date(), "yyyy-MM-dd HH:mm"));
+  const [finish, setFinish] = useState(Boolean(nursing?.endedAt));
+  const [error, setError] = useState(false);
+  const started = parse(from, "yyyy-MM-dd HH:mm", new Date());
+  const ended = parse(to, "yyyy-MM-dd HH:mm", new Date());
+  const actualStart = initialTime && from === format(new Date(initialTime), "yyyy-MM-dd HH:mm") ? new Date(initialTime) : started;
+  const actualEnd = nursing?.endedAt && to === format(new Date(nursing.endedAt), "yyyy-MM-dd HH:mm") ? new Date(nursing.endedAt) : ended;
+  const timeValid = isValid(started) && started <= new Date() && (!nursing || !finish || (isValid(actualEnd) && actualEnd > actualStart && actualEnd <= new Date()));
   const handleSave = () => {
+    if (!timeValid) { setError(true); return; }
     const ml = mlText.trim() ? parseAmount(mlText, unit) : null;
     if (mlText.trim() && ml === null) return;
 
     if (nursing) {
-      updateNursing(nursing.id, { side });
+      updateNursing(nursing.id, { side, startedAt: actualStart.toISOString(), ...(finish ? { endedAt: actualEnd.toISOString(), durationSeconds: (actualEnd.getTime() - actualStart.getTime()) / 1000 } : {}) });
     } else if (pump) {
+      updatePump(pump.id, { startedAt: actualStart.toISOString() });
       if (pump.totalMl !== null && mlText.trim() === String(mlToDisplay(pump.totalMl, unit))) { goBackOrHome(router); return; }
       if (ml !== null && ml > 0 && Number.isFinite(ml)) addPumpTotal(pump.id, ml);
       else if (!mlText.trim()) updatePump(pump.id, { leftMl: null, rightMl: null });
       else return;
     } else if (bottle) {
-      updateBottle(bottle.id, { ml });
+      updateBottle(bottle.id, { ml, occurredAt: actualStart.toISOString() });
     }
     goBackOrHome(router);
   };
@@ -78,9 +92,9 @@ export default function EditEntryScreen() {
   const showMlField = Boolean(pump || bottle);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
       <ScreenBack />
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginBottom: 16 }]}>{t("details.edit")}</Text>
+      <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginBottom: 16 }]}>{t("history.editEntry")}</Text>
       <Card style={{ gap: theme.spacing.sm }}>
         {nursing ? (
           <View style={{ gap: theme.spacing.xs }}>
@@ -125,10 +139,14 @@ export default function EditEntryScreen() {
           </View>
         ) : null}
 
-        <Button testID="entry-edit-save" disabled={showMlField && Boolean(mlText.trim()) && parseAmount(mlText, unit) === null} label={t("common.save")} tone="accent" onPress={handleSave} />
+        <DateTimeField label={t("timers.start")} value={from} onChange={setFrom} />
+        {nursing && !nursing.endedAt ? <Button label={t(finish ? "timers.keepRunning" : "timers.alreadyEnded")} variant="outline" onPress={() => setFinish(!finish)} /> : null}
+        {nursing && finish ? <DateTimeField label={t("timers.end")} value={to} onChange={setTo} /> : null}
+        {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
+        <Button testID="entry-edit-save" disabled={!timeValid || (showMlField && Boolean(mlText.trim()) && parseAmount(mlText, unit) === null)} label={t("common.save")} tone="accent" onPress={handleSave} />
         <Button label={t("history.deleteEntry")} tone="danger" variant="outline" onPress={handleDelete} />
       </Card>
-    </ScrollView>
+    </ScrollView></KeyboardAvoidingView>
   );
 }
 
