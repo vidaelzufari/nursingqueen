@@ -42,3 +42,10 @@ it("corrects a forgotten nursing stop to the actual end time", () => {
  fireEvent.press(screen.getByTestId("entry-edit-save"));
  expect(mockUpdateNursing).toHaveBeenCalledWith("n",expect.objectContaining({durationSeconds:1175,endedAt:expect.any(String)}));
 });
+
+it("allows a caregiver to edit nursing milk volume without ending the session", () => {
+ mockParams={kind:"nursing",id:"n"}; const screen=render(<EditEntry/>);
+ fireEvent.changeText(screen.getByTestId("entry-edit-field-ml"),"85");
+ fireEvent.press(screen.getByTestId("entry-edit-save"));
+ expect(mockUpdateNursing).toHaveBeenCalledWith("n",{side:"left",milkMl:85,startedAt:"2026-10-20T10:00:25.000Z"});
+});

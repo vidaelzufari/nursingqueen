@@ -60,7 +60,7 @@ export function Button({
   const toneColor = toneToColor(tone, theme.colors);
 
   const handlePressIn = useCallback(() => {
-    scale.value = withTiming(0.96, { duration: 80 });
+    scale.value = withTiming(0.98, { duration: 80 });
   }, [scale]);
 
   const handlePressOut = useCallback(() => {
@@ -101,7 +101,7 @@ export function Button({
           minHeight: large ? MIN_TOUCH_TARGET * 1.4 : MIN_TOUCH_TARGET,
           width: fullWidth ? "100%" : undefined,
           opacity: disabled ? 0.5 : 1,
-          borderRadius: theme.radii.sm,
+          borderRadius: theme.radii.md,
           paddingHorizontal: theme.spacing.lg,
         },
         animatedStyle,
@@ -144,11 +144,11 @@ function toneToColor(
 ): { base: string; active: string; contrast: string } {
   switch (tone) {
     case "nursing":
-      return { base: colors.nursing, active: colors.danger, contrast: colors.accentContrast };
+      return { base: colors.nursing, active: colors.nursing, contrast: colors.accentContrast };
     case "pumping":
-      return { base: colors.pumping, active: colors.accent, contrast: colors.accentContrast };
+      return { base: colors.pumping, active: colors.pumping, contrast: colors.accentContrast };
     case "bottle":
-      return { base: colors.bottle, active: colors.success, contrast: colors.accentContrast };
+      return { base: colors.bottle, active: colors.bottle, contrast: colors.accentContrast };
     case "neutral":
       return { base: colors.surfaceRaised, active: colors.border, contrast: colors.textPrimary };
     case "danger":

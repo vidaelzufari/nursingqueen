@@ -30,7 +30,7 @@ interface LogState {
   addPumpTotal: (id: string, totalMl: number) => void;
   logBottle: (ml: number | null, milkType: MilkType) => BottleEvent;
 
-  updateNursing: (id: string, patch: Partial<Pick<NursingSession, "side" | "startedAt" | "endedAt" | "durationSeconds" | "note">>) => void;
+  updateNursing: (id: string, patch: Partial<Pick<NursingSession, "side" | "startedAt" | "endedAt" | "durationSeconds" | "note" | "milkMl">>) => void;
   updatePump: (id: string, patch: Partial<Pick<PumpEvent, "startedAt" | "leftMl" | "rightMl" | "note">>) => void;
   updateBottle: (id: string, patch: Partial<Pick<BottleEvent, "ml" | "milkType" | "occurredAt" | "note">>) => void;
 

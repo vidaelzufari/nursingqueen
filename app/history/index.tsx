@@ -39,7 +39,7 @@ export default function HistoryScreen() {
       kind: "nursing",
       at: new Date(s.startedAt),
       title: s.side === "unknown" ? t("history.nursingTitle") : t("history.nursingTitleWithSide", { side: s.side }),
-      detailLabel: s.durationSeconds != null ? formatDurationShort(Math.round(s.durationSeconds / 60)) : undefined,
+      detailLabel: [s.durationSeconds != null ? formatDurationShort(Math.round(s.durationSeconds / 60)) : null, s.milkMl != null ? formatVolume(s.milkMl, unit) : null].filter(Boolean).join(" · ") || undefined,
       needsDetail: false,
     }));
     const pumpRows: HistoryRow[] = pumpEvents.map((p) => ({

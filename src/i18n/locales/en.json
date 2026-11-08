@@ -37,7 +37,8 @@
     "sideLeft": "Left",
     "sideRight": "Right",
     "sideBoth": "Both",
-    "sideSkip": "Skip"
+    "sideSkip": "Skip",
+    "sideUnknown": "Unsure"
   },
   "statusStrip": {
     "lastFeed": "Last feed",
@@ -354,5 +355,17 @@
     "keepRunning": "Keep this session running",
     "start": "Start time",
     "end": "End time"
+  },
+  "nursingAmount": {
+    "label": "Milk amount · optional",
+    "note": "Enter an amount you know or want to record. The timer does not measure milk intake."
+  },
+  "ageContext": {
+    "title": "Age & your baby’s rhythm",
+    "sleep": "Typical sleep at this age: {{min}}–{{max}} hours in 24 hours, including naps.",
+    "varies": "Sleep needs vary widely at this age.",
+    "personal": "Your next-session estimates come from your logs. Age guidance describes a broad reference, not an exact next nap or feed time.",
+    "sleepSource": "Sleep · AASM",
+    "feedSource": "Feeding · CDC"
   }
 }

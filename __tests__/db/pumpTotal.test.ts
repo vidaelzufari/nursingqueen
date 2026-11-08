@@ -101,3 +101,13 @@ it("rejects a sleep adjustment overlapping a previous session", () => {
   const later = sleepRepository.list("baby-a")[0]!;
   expect(() => sleepRepository.adjustStart(later.id, -120)).toThrow("Overlapping sleep");
 });
+
+it("stores an optional nursing milk amount independently of the timer", () => {
+ const session = nursingRepository.startSession("baby");
+ expect(nursingRepository.listByBaby("baby")[0]?.milkMl).toBeNull();
+ nursingRepository.update(session.id,{milkMl:95});
+ expect(nursingRepository.listByBaby("baby")[0]).toMatchObject({milkMl:95,durationSeconds:null,endedAt:null});
+ nursingRepository.update(session.id,{milkMl:null});
+ expect(nursingRepository.listByBaby("baby")[0]?.milkMl).toBeNull();
+ expect(() => nursingRepository.update(session.id,{milkMl:-10})).toThrow();
+});

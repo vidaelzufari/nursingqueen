@@ -37,7 +37,8 @@
     "sideLeft": "Gauche",
     "sideRight": "Droit",
     "sideBoth": "Les deux",
-    "sideSkip": "Passer"
+    "sideSkip": "Passer",
+    "sideUnknown": "Inconnu"
   },
   "statusStrip": {
     "lastFeed": "Dernière tétée",
@@ -354,5 +355,17 @@
     "keepRunning": "Laisser la session en cours",
     "start": "Heure de début",
     "end": "Heure de fin"
+  },
+  "nursingAmount": {
+    "label": "Quantité de lait · facultative",
+    "note": "Indiquez une quantité connue ou à noter. Le minuteur ne mesure pas le lait consommé."
+  },
+  "ageContext": {
+    "title": "L’âge et le rythme de bébé",
+    "sleep": "Sommeil habituel à cet âge : {{min}}–{{max}} heures sur 24 heures, siestes comprises.",
+    "varies": "Les besoins en sommeil varient beaucoup à cet âge.",
+    "personal": "L’heure de la prochaine session est estimée à partir de vos données. Les repères d’âge sont généraux et ne fixent pas l’heure exacte d’une sieste ou d’une tétée.",
+    "sleepSource": "Sommeil · AASM",
+    "feedSource": "Alimentation · CDC"
   }
 }

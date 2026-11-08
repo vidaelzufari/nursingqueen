@@ -35,22 +35,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SessionDock />
       <View
         style={{
-          ...theme.shadows.card,
           flexDirection: "row",
-          height: 76,
+          minHeight: 72 + insets.bottom,
           flexShrink: 0,
           overflow: "hidden",
-          borderWidth: 1,
+          borderTopWidth: 1,
           borderColor: theme.colors.border,
-          borderRadius: theme.radii.lg,
-          marginHorizontal: 20,
-          marginBottom: Math.max(insets.bottom, 12),
-          width: "92%",
-          maxWidth: 540,
+          borderRadius: 0,
+          marginHorizontal: 0,
+          paddingBottom: Math.max(insets.bottom, 8),
+          width: "100%",
+          maxWidth: 580,
           alignSelf: "center",
           borderTopColor: theme.colors.border,
           backgroundColor: theme.colors.surface,
-          paddingBottom: 6,
           paddingTop: 6,
         }}
       >
@@ -65,8 +63,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onPress={() => router.push(item.route)}
               style={{ flexGrow: 1, flexBasis: 0, height: 62, alignItems: "center", justifyContent: "center", paddingVertical: theme.spacing.xs }}
             >
-              <View style={{ width: 52, height: 30, borderRadius: theme.radii.sm, alignItems: "center", justifyContent: "center", backgroundColor: active ? theme.colors.accent : "transparent" }}>
-                <Icon name={item.key} size={21} color={active ? theme.colors.accentContrast : theme.colors.textMuted} />
+              <View style={{ width: 52, height: 30, borderRadius: theme.radii.sm, alignItems: "center", justifyContent: "center", backgroundColor: "transparent" }}>
+                <Icon name={item.key} size={21} color={active ? theme.colors.accent : theme.colors.textMuted} />
               </View>
               <Text
                 style={[

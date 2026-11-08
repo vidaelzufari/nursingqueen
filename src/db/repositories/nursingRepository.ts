@@ -5,6 +5,7 @@ import { NursingSession, NursingSide } from "../types";
 interface NursingRow {
   id: string;
   baby_id: string;
+  milk_ml?: number | null;
   side: string;
   started_at: string;
   ended_at: string | null;
@@ -18,6 +19,7 @@ function fromRow(row: NursingRow): NursingSession {
   return {
     id: row.id,
     babyId: row.baby_id,
+    milkMl: row.milk_ml ?? null,
     side: row.side as NursingSide,
     startedAt: row.started_at,
     endedAt: row.ended_at,
@@ -121,17 +123,18 @@ export const nursingRepository = {
 
   update(
     id: string,
-    patch: Partial<Pick<NursingSession, "side" | "startedAt" | "endedAt" | "durationSeconds" | "note">>
+    patch: Partial<Pick<NursingSession, "side" | "startedAt" | "endedAt" | "durationSeconds" | "note" | "milkMl">>
   ): void {
     const db = getDatabase();
     const row = db.getFirstSync<NursingRow>("SELECT * FROM nursing_sessions WHERE id = ?;", [id]);
     if (!row) return;
     const current = fromRow(row);
+    if (patch.milkMl != null && (!Number.isFinite(patch.milkMl) || patch.milkMl <= 0)) throw new Error("Invalid nursing amount");
     const next = { ...current, ...patch };
     const updatedAt = new Date().toISOString();
     db.runSync(
-      "UPDATE nursing_sessions SET side = ?, started_at = ?, ended_at = ?, duration_seconds = ?, note = ?, updated_at = ? WHERE id = ?;",
-      [next.side, next.startedAt, next.endedAt, next.durationSeconds, next.note, updatedAt, id]
+      "UPDATE nursing_sessions SET side = ?, started_at = ?, ended_at = ?, duration_seconds = ?, note = ?, milk_ml = ?, updated_at = ? WHERE id = ?;",
+      [next.side, next.startedAt, next.endedAt, next.durationSeconds, next.note, next.milkMl ?? null, updatedAt, id]
     );
   },
 

@@ -99,9 +99,9 @@ export default function HomeScreen() {
 
   return (
     <AppShell>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingBottom: theme.spacing.xl }}>
-        <View style={{ gap: 10, marginTop: 8, marginBottom: 24, padding: 16, backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radii.lg }}>
-          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 2 }]}>{t("design.brand")}</Text>
+      <ScrollView contentContainerStyle={{ padding: theme.spacing.lg, paddingBottom: theme.spacing.xl }}>
+        <View style={{ gap: 10, marginTop: 16, marginBottom: 32 }}>
+          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 1.4 }]}>{t("design.brand")}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             <View style={{ flex: 1, gap: 3 }}>
               <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("analytics.today")}</Text>
@@ -112,7 +112,7 @@ export default function HomeScreen() {
             <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")}
               testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"}
               onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")}
-              style={({ pressed }) => ({ width: 58, height: 58, borderRadius: theme.radii.md, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
+              style={({ pressed }) => ({ width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
               {activeBaby ? <Text style={[theme.type.title, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="plus" color={theme.colors.accent} />}
             </Pressable>
           </View>
@@ -155,10 +155,10 @@ export default function HomeScreen() {
 
 function RoundAction({ icon, label, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
   const theme = useTheme();
-  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 128, minWidth: 0, padding: 12, borderRadius: theme.radii.lg, borderWidth: 1, borderColor: active ? color : color + "48", backgroundColor: color + (active ? "2C" : "17"), alignItems: "flex-start", justifyContent: "space-between", opacity: pressed ? 0.7 : 1, gap: 8 })}>
-    <View style={{ width: active && subLabel ? 94 : 58, minHeight: 58, borderRadius: theme.radii.sm, backgroundColor: color, alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
-      <Icon name={icon} size={active && subLabel ? 19 : 30} color={theme.colors.accentContrast} />
-      {active && subLabel ? <Text style={[theme.type.caption, { color: theme.colors.accentContrast, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
+  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 144, minWidth: 0, padding: 18, borderRadius: theme.radii.lg, borderWidth: 1, borderColor: active ? color : theme.colors.border, backgroundColor: active ? color + "12" : theme.colors.surface, alignItems: "flex-start", justifyContent: "space-between", opacity: pressed ? 0.7 : 1, gap: 8 })}>
+    <View style={{ width: active && subLabel ? 94 : 48, minHeight: 48, borderRadius: 16, backgroundColor: color + "14", alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
+      <Icon name={icon} size={active && subLabel ? 19 : 28} color={color} />
+      {active && subLabel ? <Text style={[theme.type.caption, { color, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
     </View>
     <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name={active ? "clock" : "plus"} size={14} color={color} /><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text></View>
     {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}

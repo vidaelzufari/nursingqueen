@@ -38,6 +38,7 @@ export default function EditEntryScreen() {
   const bottle = kind === "bottle" ? bottleEvents.find((b) => b.id === id) : undefined;
 
   const [mlText, setMlText] = useState(() => {
+    if (nursing) return nursing.milkMl != null ? String(mlToDisplay(nursing.milkMl, unit)) : "";
     if (pump) return pump.totalMl != null ? String(mlToDisplay(pump.totalMl, unit)) : "";
     if (bottle) return bottle.ml != null ? String(mlToDisplay(bottle.ml, unit)) : "";
     return "";
@@ -60,7 +61,7 @@ export default function EditEntryScreen() {
     if (mlText.trim() && ml === null) return;
 
     if (nursing) {
-      updateNursing(nursing.id, { side, startedAt: actualStart.toISOString(), ...(finish ? { endedAt: actualEnd.toISOString(), durationSeconds: (actualEnd.getTime() - actualStart.getTime()) / 1000 } : {}) });
+      updateNursing(nursing.id, { side, milkMl: ml, startedAt: actualStart.toISOString(), ...(finish ? { endedAt: actualEnd.toISOString(), durationSeconds: (actualEnd.getTime() - actualStart.getTime()) / 1000 } : {}) });
     } else if (pump) {
       updatePump(pump.id, { startedAt: actualStart.toISOString() });
       if (pump.totalMl !== null && mlText.trim() === String(mlToDisplay(pump.totalMl, unit))) { goBackOrHome(router); return; }
@@ -89,10 +90,10 @@ export default function EditEntryScreen() {
     ]);
   };
 
-  const showMlField = Boolean(pump || bottle);
+  const showMlField = Boolean(nursing || pump || bottle);
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
+    <KeyboardAvoidingView style={{ flex: 1, paddingHorizontal: 4 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
       <ScreenBack />
       <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginBottom: 16 }]}>{t("history.editEntry")}</Text>
       <Card style={{ gap: theme.spacing.sm }}>
@@ -108,7 +109,7 @@ export default function EditEntryScreen() {
                   variant={side === s ? "solid" : "outline"}
                   active={side === s}
                   onPress={() => setSide(s)}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, paddingHorizontal: 4 }}
                 />
               ))}
             </View>
@@ -118,8 +119,9 @@ export default function EditEntryScreen() {
         {showMlField ? (
           <View style={{ gap: theme.spacing.xs }}>
             <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>
-              {t("bottleEntry.amount")} ({unit})
+              {t(nursing ? "nursingAmount.label" : "bottleEntry.amount")} ({unit})
             </Text>
+            {nursing ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("nursingAmount.note")}</Text> : null}
             <TextInput
               testID="entry-edit-field-ml"
               value={mlText}

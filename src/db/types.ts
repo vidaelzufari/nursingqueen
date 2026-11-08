@@ -21,6 +21,8 @@ export interface WeightEntry {
 }
 
 export interface NursingSession {
+  /** Optional amount supplied by the caregiver; never inferred from duration. */
+  milkMl?: number | null;
   id: string;
   babyId: string;
   side: NursingSide;

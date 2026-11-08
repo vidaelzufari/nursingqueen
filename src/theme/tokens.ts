@@ -113,9 +113,9 @@ export const radii = {
 } as const;
 
 export const typeScale = {
-  display: { fontSize: 40, lineHeight: 46, letterSpacing: -0.9, fontWeight: "800" as const },
-  title: { fontSize: 26, lineHeight: 32, fontWeight: "800" as const },
-  subtitle: { fontSize: 19, lineHeight: 25, fontWeight: "700" as const },
+  display: { fontSize: 34, lineHeight: 40, letterSpacing: -0.8, fontWeight: "700" as const },
+  title: { fontSize: 26, lineHeight: 32, fontWeight: "600" as const },
+  subtitle: { fontSize: 20, lineHeight: 26, fontWeight: "600" as const },
   body: { fontSize: 16, lineHeight: 22, fontWeight: "400" as const },
   bodyStrong: { fontSize: 16, lineHeight: 22, fontWeight: "600" as const },
   caption: { fontSize: 13, lineHeight: 18, fontWeight: "500" as const },

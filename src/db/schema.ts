@@ -96,6 +96,7 @@ export const migrations: Migration[] = [
       `CREATE UNIQUE INDEX IF NOT EXISTS idx_sleep_one_active ON sleep_sessions(baby_id) WHERE ended_at IS NULL;`,
     ],
   },
+  { version: 3, statements: [`ALTER TABLE nursing_sessions ADD COLUMN milk_ml REAL CHECK (milk_ml IS NULL OR milk_ml > 0);`] },
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations[migrations.length - 1]?.version ?? 0;
