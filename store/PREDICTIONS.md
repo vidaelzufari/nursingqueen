@@ -29,3 +29,13 @@ Source review, 2026-11-08: CDC says feeding timing varies by baby and time of da
 Sources: https://www.cdc.gov/infant-toddler-nutrition/breastfeeding/how-much-and-how-often.html and https://sleepeducation.org/healthy-sleep/.
 
 Validate candidate models chronologically against actual subsequent logs, with splits by baby, stratification by age, feeding mode and day/night; report prediction error, coverage, abstention and calibration. Missing feeds are not observed long intervals. No model training or external transmission of health logs is implemented by this change.
+
+
+## Sleep insights — 23 November 2026
+The sleep hub adds logged sleep in the trailing 24 hours, typical completed-session duration (median), elapsed awake time and next-sleep windows. Start/stop and editable manual sessions remain the source of truth. Totals are labelled as logged data, never measured sleep completeness or an age-based deficit.
+
+An experimental on-device nearest-neighbour model fits only the active baby's completed records from the last 14 days. It compares local clock time and preceding sleep duration, uses up to seven neighbours, and downweights older observations. At least four neighbours across three logged days are required. Gaps over 12 hours are excluded from adaptive training as potentially missing logs; this is an engineering filter, not a recommended wake duration.
+
+Before using the adaptive estimate, the engine performs up to eight chronological holdouts with no target leakage. At least three holdouts must exist and mean absolute error must improve by more than 5% against a median baseline on the same pairs. Otherwise the existing seven-day median engine remains the fallback, or no countdown is shown. This per-baby retrospective check is not population validation, a calibrated confidence score or a guarantee of future accuracy. Synthetic regression tests cover promotion, fallback and future-data isolation; real-world and age-stratified validation remains outstanding.
+
+Future/invalid starts are ignored. Invalid ends, overlapping sessions, multiple active timers and sessions over 24 hours trigger review rather than a prediction. A day-long timer is a request to check a possible logging error, never an automatic end or a physiological limit. Last wake-ups over a day old withhold forecasts. AASM daily sleep totals are shown as separate age context and never converted into a next-nap prescription. All calculations run locally; no external LLM, model download or health-data upload is used.

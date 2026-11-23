@@ -121,7 +121,7 @@ export default function HomeScreen() {
           <RoundAction hint={t("refresh.nursingHint")} testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={t("refresh.feed")} actionLabel={openNursingSession ? t("design.finish") : t("refresh.start")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
           <RoundAction hint={t("refresh.pumpHint")} actionLabel={t("refresh.add")} testID="home-button-pump" icon="pump" label={t("refresh.pump")} color={theme.colors.pumping} onPress={handlePump} />
           <RoundAction hint={t("refresh.bottleHint")} actionLabel={t("refresh.add")} testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
-          <RoundAction hint={t("refresh.sleepHint")} actionLabel={t(activeSleep ? "sleep.stop" : "refresh.start")} testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t("sleep.title")} color={theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
+          <RoundAction onDetails={() => router.push("/sleep")} hint={t("refresh.sleepHint")} actionLabel={t(activeSleep ? "sleep.stop" : "refresh.start")} testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t("sleep.title")} color={theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
         </View>
         {activeSleep ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ alignSelf: "center", minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8 }}><Icon name="clock" size={16} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("sleep.adjust")}</Text></Pressable> : null}
         {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : { pathname: "/profile/edit", params: { intent: "earlier" } })} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
@@ -150,14 +150,16 @@ export default function HomeScreen() {
   );
 }
 
-function RoundAction({ icon, label, hint, actionLabel, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; hint: string; actionLabel: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
+function RoundAction({ icon, label, hint, actionLabel, color, onPress, onDetails, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; hint: string; actionLabel: string; color: string; onPress: () => void; onDetails?: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
   return <Card raised={active} style={{ flexBasis: "43%", flexGrow: 1, minWidth: 0, padding: 16, gap: 12, borderRadius: theme.radii.xl, borderColor: active ? color : theme.colors.border, minHeight: 216 }}>
     <View style={{ width: 46, height: 46, borderRadius: 17, backgroundColor: color + "16", alignItems: "center", justifyContent: "center" }}><Icon name={icon} size={26} color={color} /></View>
     <View style={{ flex: 1, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{label}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{active ? statusLabel ?? hint : hint}</Text></View>
     {active && subLabel ? <Text accessibilityLiveRegion="none" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[theme.type.subtitle, { color, fontVariant: ["tabular-nums"], fontSize: width < 360 ? 18 : 23, lineHeight: 30 }]}>{subLabel}</Text> : null}
     <Button testID={testID} label={actionLabel} onPress={onPress} icon={width >= 360 ? <Icon name={active ? "stop" : icon === "heart" || icon === "moon" ? "play" : "plus"} size={17} color={theme.colors.accentContrast} /> : undefined} style={{ minHeight: 48, paddingHorizontal: 8, borderRadius: theme.radii.pill }} />
+    {onDetails ? <Button label={t("sleepAI.open")} variant="ghost" tone="neutral" onPress={onDetails} style={{ minHeight: 44, paddingHorizontal: 0 }} /> : null}
   </Card>;
 }
 

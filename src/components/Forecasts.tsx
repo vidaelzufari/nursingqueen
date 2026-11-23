@@ -4,8 +4,10 @@ import { format, isSameDay } from "date-fns";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useLogStore } from "@/store/useLogStore";
+import { getSleepInsights } from "@/domain/sleepInsights";
+import { useActiveBaby } from "@/store/useBabyStore";
 import { useSleepStore } from "@/store/useSleepStore";
-import { forecastNext, forecastSleep, countdown } from "@/domain/forecast";
+import { forecastNext, countdown } from "@/domain/forecast";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Card } from "./Card";
 import { Icon, IconName } from "./Icon";
@@ -13,10 +15,12 @@ export function Forecasts({ now, compact = false, onAddSession }: { now: Date; c
   const theme = useTheme(); const { t } = useTranslation(); const router = useRouter();
   const { nursingSessions, bottleEvents, pumpEvents } = useLogStore();
   const sessions = useSleepStore(s => s.sessions);
+  const baby = useActiveBaby();
+  const sleep = getSleepInsights(sessions, now, baby?.dateOfBirth);
   const rows = [
     { key: "feed", icon: "heart" as IconName, active: nursingSessions.some(s => !s.endedAt), forecast: forecastNext([...nursingSessions.filter(s => s.endedAt && (s.durationSeconds ?? 0) > 0).map(s => new Date(s.startedAt)), ...bottleEvents.map(s => new Date(s.occurredAt))], now), color: theme.colors.nursing },
     { key: "pump", icon: "pump" as IconName, active: false, forecast: forecastNext(pumpEvents.filter(s => (s.totalMl ?? 0) > 0).map(s => new Date(s.startedAt)), now), color: theme.colors.pumping },
-    { key: "sleep", icon: "moon" as IconName, active: sessions.some(s => !s.endedAt), forecast: forecastSleep(sessions, now), color: theme.colors.sleep },
+    { key: "sleep", icon: "moon" as IconName, active: sessions.some(s => !s.endedAt), forecast: sleep.forecast, color: theme.colors.sleep },
   ];
   const active = rows.find(row => row.active);
   const sorted = [...rows].filter(row => row.forecast && !row.active).sort((a,b) => a.forecast!.at.getTime() - b.forecast!.at.getTime());
