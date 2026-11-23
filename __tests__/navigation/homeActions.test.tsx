@@ -8,6 +8,8 @@ import { SessionDock } from "@/components/SessionDock";
 import { AppShell } from "@/navigation/AppShell";
 import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
 
+jest.mock("expo-haptics", () => ({ impactAsync: jest.fn(async () => {}), notificationAsync: jest.fn(async () => {}), ImpactFeedbackStyle: { Light: "light", Medium: "medium" }, NotificationFeedbackType: { Success: "success" } }));
+
 const mockPush = jest.fn();
 const mockStartNursing = jest.fn();
 const mockState = {

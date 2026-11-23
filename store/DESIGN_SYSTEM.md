@@ -7,3 +7,7 @@ Keep Nursing Queen's lilac/plum palette and activity colors. Use a single system
 Use a plain fixed bottom navigation with outline icons and a color-selected label. Primary buttons remain generously sized, with subtle press feedback. Cards have a light border and no blanket shadow; elevation is reserved for raised content. Preserve dark/night modes and screen-reader labels. Test at a narrow mobile width and with the keyboard open.
 
 Navigation controls: 48-point circular icon targets, a clean chevron for full screens and a close icon at the trailing edge for dismissible logging flows. Keep their screen-reader labels; mirror the back chevron for RTL. No bordered rectangular “Back” buttons. Entry headings use a compact tinted activity icon and a quiet timestamp without another boxed surface.
+
+## Approved reference — 23 November 2026
+
+Use the supplied sixth screenshot as the Home layout reference: a real baby-profile banner, two action cards per row and explicit Start/Add/Finish buttons. Use consistent outline icons rather than emoji; no invented baby photo, weight, timer target or decorative controls. White cards, plum/raspberry accents and soft lilac surfaces share 18/24/28-point radii. Keep the plain bottom navigation. Active timers show tabular elapsed time above the finish button and in the persistent dock. Long labels wrap; cards grow vertically. History combines activity filters with title/note search. Empty forecasts invite logging; correction actions appear when results exist. Zero chart values have no visible bars.

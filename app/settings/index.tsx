@@ -6,6 +6,9 @@ import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "@/navigation/AppShell";
 import { useTheme } from "@/theme/ThemeProvider";
+import { useRouter } from "expo-router";
+import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
+import { PageHeader } from "@/components/PageHeader";
 import { Icon } from "@/components/Icon";
 import { Button, Card } from "@/components";
 import { useSettingsStore, ThemePreference, SupportedLanguage } from "@/store/useSettingsStore";
@@ -32,6 +35,9 @@ const LANGUAGE_OPTIONS: { value: SupportedLanguage | "system"; label: string }[]
 ];
 
 export default function SettingsScreen() {
+  const router = useRouter();
+  const baby = useActiveBaby();
+  const babies = useBabyStore(s => s.babies);
   const theme = useTheme();
   const { t } = useTranslation();
   const themePreference = useSettingsStore((s) => s.themePreference);
@@ -68,23 +74,26 @@ export default function SettingsScreen() {
 
   return (
     <AppShell>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.md, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
-        <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("settings.title")}</Text>
-        <Text style={[theme.type.body, { color: theme.colors.textSecondary, marginTop: -8 }]}>{t("design.preferences")}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 7 }}><Icon name="check" color={theme.colors.success} size={16} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.saved")}</Text></View>
-
-        <Section title={t("settings.appearance")}>
+      <ScrollView contentContainerStyle={{ padding: theme.spacing.lg, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
+        <PageHeader title={t("settings.title")} subtitle={t("refresh.settingsSubtitle")} />
+        <Card style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
+          <View style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" color={theme.colors.accent} /></View>
+          <View style={{ flex: 1, minWidth: 100, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("refresh.profiles")} ({babies.length})</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{baby?.name ?? t("profile.addBaby")}</Text></View>
+          <Button label={t("common.edit")} onPress={() => router.push("/profile")} style={{ minHeight: 44, paddingHorizontal: 16 }} />
+        </Card>
+        <Section title={t("settings.language")}>
           <OptionRow>
-            {THEME_OPTIONS.map((opt) => (
+            {LANGUAGE_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 16 }}
-                label={t(opt.labelKey)}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                testID={`settings-language-option-${opt.value}`}
+                label={opt.value === "system" ? t(opt.label) : opt.label}
                 tone="accent"
-                variant={themePreference === opt.value ? "solid" : "outline"}
-                active={themePreference === opt.value}
-                icon={themePreference === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
-                onPress={() => setThemePreference(opt.value)}
+                variant={language === opt.value ? "soft" : "outline"}
+                active={language === opt.value}
+                icon={language === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
+                onPress={() => setLanguage(opt.value)}
               />
             ))}
           </OptionRow>
@@ -95,31 +104,30 @@ export default function SettingsScreen() {
             {UNIT_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 16 }}
-                label={t(opt.labelKey)}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                label={opt.value}
                 tone="accent"
-                variant={unit === opt.value ? "solid" : "outline"}
+                variant={unit === opt.value ? "soft" : "ghost"}
                 active={unit === opt.value}
-                icon={unit === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
+                icon={unit === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
                 onPress={() => setUnit(opt.value)}
               />
             ))}
           </OptionRow>
         </Section>
 
-        <Section title={t("settings.language")}>
+        <Section title={t("settings.appearance")}>
           <OptionRow>
-            {LANGUAGE_OPTIONS.map((opt) => (
+            {THEME_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 16 }}
-                testID={`settings-language-option-${opt.value}`}
-                label={opt.value === "system" ? t(opt.label) : opt.label}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                label={t(opt.labelKey)}
                 tone="accent"
-                variant={language === opt.value ? "solid" : "outline"}
-                active={language === opt.value}
-                icon={language === opt.value ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined}
-                onPress={() => setLanguage(opt.value)}
+                variant={themePreference === opt.value ? "soft" : "outline"}
+                active={themePreference === opt.value}
+                icon={themePreference === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
+                onPress={() => setThemePreference(opt.value)}
               />
             ))}
           </OptionRow>

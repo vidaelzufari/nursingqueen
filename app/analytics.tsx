@@ -1,10 +1,12 @@
 import { AgeContext } from "@/components/AgeContext";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { AppShell } from "@/navigation/AppShell";
 import { WeeklySummary } from "@/components/WeeklySummary";
 import { Forecasts } from "@/components/Forecasts";
+import { Icon } from "@/components/Icon";
+import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useLogStore, computeStatusStrip } from "@/store/useLogStore";
@@ -15,9 +17,11 @@ export default function AnalyticsScreen() {
   const { nursingSessions, pumpEvents, bottleEvents } = useLogStore(); const unit = useSettingsStore(s => s.unit);
   const status = computeStatusStrip(nursingSessions, pumpEvents, bottleEvents, now);
   useEffect(() => { const timer = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(timer); }, []);
-  return <AppShell><ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 32 }}><Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("analytics.title")}</Text><Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t("analytics.subtitle")}</Text><WeeklySummary now={now} />
-    <Card><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.pumpTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.pumping }]}>{formatVolume(status.todayPumpMl, unit)}</Text></Card>
-    <Card><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.bottleTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.bottle }]}>{formatVolume(status.todayBottleMl, unit)}</Text></Card>
+  return <AppShell><ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 32 }}><PageHeader title={t("analytics.title")} subtitle={t("analytics.subtitle")} />
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+    <Card style={{ flexBasis: "44%", flexGrow: 1, padding: 16, gap: 8 }}><Icon name="pump" color={theme.colors.pumping} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.pumpTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.pumping }]}>{formatVolume(status.todayPumpMl, unit)}</Text></Card>
+    <Card style={{ flexBasis: "44%", flexGrow: 1, padding: 16, gap: 8 }}><Icon name="bottle" color={theme.colors.bottle} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.bottleTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.bottle }]}>{formatVolume(status.todayBottleMl, unit)}</Text></Card>
+    </View><WeeklySummary now={now} />
     <Forecasts now={now} /><AgeContext now={now} />
   </ScrollView></AppShell>;
 }

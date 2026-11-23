@@ -367,5 +367,30 @@
     "personal": "L’heure de la prochaine session est estimée à partir de vos données. Les repères d’âge sont généraux et ne fixent pas l’heure exacte d’une sieste ou d’une tétée.",
     "sleepSource": "Sommeil · AASM",
     "feedSource": "Alimentation · CDC"
+  },
+  "refresh": {
+    "start": "Démarrer",
+    "add": "Ajouter",
+    "nursingHint": "Minuteur G / D",
+    "pumpHint": "Quantité à compléter",
+    "bottleHint": "Maternel ou formule",
+    "sleepHint": "Sieste ou nuit",
+    "manageProfile": "Gérer le profil",
+    "actions": "Actions principales",
+    "learning": "À la découverte de votre rythme",
+    "learningBody": "Quelques sessions de plus nous aideront à repérer les habitudes de votre bébé.",
+    "addSession": "Ajouter une session",
+    "all": "Tout",
+    "search": "Rechercher une activité ou une note",
+    "emptySearch": "Aucune activité trouvée",
+    "emptySearchHint": "Essayez un autre filtre ou ajoutez une session.",
+    "historySubtitle": "Touchez une entrée pour la corriger ou la compléter.",
+    "settingsSubtitle": "Préférences, rappels et données locales",
+    "noData": "Pas encore de session",
+    "profiles": "Profils bébé",
+    "feed": "Allaitement",
+    "pump": "Tirage",
+    "bottle": "Biberon",
+    "sleep": "Sommeil"
   }
 }

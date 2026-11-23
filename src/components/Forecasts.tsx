@@ -9,7 +9,7 @@ import { forecastNext, forecastSleep, countdown } from "@/domain/forecast";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Card } from "./Card";
 import { Icon, IconName } from "./Icon";
-export function Forecasts({ now, compact = false }: { now: Date; compact?: boolean }) {
+export function Forecasts({ now, compact = false, onAddSession }: { now: Date; compact?: boolean; onAddSession?: () => void }) {
   const theme = useTheme(); const { t } = useTranslation(); const router = useRouter();
   const { nursingSessions, bottleEvents, pumpEvents } = useLogStore();
   const sessions = useSleepStore(s => s.sessions);
@@ -24,16 +24,16 @@ export function Forecasts({ now, compact = false }: { now: Date; compact?: boole
   const displayed = compact ? next ? [next] : active ? [active] : [] : rows;
   return <View style={{ gap: 12, marginBottom: 24 }}><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("forecast.title")}</Text>
     {displayed.map(row => <Pressable key={row.key} accessibilityRole="button" accessibilityLabel={t(`forecast.${row.key}`)} onPress={() => router.push(row.key === "sleep" ? "/sleep" : "/history")}>
-      <Card style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+      <Card style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
         <View style={{ width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center", backgroundColor: row.color + "18" }}><Icon name={row.icon} color={row.color} size={22} /></View>
         <View style={{ flex: 1 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t(`forecast.${row.key}`)}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{row.active ? t("forecast.active") : row.forecast ? format(row.forecast.earliest, isSameDay(row.forecast.at, now) ? "p" : "EEE p") + "–" + format(row.forecast.latest, "p") : t("forecast.moreLogs")}</Text></View>
-        <Text style={[theme.type.bodyStrong, { color: row.color, fontVariant: ["tabular-nums"] }]}>{row.active ? "●" : row.forecast ? row.forecast.at <= now ? t("forecast.reached") : t("forecast.remaining", { time: countdown(row.forecast.at, now) }) : "—"}</Text>
+        <Text style={[theme.type.bodyStrong, { color: row.color, fontSize: 23, lineHeight: 30, fontVariant: ["tabular-nums"] }]}>{row.active ? "●" : row.forecast ? row.forecast.at <= now ? t("forecast.reached") : t("forecast.remaining", { time: countdown(row.forecast.at, now) }) : "—"}</Text>
       </Card>
     </Pressable>)}
-    {compact && !displayed.length ? <Card><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("forecast.learning")}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary, marginTop: 6 }]}>{t("forecast.moreLogs")}</Text></Card> : null}
+    {compact && !displayed.length ? <Card><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("refresh.learning")}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary, marginTop: 6 }]}>{t("refresh.learningBody")}</Text><Pressable accessibilityRole="button" onPress={() => onAddSession ? onAddSession() : router.push("/")} style={{ minHeight: 48, justifyContent: "center", marginTop: 10 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.accent }]}>{t("refresh.addSession")} →</Text></Pressable></Card> : null}
     {displayed.filter(row => row.forecast && !row.active).map(row => <Text key={row.key} style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("predictions.evidence", { count: row.forecast!.samples })} · {t(`predictions.${row.forecast!.confidence}`)}</Text>)}
     <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("forecast.note")}</Text>
-    <Pressable accessibilityRole="button" onPress={() => router.push("/history")} style={{ minHeight: 44, justifyContent: "center" }}><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("predictions.correct")}</Text></Pressable>
+    {(!compact || displayed.length > 0) ? <Pressable accessibilityRole="button" onPress={() => router.push("/history")} style={{ minHeight: 44, justifyContent: "center" }}><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("predictions.correct")}</Text></Pressable> : null}
     {compact ? <Pressable accessibilityRole="button" onPress={() => router.push("/analytics")} style={{ minHeight: 44, justifyContent: "center" }}><Text style={[theme.type.bodyStrong, { color: theme.colors.accent }]}>{t("forecast.all")} →</Text></Pressable> : null}
   </View>;
 }

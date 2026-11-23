@@ -367,5 +367,30 @@
     "personal": "Your next-session estimates come from your logs. Age guidance describes a broad reference, not an exact next nap or feed time.",
     "sleepSource": "Sleep · AASM",
     "feedSource": "Feeding · CDC"
+  },
+  "refresh": {
+    "start": "Start",
+    "add": "Add",
+    "nursingHint": "Left / right timer",
+    "pumpHint": "Log now, add amount later",
+    "bottleHint": "Breast milk or formula",
+    "sleepHint": "Nap or nighttime",
+    "manageProfile": "Manage profile",
+    "actions": "Main actions",
+    "learning": "Discovering your rhythm",
+    "learningBody": "A few more sessions will help us spot your baby’s routine.",
+    "addSession": "Add a session",
+    "all": "All",
+    "search": "Search activities or notes",
+    "emptySearch": "No matching activities",
+    "emptySearchHint": "Try a different search or filter, or add a session.",
+    "historySubtitle": "Tap an entry to correct or complete it.",
+    "settingsSubtitle": "Preferences, reminders and your local data",
+    "noData": "No sessions yet",
+    "profiles": "Baby profiles",
+    "feed": "Nursing",
+    "pump": "Pumping",
+    "bottle": "Bottle",
+    "sleep": "Sleep"
   }
 }

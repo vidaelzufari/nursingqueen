@@ -31,13 +31,13 @@ export interface ColorTokens {
 const light: ColorTokens = {
   background: "#F7F5FA",
   surface: "#FFFFFF",
-  surfaceRaised: "#F1EDF7",
-  border: "#E9E3EF",
-  textPrimary: "#30243E",
-  textSecondary: "#71667E",
-  textMuted: "#82758F",
-  accent: "#70528F",
-  sleep: "#70528F",
+  surfaceRaised: "#F8EFF8",
+  border: "#E8D4E8",
+  textPrimary: "#321A35",
+  textSecondary: "#647892",
+  textMuted: "#72829A",
+  accent: "#953D8B",
+  sleep: "#953D8B",
   accentContrast: "#FFFFFF",
   crown: "#AB87C5",
   nursing: "#B95C80",
@@ -105,10 +105,10 @@ export const spacing = {
 } as const;
 
 export const radii = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  sm: 12,
+  md: 18,
+  lg: 24,
+  xl: 28,
   pill: 999,
 } as const;
 

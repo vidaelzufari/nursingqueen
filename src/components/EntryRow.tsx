@@ -35,7 +35,7 @@ export function EntryRow({
   return (
     <Pressable testID={testID} onPress={onPress} accessibilityRole="button">
       <Card style={{ marginBottom: theme.spacing.xs }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: theme.spacing.sm }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: theme.spacing.sm }}>
           <View
             style={{
               width: 44,
@@ -46,7 +46,7 @@ export function EntryRow({
               justifyContent: "center",
             }}
           ><Icon name={kind === "nursing" ? "heart" : kind === "sleep" ? "moon" : kind} size={21} color={dotColor} /></View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flexGrow: 1, flexBasis: "55%", minWidth: 100 }}>
             <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
             <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{timeLabel}</Text>
           </View>

@@ -1,8 +1,10 @@
 import React from "react";
 import Svg, { Path, Circle, Rect } from "react-native-svg";
 
-export type IconName = "chevron" | "close" | "calendar" | "analytics" | "home" | "history" | "settings" | "heart" | "pump" | "bottle" | "plus" | "arrow" | "baby" | "clock" | "check" | "sparkles" | "moon" | "photo" | "stop";
+export type IconName = "play" | "search" | "chevron" | "close" | "calendar" | "analytics" | "home" | "history" | "settings" | "heart" | "pump" | "bottle" | "plus" | "arrow" | "baby" | "clock" | "check" | "sparkles" | "moon" | "photo" | "stop";
 const paths: Partial<Record<IconName, string>> = {
+  play: "m9 5 11 7-11 7Z",
+  search: "M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
   chevron: "m14 6-6 6 6 6",
   close: "m6 6 12 12M18 6 6 18",
   calendar: "M4 5h16v16H4zM8 3v4M16 3v4M4 10h16",

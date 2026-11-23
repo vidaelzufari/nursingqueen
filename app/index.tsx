@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { dateLocale } from "@/domain/dateLocale";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Image, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { format, isSameDay } from "date-fns";
 import { AppShell } from "@/navigation/AppShell";
 import { useTheme } from "@/theme/ThemeProvider";
-import { Card } from "@/components";
+import { Button, Card } from "@/components";
 import { Icon, IconName } from "@/components/Icon";
 import { RecentActivities } from "@/components/RecentActivities";
 import { WeeklySummary } from "@/components/WeeklySummary";
@@ -22,9 +23,11 @@ import { computeStashForecast } from "@/domain/recommendations";
 import { formatVolume } from "@/domain/units";
 
 export default function HomeScreen() {
+  const scroll = useRef<ScrollView>(null);
   const theme = useTheme();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n?.resolvedLanguage ?? i18n?.language);
   const [now, setNow] = useState(() => new Date());
 
   const activeBaby = useActiveBaby();
@@ -99,45 +102,39 @@ export default function HomeScreen() {
 
   return (
     <AppShell>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.lg, paddingBottom: theme.spacing.xl }}>
-        <View style={{ gap: 10, marginTop: 16, marginBottom: 32 }}>
-          <Text style={[theme.type.micro, { color: theme.colors.accent, letterSpacing: 1.4 }]}>{t("design.brand")}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <View style={{ flex: 1, gap: 3 }}>
-              <Text accessibilityRole="header" style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("analytics.today")}</Text>
-              {activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>
-                {activeBaby.name} · {age ? age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks }) : t("setup.editDate")}
-              </Text> : null}
+      <ScrollView ref={scroll} contentContainerStyle={{ padding: theme.spacing.lg, paddingBottom: theme.spacing.xl }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")} testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"} onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")} style={{ marginTop: 8, marginBottom: 24 }}>
+          <Card raised style={{ flexDirection: "row", alignItems: "center", gap: 14, padding: 18, borderRadius: theme.radii.xl }}>
+            {activeBaby?.photoUri ? <Image source={{ uri: activeBaby.photoUri }} style={{ width: 62, height: 62, borderRadius: 22 }} /> : <View style={{ width: 62, height: 62, borderRadius: 22, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center" }}><Icon name="baby" size={32} color={theme.colors.accent} /></View>}
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>
+              {age ? <Text style={[theme.type.caption, { color: theme.colors.accent }]}>{age.isMonthsPhase ? t("profile.age.months", { count: age.months }) : t("profile.age.weeks", { count: age.weeks })}</Text> : null}
+              <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("refresh.manageProfile")}</Text>
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")}
-              testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"}
-              onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")}
-              style={({ pressed }) => ({ width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: theme.colors.border, opacity: pressed ? 0.7 : 1 })}>
-              {activeBaby ? <Text style={[theme.type.title, { color: theme.colors.accent }]}>{activeBaby.name.charAt(0).toUpperCase()}</Text> : <Icon name="plus" color={theme.colors.accent} />}
-            </Pressable>
-          </View>
-        </View>
+            <Icon name="arrow" size={20} color={theme.colors.accent} />
+          </Card>
+        </Pressable>
 
         {!activeBaby ? <Text style={[theme.type.body, { color: theme.colors.textSecondary, marginBottom: 20 }]}>{t("setup.homeHint")}</Text> : null}
-        <Text accessibilityRole="header" style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 12 }]}>{t("design.quickLog")}</Text>
+        <Text accessibilityRole="header" style={[theme.type.subtitle, { color: theme.colors.textPrimary, marginBottom: 12 }]}>{t("refresh.actions")}</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 8 }}>
-          <RoundAction testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={openNursingSession ? t("design.finish") : t("design.nurse")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
-          <RoundAction testID="home-button-pump" icon="pump" label={t("design.pump")} color={theme.colors.pumping} onPress={handlePump} />
-          <RoundAction testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
-          <RoundAction testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t(activeSleep ? "sleep.stop" : "sleep.title")} color={theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
+          <RoundAction hint={t("refresh.nursingHint")} testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon={openNursingSession ? "stop" : "heart"} label={t("refresh.feed")} actionLabel={openNursingSession ? t("design.finish") : t("refresh.start")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onPress={openNursingSession ? handleStop : handleStart} />
+          <RoundAction hint={t("refresh.pumpHint")} actionLabel={t("refresh.add")} testID="home-button-pump" icon="pump" label={t("refresh.pump")} color={theme.colors.pumping} onPress={handlePump} />
+          <RoundAction hint={t("refresh.bottleHint")} actionLabel={t("refresh.add")} testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} />
+          <RoundAction hint={t("refresh.sleepHint")} actionLabel={t(activeSleep ? "sleep.stop" : "refresh.start")} testID="home-button-sleep" icon={activeSleep ? "stop" : "moon"} label={t("sleep.title")} color={theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} />
         </View>
         {activeSleep ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ alignSelf: "center", minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8 }}><Icon name="clock" size={16} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("sleep.adjust")}</Text></Pressable> : null}
         {!openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : { pathname: "/profile/edit", params: { intent: "earlier" } })} style={{ alignSelf: "center", flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, marginBottom: 16 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : <View style={{ height: 20 }} />}
-        <Forecasts now={now} compact />
+        <RecentActivities now={now} />
+        <Forecasts now={now} compact onAddSession={() => scroll.current?.scrollTo({ y: 0, animated: true })} />
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("design.atGlance")}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name="clock" size={14} color={theme.colors.textMuted} /><Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{format(now, "EEE, d MMM")}</Text></View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name="clock" size={14} color={theme.colors.textMuted} /><Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{format(now, "EEE, d MMM", { locale })}</Text></View>
         </View>
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}>
           <Metric onPress={() => router.push({ pathname: "/details", params: { kind: "latest" } })} icon="heart" label={t("statusStrip.lastFeed")} value={statusStrip.lastFeedAt ? formatDurationShort(minutesSince(statusStrip.lastFeedAt, now)) : t("design.noFeed")} color={theme.colors.nursing} />
           <Metric onPress={() => router.push({ pathname: "/details", params: { kind: "feeds" } })} icon="bottle" label={t("statusStrip.todayFeeds")} value={String(statusStrip.todayNursingCount + bottleEvents.filter(event => isSameDay(new Date(event.occurredAt), now)).length)} color={theme.colors.pumping} />
         </View>
-        <RecentActivities now={now} />
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}><Metric onPress={() => router.push({ pathname: "/details", params: { kind: "sleep" } })} icon="moon" label={t("sleep.today")} value={formatDurationShort(Math.floor(sleepSecondsToday(sleepSessions, now) / 60))} color={theme.colors.sleep} /></View>
         <Pressable accessibilityRole="button" accessibilityLabel={t("statusStrip.currentStash")} onPress={() => router.push({ pathname: "/details", params: { kind: "stash" } })}><Card style={{ marginBottom: 24, flexDirection: "row", alignItems: "center", gap: 14 }}>
           <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="pump" color={theme.colors.bottle} /></View>
@@ -153,17 +150,17 @@ export default function HomeScreen() {
   );
 }
 
-function RoundAction({ icon, label, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
+function RoundAction({ icon, label, hint, actionLabel, color, onPress, active = false, testID, subLabel, statusLabel }: { icon: IconName; label: string; hint: string; actionLabel: string; color: string; onPress: () => void; active?: boolean; testID: string; subLabel?: string; statusLabel?: string }) {
   const theme = useTheme();
-  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: active }} onPress={onPress} style={({ pressed }) => ({ flexBasis: "43%", flexGrow: 1, minHeight: 144, minWidth: 0, padding: 18, borderRadius: theme.radii.lg, borderWidth: 1, borderColor: active ? color : theme.colors.border, backgroundColor: active ? color + "12" : theme.colors.surface, alignItems: "flex-start", justifyContent: "space-between", opacity: pressed ? 0.7 : 1, gap: 8 })}>
-    <View style={{ width: active && subLabel ? 94 : 48, minHeight: 48, borderRadius: 16, backgroundColor: color + "14", alignItems: "center", justifyContent: "center", paddingVertical: 6, gap: 2 }}>
-      <Icon name={icon} size={active && subLabel ? 19 : 28} color={color} />
-      {active && subLabel ? <Text style={[theme.type.caption, { color, fontVariant: ["tabular-nums"] }]}>{subLabel}</Text> : null}
-    </View>
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name={active ? "clock" : "plus"} size={14} color={color} /><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary, textAlign: "center" }]}>{label}</Text></View>
-    {statusLabel ? <Text style={[theme.type.caption, { color, textAlign: "center" }]}>{statusLabel}</Text> : null}
-  </Pressable>;
+  const { width } = useWindowDimensions();
+  return <Card raised={active} style={{ flexBasis: "43%", flexGrow: 1, minWidth: 0, padding: 16, gap: 12, borderRadius: theme.radii.xl, borderColor: active ? color : theme.colors.border, minHeight: 216 }}>
+    <View style={{ width: 46, height: 46, borderRadius: 17, backgroundColor: color + "16", alignItems: "center", justifyContent: "center" }}><Icon name={icon} size={26} color={color} /></View>
+    <View style={{ flex: 1, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{label}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{active ? statusLabel ?? hint : hint}</Text></View>
+    {active && subLabel ? <Text accessibilityLiveRegion="none" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={[theme.type.subtitle, { color, fontVariant: ["tabular-nums"], fontSize: width < 360 ? 18 : 23, lineHeight: 30 }]}>{subLabel}</Text> : null}
+    <Button testID={testID} label={actionLabel} onPress={onPress} icon={width >= 360 ? <Icon name={active ? "stop" : icon === "heart" || icon === "moon" ? "play" : "plus"} size={17} color={theme.colors.accentContrast} /> : undefined} style={{ minHeight: 48, paddingHorizontal: 8, borderRadius: theme.radii.pill }} />
+  </Card>;
 }
+
 function Metric({ icon, label, value, color, onPress }: { icon: IconName; label: string; value: string; color: string; onPress: () => void }) {
   const theme = useTheme();
   return <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value}`} onPress={onPress} style={{ flex: 1 }}><Card style={{ minHeight: 106, gap: 5 }}><Icon name={icon} size={21} color={color} /><Text style={[theme.type.title, { color: theme.colors.textPrimary, fontSize: 25 }]}>{value}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{label}</Text><View style={{ position: "absolute", end: 14, top: 16 }}><Icon name="arrow" size={16} color={theme.colors.textMuted} /></View></Card></Pressable>;

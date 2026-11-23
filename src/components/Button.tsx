@@ -10,7 +10,7 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { MIN_TOUCH_TARGET } from "@/theme/tokens";
 
 export type ButtonTone = "accent" | "nursing" | "pumping" | "bottle" | "neutral" | "danger";
-export type ButtonVariant = "solid" | "outline" | "ghost";
+export type ButtonVariant = "solid" | "outline" | "ghost" | "soft";
 
 export interface ButtonProps {
   label: string;
@@ -78,7 +78,7 @@ export function Button({
   }, [disabled, haptic, onPress]);
 
   const backgroundColor =
-    variant === "solid" ? (active ? toneColor.active : toneColor.base) : "transparent";
+    variant === "solid" ? (active ? toneColor.active : toneColor.base) : variant === "soft" ? toneColor.base + "0C" : "transparent";
   const borderColor = variant === "outline" ? (tone === "neutral" ? theme.colors.border : toneColor.base) : "transparent";
   const textColor =
     variant === "solid" ? toneColor.contrast : disabled ? theme.colors.textMuted : tone === "neutral" ? theme.colors.textPrimary : toneColor.base;
@@ -96,8 +96,8 @@ export function Button({
         styles.base,
         {
           backgroundColor,
-          borderColor,
-          borderWidth: variant === "outline" ? 1 : 0,
+          borderColor: variant === "soft" ? toneColor.base : borderColor,
+          borderWidth: variant === "outline" || variant === "soft" ? 1 : 0,
           minHeight: large ? MIN_TOUCH_TARGET * 1.4 : MIN_TOUCH_TARGET,
           width: fullWidth ? "100%" : undefined,
           opacity: disabled ? 0.5 : 1,
@@ -110,13 +110,13 @@ export function Button({
     >
       <View style={styles.content}>
         {icon}
-        <View>
+        <View style={{ flexShrink: 1 }}>
           <Text
             style={[
               theme.type.bodyStrong,
               { color: textColor, textAlign: "center" },
             ]}
-            numberOfLines={1}
+            
             maxFontSizeMultiplier={1.6}
           >
             {label}
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   content: {
+    flexShrink: 1,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
