@@ -14,7 +14,7 @@ const mockPush = jest.fn();
 const mockStartNursing = jest.fn();
 const mockState = {
   nursingSessions: [] as { id: string; startedAt: string; endedAt: string | null }[], pumpEvents: [], bottleEvents: [],
-  openNursingSession: () => null,
+  openNursingSession: (): { id: string; startedAt: string; endedAt: string | null } | null => null,
   startNursing: mockStartNursing, stopNursing: jest.fn(), logPump: jest.fn(),
 };
 const mockTheme = { colors: palettes.light, spacing, radii, type: typeScale, shadows, mode: "light" };
@@ -92,4 +92,36 @@ it("recovers a saved profile before routing Bottle even if the mounted state was
   fireEvent.press(screen.getByTestId("home-button-bottle"));
   expect(mockPush).toHaveBeenCalledWith("/modals/bottle-entry");
   expect(mockPush).not.toHaveBeenCalledWith("/profile/edit");
+});
+
+
+it("shows the persistent timer only after the action row scrolls out of view", () => {
+  mockState.nursingSessions = [{ id: "active", startedAt: new Date(Date.now() - 120000).toISOString(), endedAt: null }];
+  try {
+    const screen = render(<HomeScreen />);
+    expect(screen.queryByTestId("session-dock-nursing")).toBeNull();
+    fireEvent(screen.getByTestId("home-action-grid"), "layout", { nativeEvent: { layout: { x: 0, y: 100, width: 340, height: 412 } } });
+    fireEvent.scroll(screen.getByTestId("home-scroll"), { nativeEvent: { contentOffset: { y: 350 } } });
+    expect(screen.getByTestId("session-dock-nursing")).toBeTruthy();
+    fireEvent.scroll(screen.getByTestId("home-scroll"), { nativeEvent: { contentOffset: { y: 0 } } });
+    expect(screen.queryByTestId("session-dock-nursing")).toBeNull();
+  } finally { mockState.nursingSessions = []; }
+});
+
+
+it("opens an active feed for editing without stopping it when its timer is tapped", () => {
+  const session = { id: "active", startedAt: new Date(Date.now() - 120000).toISOString(), endedAt: null };
+  mockState.nursingSessions = [session];
+  mockState.openNursingSession = () => session;
+  try {
+    const screen = render(<HomeScreen />);
+    fireEvent.press(screen.getByRole("button", { name: "refresh.feed · timers.edit" }));
+    expect(mockPush).toHaveBeenCalledWith("/entry/nursing/active");
+    expect(mockState.stopNursing).not.toHaveBeenCalled();
+    fireEvent.press(screen.getByTestId("home-button-stop-nursing"));
+    expect(mockState.stopNursing).toHaveBeenCalledTimes(1);
+  } finally {
+    mockState.nursingSessions = [];
+    mockState.openNursingSession = () => null;
+  }
 });

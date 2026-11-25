@@ -19,7 +19,10 @@
     "oz": "oz",
     "minutesShort": "{{count}}m",
     "hoursMinutesShort": "{{hours}}h {{minutes}}m",
-    "hoursShort": "{{count}}h"
+    "hoursShort": "{{count}}h",
+    "loading": "Loading…",
+    "startupError": "We couldn’t open the app",
+    "restartHint": "Please close and reopen Nursing Queen. Your saved data has not been reset."
   },
   "home": {
     "greeting": "Hello, Queen",
@@ -103,7 +106,9 @@
     "weight": "Weight",
     "addWeight": "Add a weight entry",
     "weightEmpty": "No weight entries yet.",
-    "privacyNote": "This profile stays on this device only."
+    "privacyNote": "This profile stays on this device only.",
+    "weightGrams": "Weight (g)",
+    "editTitle": "Edit profile"
   },
   "settings": {
     "title": "Settings",
@@ -260,7 +265,9 @@
     "sleep": "Sleep",
     "chart": "Seven-day activity chart",
     "hours": "hours",
-    "logged": "Logged activity"
+    "logged": "Logged activity",
+    "emptyTitle": "Your patterns will appear here",
+    "emptyBody": "Log an activity to start building this week’s summary."
   },
   "analytics": {
     "title": "Analytics",
@@ -372,11 +379,11 @@
     "start": "Start",
     "add": "Add",
     "nursingHint": "Left / right timer",
-    "pumpHint": "Log now, add amount later",
+    "pumpHint": "Quick entry",
     "bottleHint": "Breast milk or formula",
     "sleepHint": "Nap or nighttime",
     "manageProfile": "Manage profile",
-    "actions": "Main actions",
+    "actions": "Log a moment",
     "learning": "Discovering your rhythm",
     "learningBody": "A few more sessions will help us spot your baby’s routine.",
     "addSession": "Add a session",

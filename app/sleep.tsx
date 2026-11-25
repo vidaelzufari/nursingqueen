@@ -1,7 +1,12 @@
+import { useDurationFormatter } from "@/i18n/useDurationFormatter";
+import { EmptyState } from "@/components/EmptyState";
+import { EntryRow } from "@/components/EntryRow";
+import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import React, { useEffect, useRef, useState } from "react";
-import Svg, { Circle, Line } from "react-native-svg";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import type { ScrollView } from "react-native";
+import Svg, { Circle } from "react-native-svg";
+import { Text, View, useWindowDimensions } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { format, parse } from "date-fns";
 import { useTranslation } from "react-i18next";
@@ -10,13 +15,14 @@ import { dateLocale } from "@/domain/dateLocale";
 import { ScreenBack } from "@/components/ScreenBack";
 import { Button, Card } from "@/components";
 import { DateTimeField } from "@/components/DateTimeField";
+import { ActivityArtwork } from "@/components/ActivityArtwork";
 import { Icon } from "@/components/Icon";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useSleepStore } from "@/store/useSleepStore";
 import { validSleepRange } from "@/domain/sleep";
-import { formatDurationShort } from "@/domain/dateMath";
 const DATE_FORMAT = "yyyy-MM-dd HH:mm";
 export default function SleepScreen() {
+  const formatDurationShort = useDurationFormatter();
   const theme = useTheme(); const { t, i18n } = useTranslation(); const router = useRouter();
   const locale = dateLocale(i18n.resolvedLanguage ?? i18n.language);
   const { width } = useWindowDimensions();
@@ -49,27 +55,26 @@ export default function SleepScreen() {
   };
   const elapsed = active ? Math.floor(Math.max(0, now.getTime() - new Date(active.startedAt).getTime()) / 1000) : 0;
   const timerText = [Math.floor(elapsed / 3600), Math.floor(elapsed % 3600 / 60), elapsed % 60].map(n => String(n).padStart(2, "0")).join(":");
-  return <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.background }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView ref={scroll} contentContainerStyle={{ padding: 24, gap: 18, maxWidth: 580, width: "100%", alignSelf: "center", paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+  return <Screen ref={scroll}>
     <ScreenBack />
-    <Icon name="moon" size={36} color={theme.colors.sleep} />
-    <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("sleep.title")}</Text>
+    <Text style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("sleep.title")}</Text>
     {!manual ? <>
       <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t("sleepAI.intro")}</Text>
       <Card style={{ alignItems: "center", gap: 20, paddingVertical: 28 }}>
-        <View style={{ width: dialSize, height: dialSize, borderRadius: dialSize / 2, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", gap: 12 }}>
+        <View style={{ width: dialSize, height: dialSize, borderRadius: dialSize / 2, backgroundColor: "transparent", alignItems: "center", justifyContent: "center", gap: 10 }}>
           <Svg pointerEvents="none" width={dialSize} height={dialSize} viewBox="0 0 250 250" style={{ position: "absolute" }}>
-            <Circle cx={125} cy={125} r={119} stroke={theme.colors.border} strokeWidth={2} fill="none" />
-            {Array.from({ length: 60 }, (_, i) => { const angle = i * Math.PI / 30; const inner = i % 5 === 0 ? 105 : 111; return <Line key={i} x1={125 + Math.sin(angle) * inner} y1={125 - Math.cos(angle) * inner} x2={125 + Math.sin(angle) * 115} y2={125 - Math.cos(angle) * 115} stroke={active && i % 5 === 0 ? theme.colors.sleep : theme.colors.border} strokeWidth={i % 5 === 0 ? 2 : 1} strokeLinecap="round" />; })}
+            <Circle cx={125} cy={125} r={116} stroke={theme.colors.sleep + "12"} strokeWidth={8} fill="none" />
+            <Circle cx={125} cy={125} r={102} stroke={theme.colors.sleep + "10"} strokeWidth={1} fill="none" />
           </Svg>
-          <Icon name="moon" size={36} color={theme.colors.sleep} />
+          <ActivityArtwork kind="moon" size={48} color={theme.colors.sleep} />
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t(active ? "sleep.sleeping" : "sleep.ready")}</Text>
-          <Text style={[theme.type.display, { fontSize: dialSize < 230 ? 26 : 32, color: theme.colors.textPrimary, fontVariant: ["tabular-nums"] }]}>{timerText}</Text>
+          <Text style={[theme.type.display, { fontSize: dialSize < 230 ? 28 : 36, color: theme.colors.textPrimary, fontVariant: ["tabular-nums"] }]}>{timerText}</Text>
         </View>
         {active ? <>
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("sleep.startedAt", { time: format(new Date(active.startedAt), "PPp", { locale }) })}</Text>
           <View style={{ flexDirection: "row", gap: 16 }}>
-            <Button label="−1 min" tone="neutral" variant="outline" onPress={() => shiftStart(-60)} style={{ width: 92, paddingHorizontal: 0 }} />
-            <Button label="+1 min" tone="neutral" variant="outline" disabled={new Date(active.startedAt).getTime() + 60000 >= now.getTime()} onPress={() => shiftStart(60)} style={{ width: 92, paddingHorizontal: 0 }} />
+            <Button label={`−${t("common.minutesShort", { count: 1 })}`} tone="neutral" variant="outline" onPress={() => shiftStart(-60)} style={{ width: 92, paddingHorizontal: 0 }} />
+            <Button label={`+${t("common.minutesShort", { count: 1 })}`} tone="neutral" variant="outline" disabled={new Date(active.startedAt).getTime() + 60000 >= now.getTime()} onPress={() => shiftStart(60)} style={{ width: 92, paddingHorizontal: 0 }} />
           </View>
           {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
         </> : null}
@@ -83,8 +88,8 @@ export default function SleepScreen() {
       <DateTimeField label={t("sleep.to")} value={to} onChange={setTo} />
       {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
       <Button label={t("common.save")} disabled={!valid} onPress={() => { if (!babyId) { router.push("/profile/edit"); return; } try { save(startDate, endDate, existing?.id); goBackOrHome(router); } catch { setError(true); } }} />
-      {existing ? <Button label={t(confirmDelete ? "sleep.confirmDelete" : "common.delete")} tone="danger" variant="outline" onPress={() => { if (!confirmDelete) setConfirmDelete(true); else { remove(existing.id); goBackOrHome(router); } }} /> : <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => setManual(false)} />}
+      {existing ? <Button label={t(confirmDelete ? "sleep.confirmDelete" : "common.delete")} tone="danger" variant="ghost" onPress={() => { if (!confirmDelete) setConfirmDelete(true); else { remove(existing.id); goBackOrHome(router); } }} /> : <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => setManual(false)} />}
     </Card>}
-    {!manual ? <><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("sleep.recent")}</Text>{sessions.length === 0 ? <Text style={{ color: theme.colors.textSecondary }}>{t("sleep.empty")}</Text> : sessions.slice(0, 20).map(session => <Button key={session.id} tone="neutral" variant="outline" label={format(new Date(session.startedAt), "PPp", { locale })} subLabel={session.endedAt ? formatDurationShort(Math.round((new Date(session.endedAt).getTime() - new Date(session.startedAt).getTime()) / 60000)) : t("sleep.sleeping")} onPress={() => router.push({ pathname: "/sleep", params: { id: session.id } })} />)}</> : null}
-  </ScrollView></KeyboardAvoidingView>;
+    {!manual ? <><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("sleep.recent")}</Text>{sessions.length === 0 ? <EmptyState icon="moon" title={t("sleep.empty")} /> : sessions.slice(0, 20).map(session => <EntryRow key={session.id} kind="sleep" title={t("sleep.title")} timeLabel={format(new Date(session.startedAt), "PPp", { locale })} detailLabel={session.endedAt ? formatDurationShort(Math.round((new Date(session.endedAt).getTime() - new Date(session.startedAt).getTime()) / 60000)) : t("sleep.sleeping")} onPress={() => router.push({ pathname: "/sleep", params: { id: session.id } })} />)}</> : null}
+  </Screen>;
 }

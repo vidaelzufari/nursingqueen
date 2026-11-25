@@ -29,7 +29,7 @@ export function StatChip({ label, value, icon, tone = "neutral" }: StatChipProps
         {value}
       </Text>
       <Text
-        style={[theme.type.micro, { color: theme.colors.textMuted, textTransform: "uppercase" }]}
+        style={[theme.type.micro, { color: theme.colors.textMuted }]}
         maxFontSizeMultiplier={1.6}
       >
         {label}

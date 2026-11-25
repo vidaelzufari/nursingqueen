@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
+import { EmptyState } from "@/components/EmptyState";
+import { BrandMark } from "@/components/BrandMark";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -22,6 +24,7 @@ initSentry();
 initI18n();
 
 function Bootstrap({ children }: { children: React.ReactNode }) {
+  const theme = useTheme(); const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [startupError, setStartupError] = useState<string | null>(null);
   const language = useSettingsStore((s) => s.language);
@@ -64,8 +67,8 @@ function Bootstrap({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, babies, activeBabyId]);
 
-  if (startupError) return <Text accessibilityRole="alert">{startupError}</Text>;
-  if (!ready) return null;
+  if (startupError) return <View accessibilityRole="alert" style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: "center", padding: 24 }}><EmptyState icon="close" title={t("common.startupError")} message={t("common.restartHint")} /></View>;
+  if (!ready) return <View style={{ flex: 1, backgroundColor: theme.colors.background, alignItems: "center", justifyContent: "center", gap: 20 }}><BrandMark size={56} /><ActivityIndicator color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("common.loading")}</Text></View>;
   return <>{children}</>;
 }
 

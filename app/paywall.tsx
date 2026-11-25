@@ -1,4 +1,5 @@
 import { goBackOrHome } from "@/navigation/back";
+import { Screen } from "@/components/Screen";
 import { ScreenBack } from "@/components/ScreenBack";
 import React from "react";
 import { Text, View } from "react-native";
@@ -16,15 +17,15 @@ export default function PaywallScreen() {
   const restore = useEntitlementStore((s) => s.restore);
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.lg, justifyContent: "flex-start", gap: theme.spacing.md, alignItems: "center" }}>
+    <Screen>
       <ScreenBack />
-      <CrownMark size={48} />
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary, textAlign: "center" }]}>{t("paywall.title")}</Text>
+      <View style={{ alignSelf: "center", padding: 24, borderRadius: 32, backgroundColor: theme.colors.surfaceRaised }}><CrownMark size={80} /></View>
+      <Text style={[theme.type.display, { color: theme.colors.textPrimary, textAlign: "center" }]}>{t("paywall.title")}</Text>
       <Text style={[theme.type.body, { color: theme.colors.textSecondary, textAlign: "center" }]}>{t("paywall.subtitle")}</Text>
       <Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{t("paywall.priceNote")}</Text>
       <Button label={t("paywall.purchase")} tone="accent" fullWidth onPress={() => purchase().then(() => goBackOrHome(router))} />
       <Button label={t("paywall.restore")} tone="neutral" variant="outline" fullWidth onPress={() => void restore()} />
       <Button label={t("paywall.notNow")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
-    </View>
+    </Screen>
   );
 }

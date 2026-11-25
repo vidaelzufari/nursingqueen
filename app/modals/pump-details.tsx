@@ -1,7 +1,9 @@
+import { Field } from "@/components/Field";
+import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
+import { Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -39,15 +41,15 @@ export default function PumpDetailsModal() {
       goBackOrHome(router);
     } catch (error) { committed.current = false; throw error; }
   };
-  return <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, paddingTop: 36, paddingBottom: 40, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center" }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+  return <Screen>
       <ScreenBack dismiss />
     <EntryHeading title={t("quick.pumpTitle")} icon="pump" color={theme.colors.pumping} at={event?.startedAt} />
     <Text style={[theme.type.caption, { color: theme.colors.textSecondary, textAlign: "center" }]}>{t(event ? "quick.pumpSaved" : "quick.tapToSave")}</Text>
     {!split ? <QuickAmount unit={unit} color={theme.colors.pumping} lastMl={last?.totalMl} onSave={save} disabled={!event} /> : <View style={{ gap: 14 }}>
-      <View style={{ flexDirection: "row", gap: 12 }}>{(["left", "right"] as const).map(side => <View key={side} style={{ flex: 1, gap: 8 }}><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t(side === "left" ? "pumpDetail.leftMl" : "pumpDetail.rightMl", { unit })}</Text><TextInput accessibilityLabel={t(side === "left" ? "pumpDetail.leftMl" : "pumpDetail.rightMl", { unit })} testID={`pump-detail-${side}-input`} value={side === "left" ? left : right} onChangeText={side === "left" ? setLeft : setRight} keyboardType="decimal-pad" placeholder="0" placeholderTextColor={theme.colors.textMuted} style={{ minHeight: 64, borderRadius: 24, padding: 16, fontSize: 26, color: theme.colors.textPrimary, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border }} /></View>)}</View>
+      <View style={{ flexDirection: "row", gap: 12 }}>{(["left", "right"] as const).map(side => <View key={side} style={{ flex: 1 }}><Field label={t(side === "left" ? "pumpDetail.leftMl" : "pumpDetail.rightMl", { unit })} amount testID={`pump-detail-${side}-input`} value={side === "left" ? left : right} onChangeText={side === "left" ? setLeft : setRight} keyboardType="decimal-pad" placeholder="0" /></View>)}</View>
       <Button testID="pump-detail-save" disabled={!validSplit || !event} label={t("pumpDetail.save")} tone="pumping" onPress={() => save()} />
     </View>}
     <Button label={t(split ? "quick.totalOnly" : "quick.bySide")} tone="neutral" variant="ghost" onPress={() => setSplit(!split)} />
     <Button testID="pump-detail-dismiss" label={t("quick.doneLater")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
-  </ScrollView></KeyboardAvoidingView>;
+  </Screen>;
 }

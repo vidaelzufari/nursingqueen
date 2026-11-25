@@ -7,7 +7,7 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "@/theme/ThemeProvider";
-import { MIN_TOUCH_TARGET } from "@/theme/tokens";
+import { componentMetrics, MIN_TOUCH_TARGET } from "@/theme/tokens";
 
 export type ButtonTone = "accent" | "nursing" | "pumping" | "bottle" | "neutral" | "danger";
 export type ButtonVariant = "solid" | "outline" | "ghost" | "soft";
@@ -22,6 +22,7 @@ export interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   large?: boolean;
+  compact?: boolean;
   haptic?: "light" | "medium" | "success" | "none";
   onPress: () => void;
   style?: ViewStyle;
@@ -45,6 +46,7 @@ export function Button({
   disabled = false,
   fullWidth = false,
   large = false,
+  compact = false,
   haptic = "light",
   onPress,
   style,
@@ -78,7 +80,7 @@ export function Button({
   }, [disabled, haptic, onPress]);
 
   const backgroundColor =
-    variant === "solid" ? (active ? toneColor.active : toneColor.base) : variant === "soft" ? toneColor.base + "0C" : "transparent";
+    variant === "solid" ? (active ? toneColor.active : toneColor.base) : variant === "soft" ? toneColor.base + "12" : "transparent";
   const borderColor = variant === "outline" ? (tone === "neutral" ? theme.colors.border : toneColor.base) : "transparent";
   const textColor =
     variant === "solid" ? toneColor.contrast : disabled ? theme.colors.textMuted : tone === "neutral" ? theme.colors.textPrimary : toneColor.base;
@@ -96,28 +98,28 @@ export function Button({
         styles.base,
         {
           backgroundColor,
-          borderColor: variant === "soft" ? toneColor.base : borderColor,
-          borderWidth: variant === "outline" || variant === "soft" ? 1 : 0,
-          minHeight: large ? MIN_TOUCH_TARGET * 1.4 : MIN_TOUCH_TARGET,
+          borderColor: variant === "soft" ? "transparent" : borderColor,
+          borderWidth: variant === "outline" ? 1 : 0,
+          minHeight: large ? componentMetrics.button.largeHeight : compact ? 44 : MIN_TOUCH_TARGET,
           width: fullWidth ? "100%" : undefined,
           opacity: disabled ? 0.5 : 1,
-          borderRadius: theme.radii.md,
-          paddingHorizontal: theme.spacing.lg,
+          borderRadius: variant === "solid" ? componentMetrics.button.radius : theme.radii.md,
+          paddingHorizontal: componentMetrics.button.horizontalPadding,
+          paddingVertical: 12,
         },
         animatedStyle,
         style,
       ]}
     >
       <View style={styles.content}>
-        {icon}
+        {icon ? <View style={styles.icon}>{icon}</View> : null}
         <View style={{ flexShrink: 1 }}>
           <Text
             style={[
-              theme.type.bodyStrong,
+              compact ? theme.type.caption : theme.type.bodyStrong,
               { color: textColor, textAlign: "center" },
             ]}
             
-            maxFontSizeMultiplier={1.6}
           >
             {label}
           </Text>
@@ -127,8 +129,7 @@ export function Button({
                 theme.type.caption,
                 { color: textColor, opacity: 0.85, textAlign: "center" },
               ]}
-              maxFontSizeMultiplier={1.6}
-            >
+              >
               {subLabel}
             </Text>
           ) : null}
@@ -160,6 +161,7 @@ function toneToColor(
 }
 
 const styles = StyleSheet.create({
+  icon: { width: 22, height: 22, alignItems: "center", justifyContent: "center" },
   base: {
     alignItems: "center",
     justifyContent: "center",

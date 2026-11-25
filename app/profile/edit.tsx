@@ -1,7 +1,9 @@
+import { Field } from "@/components/Field";
+import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
@@ -75,60 +77,33 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: theme.colors.background }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 20, gap: 20, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }}>
+    <Screen>
       <ScreenBack />
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("design.babySetup")}</Text>
+      <Text style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t(existing ? "profile.editTitle" : "design.babySetup")}</Text>
       {!existing ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t(loggingIntent ? "setup.reason" : "setup.intro")}</Text> : null}
-      {!loggingIntent ? <Card style={{ alignItems: "center", gap: theme.spacing.sm }}>
-        {photoUri ? (
-          <Image source={{ uri: photoUri }} style={{ width: 96, height: 96, borderRadius: 48 }} />
-        ) : (
-          <View style={{ width: 96, height: 96, borderRadius: 48, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}>
-            <Icon name="baby" size={40} color={theme.colors.accent} />
-          </View>
-        )}
-        <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.photoHint")}</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: theme.spacing.xs }}>
-          <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.choosePhoto")} tone="neutral" variant="outline" onPress={handlePickPhoto} />
-          <Button icon={<Icon name="photo" size={18} color={theme.colors.textPrimary} />} label={t("profile.takePhoto")} tone="neutral" variant="outline" onPress={handleTakePhoto} />
+      {!loggingIntent ? <Card style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 16 }}>
+        {photoUri ? <Image source={{ uri: photoUri }} style={{ width: 72, height: 72, borderRadius: 36 }} /> : <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" size={32} color={theme.colors.accent} /></View>}
+        <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+          <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.photoHint")}</Text>
+          <Button compact icon={<Icon name="photo" size={16} color={theme.colors.accent} />} label={t("profile.choosePhoto")} variant="ghost" onPress={handlePickPhoto} style={{ paddingHorizontal: 4 }} />
+          <Button compact label={t("profile.takePhoto")} tone="neutral" variant="ghost" onPress={handleTakePhoto} style={{ paddingHorizontal: 4 }} />
         </View>
       </Card> : null}
 
       <Card style={{ gap: theme.spacing.sm }}>
-        <View style={{ gap: theme.spacing.xs }}>
-          <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("profile.name")}</Text>
-          <TextInput accessibilityLabel={t("profile.name")} value={name} onChangeText={setName} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()} placeholderTextColor={theme.colors.textMuted} style={inputStyle(theme)} />
-        </View>
+        <Field label={t("profile.name")} value={name} onChangeText={setName} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()} />
         <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
-        <Button label={t(loggingIntent ? `setup.save_${loggingIntent}` : "design.saveBaby")} disabled={!name.trim() || !validBirthDate(dateOfBirth)} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
+        <Button label={t(loggingIntent ? `setup.save_${loggingIntent}` : existing ? "common.save" : "design.saveBaby")} disabled={!name.trim() || !validBirthDate(dateOfBirth)} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
       </Card>
 
       {existing ? (
         <Card style={{ gap: theme.spacing.xs }}>
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("profile.addWeight")}</Text>
-          <TextInput
-            value={weightText}
-            onChangeText={setWeightText}
-            keyboardType="number-pad"
-            placeholder="grams"
-            placeholderTextColor={theme.colors.textMuted}
-            style={inputStyle(theme)}
-          />
-          <Button label={t("common.add")} tone="accent" variant="outline" onPress={handleAddWeight} />
+          <Field label={t("profile.weightGrams")} value={weightText} onChangeText={setWeightText} keyboardType="number-pad" placeholder="0" amount />
+          <Button label={t("common.add")} tone="accent" variant="soft" onPress={handleAddWeight} />
         </Card>
       ) : null}
-    </ScrollView></KeyboardAvoidingView>
+    </Screen>
   );
 }
 
-function inputStyle(theme: ReturnType<typeof useTheme>) {
-  return {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radii.md,
-    padding: theme.spacing.md,
-    minHeight: 54,
-    backgroundColor: theme.colors.surfaceRaised,
-    color: theme.colors.textPrimary,
-  } as const;
-}

@@ -1,5 +1,9 @@
+import { useDurationFormatter } from "@/i18n/useDurationFormatter";
+import { dateLocale } from "@/domain/dateLocale";
+import { EmptyState } from "@/components/EmptyState";
+import { Screen } from "@/components/Screen";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { format, isSameDay, startOfDay } from "date-fns";
 import { useTranslation } from "react-i18next";
@@ -11,11 +15,12 @@ import { useSleepStore } from "@/store/useSleepStore";
 import { useStashStore } from "@/store/useStashStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatVolume } from "@/domain/units";
-import { formatDurationShort } from "@/domain/dateMath";
 import { sleepSecondsToday } from "@/domain/sleep";
 export default function DetailsScreen() {
+  const formatDurationShort = useDurationFormatter();
   const { kind = "feeds" } = useLocalSearchParams<{ kind?: string }>();
-  const theme = useTheme(); const router = useRouter(); const { t } = useTranslation();
+  const theme = useTheme(); const router = useRouter(); const { t, i18n } = useTranslation();
+  const locale = dateLocale(i18n?.resolvedLanguage ?? i18n?.language);
   const { nursingSessions, bottleEvents } = useLogStore();
   const sessions = useSleepStore(s => s.sessions); const items = useStashStore(s => s.items);
   const unit = useSettingsStore(s => s.unit);
@@ -29,22 +34,22 @@ export default function DetailsScreen() {
   const todaySleep = sessions.filter(s => new Date(s.startedAt) <= now && (!s.endedAt || new Date(s.endedAt) > startOfDay(now)));
   const available = items.filter(s => s.status === "available" || s.status === "thawed");
   const title = t(kind === "sleep" ? "sleep.today" : kind === "stash" ? "statusStrip.currentStash" : kind === "latest" ? "statusStrip.lastFeed" : "statusStrip.todayFeeds");
-  return <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, gap: 16, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }}>
-    <ScreenBack /><Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{title}</Text>
+  return <Screen>
+    <ScreenBack /><Text style={[theme.type.display, { color: theme.colors.textPrimary }]}>{title}</Text>
     <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("details.editHint")}</Text>
     {kind === "sleep" ? <>
       <Card><Text style={[theme.type.display, { color: theme.colors.accent }]}>{formatDurationShort(Math.floor(sleepSecondsToday(sessions, now) / 60))}</Text><Text style={{ color: theme.colors.textSecondary }}>{t("sleep.today")}</Text></Card>
-      {todaySleep.map(s => <EntryRow key={s.id} kind="sleep" title={t("sleep.title")} timeLabel={`${format(new Date(s.startedAt), "PPp")} — ${s.endedAt ? format(new Date(s.endedAt), "PPp") : t("sleep.sleeping")}`} detailLabel={s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : undefined} onPress={() => router.push({ pathname: "/sleep", params: { id: s.id } })} />)}
-      {!todaySleep.length ? <Text style={{ color: theme.colors.textSecondary }}>{t("sleep.empty")}</Text> : null}<Button label={t("sleep.title")} onPress={() => router.push("/sleep")} />
+      {todaySleep.map(s => <EntryRow key={s.id} kind="sleep" title={t("sleep.title")} timeLabel={`${format(new Date(s.startedAt), "PPp", { locale })} — ${s.endedAt ? format(new Date(s.endedAt), "PPp", { locale }) : t("sleep.sleeping")}`} detailLabel={s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : undefined} onPress={() => router.push({ pathname: "/sleep", params: { id: s.id } })} />)}
+      {!todaySleep.length ? <EmptyState icon="moon" title={t("sleep.empty")} /> : null}<Button label={t("sleep.title")} onPress={() => router.push("/sleep")} />
     </> : kind === "stash" ? <>
       <Card><Text style={[theme.type.display, { color: theme.colors.accent }]}>{formatVolume(available.reduce((sum, s) => sum + s.ml, 0), unit)}</Text></Card>
-      {available.map(s => <Card key={s.id}><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{formatVolume(s.ml, unit)}</Text><Text style={{ color: theme.colors.textSecondary }}>{format(new Date(s.pumpedAt), "PPp")} · {t(`stash.location.${s.location}`, { defaultValue: s.location })}</Text></Card>)}
-      {!available.length ? <Text style={{ color: theme.colors.textSecondary }}>{t("details.noStash")}</Text> : null}
+      {available.map(s => <Card key={s.id}><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{formatVolume(s.ml, unit)}</Text><Text style={{ color: theme.colors.textSecondary }}>{format(new Date(s.pumpedAt), "PPp", { locale })} · {t(`stash.location.${s.location}`, { defaultValue: s.location })}</Text></Card>)}
+      {!available.length ? <EmptyState icon="pump" title={t("details.noStash")} /> : null}
     </> : <>
-      {rows.map(s => <EntryRow key={s.id} kind={s.kind} title={s.title} timeLabel={format(s.at, "PPp")} detailLabel={s.detail} onPress={() => router.push(`/entry/${s.kind}/${s.id}`)} />)}
-      {!rows.length ? <Text style={{ color: theme.colors.textSecondary }}>{t("details.noFeeds")}</Text> : null}
+      {rows.map(s => <EntryRow key={s.id} kind={s.kind} title={s.title} timeLabel={format(s.at, "PPp", { locale })} detailLabel={s.detail} onPress={() => router.push(`/entry/${s.kind}/${s.id}`)} />)}
+      {!rows.length ? <EmptyState icon="heart" title={t("details.noFeeds")} actionLabel={t("refresh.actions")} onAction={() => router.push("/")} /> : null}
       <Button label={t("history.title")} tone="neutral" variant="outline" onPress={() => router.push("/history")} />
     </>}
     <View style={{ height: 12 }} />
-  </ScrollView>;
+  </Screen>;
 }

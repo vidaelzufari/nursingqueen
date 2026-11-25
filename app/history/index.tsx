@@ -1,3 +1,5 @@
+import { useDurationFormatter } from "@/i18n/useDurationFormatter";
+import { EmptyState } from "@/components/EmptyState";
 import { dateLocale } from "@/domain/dateLocale";
 import React, { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from "react-native";
@@ -13,7 +15,6 @@ import { useSleepStore } from "@/store/useSleepStore";
 import { useLogStore } from "@/store/useLogStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatVolume } from "@/domain/units";
-import { formatDurationShort } from "@/domain/dateMath";
 
 interface HistoryRow {
   id: string;
@@ -26,6 +27,7 @@ interface HistoryRow {
 }
 
 export default function HistoryScreen() {
+  const formatDurationShort = useDurationFormatter();
   const theme = useTheme();
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -66,31 +68,26 @@ export default function HistoryScreen() {
     }));
     const sleepRows: HistoryRow[] = sleepSessions.map(s => ({ id: s.id, kind: "sleep", at: new Date(s.startedAt), title: t("sleep.title"), detailLabel: s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : t("sleep.sleeping"), needsDetail: false }));
     return [...nursingRows, ...pumpRows, ...bottleRows, ...sleepRows].sort((a, b) => b.at.getTime() - a.at.getTime());
-  }, [nursingSessions, pumpEvents, bottleEvents, sleepSessions, unit, t]);
+  }, [nursingSessions, pumpEvents, bottleEvents, sleepSessions, unit, t, formatDurationShort]);
 
   const filtered = rows.filter(row => (filter === "all" || row.kind === filter) && `${row.title} ${row.note ?? ""}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   return (
     <AppShell>
       <View style={{ padding: theme.spacing.lg, paddingBottom: 8, paddingTop: 24, gap: 14 }}>
-        <PageHeader title={t("history.title")} subtitle={t("refresh.historySubtitle")} action={<Button label={t("refresh.add")} icon={<Icon name="plus" color={theme.colors.accentContrast} size={16} />} onPress={() => router.push("/")} style={{ minHeight: 44, paddingHorizontal: 12, borderRadius: 24 }} />} />
+        <PageHeader title={t("history.title")} subtitle={t("refresh.historySubtitle")} action={<Button label={t("refresh.add")} icon={<Icon name="plus" color={theme.colors.accentContrast} size={16} />} onPress={() => router.push("/")} style={{ minHeight: 44, paddingHorizontal: 12 }} />} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
           {(["all", "nursing", "pump", "bottle", "sleep"] as const).map(kind => <Pressable key={kind} accessibilityRole="button" accessibilityState={{ selected: filter === kind }} onPress={() => setFilter(kind)} style={{ minHeight: 44, paddingHorizontal: 18, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: filter === kind ? theme.colors.accent : theme.colors.surface, borderWidth: 1, borderColor: filter === kind ? theme.colors.accent : theme.colors.border }}><Text style={[theme.type.bodyStrong, { color: filter === kind ? theme.colors.accentContrast : theme.colors.textSecondary }]}>{t(kind === "all" ? "refresh.all" : `refresh.${kind === "nursing" ? "feed" : kind}`)}</Text></Pressable>)}
         </ScrollView>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 14, borderRadius: 18, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface }}><Icon name="search" size={20} color={theme.colors.textMuted} /><TextInput accessibilityLabel={t("refresh.search")} placeholder={t("refresh.search")} placeholderTextColor={theme.colors.textMuted} value={query} onChangeText={setQuery} style={[theme.type.body, { color: theme.colors.textPrimary, flex: 1, minWidth: 0, minHeight: 48, paddingVertical: 12 }]} /></View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 14, borderRadius: theme.radii.md, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface }}><Icon name="search" size={20} color={theme.colors.textMuted} /><TextInput accessibilityLabel={t("refresh.search")} placeholder={t("refresh.search")} placeholderTextColor={theme.colors.textMuted} value={query} onChangeText={setQuery} style={[theme.type.body, { color: theme.colors.textPrimary, flex: 1, minWidth: 0, minHeight: 48, paddingVertical: 12 }]} /></View>
       </View>
-      <FlatList
+      <FlatList contentInsetAdjustmentBehavior="never" automaticallyAdjustContentInsets={false}
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: theme.spacing.lg }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         ListEmptyComponent={
-          <View style={{ alignItems: "center", padding: 28, paddingTop: 40, gap: 16, backgroundColor: theme.colors.surface, borderRadius: theme.radii.xl, borderWidth: 1, borderStyle: "dashed", borderColor: theme.colors.border }}>
-            <View style={{ width: 92, height: 92, borderRadius: 46, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="history" size={36} color={theme.colors.accent} /></View>
-            <Text style={[theme.type.title, { color: theme.colors.textPrimary, textAlign: "center" }]}>{t(rows.length ? "refresh.emptySearch" : "design.historyEmpty")}</Text>
-            <Text style={[theme.type.body, { color: theme.colors.textSecondary, textAlign: "center" }]}>{t(rows.length ? "refresh.emptySearchHint" : "design.historyHint")}</Text>
-            <Button label={t("refresh.addSession")} icon={<Icon name="plus" color={theme.colors.accentContrast} size={18} />} onPress={() => router.push("/")} />
-          </View>
+          <EmptyState icon="history" title={t(rows.length ? "refresh.emptySearch" : "design.historyEmpty")} message={t(rows.length ? "refresh.emptySearchHint" : "design.historyHint")} actionLabel={t("refresh.addSession")} onAction={() => router.push("/")} />
         }
         renderItem={({ item, index }) => (
           <EntryRow

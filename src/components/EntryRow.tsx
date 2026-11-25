@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
+import { IconBadge } from "./IconBadge";
 import { Icon } from "./Icon";
 import { Card } from "./Card";
 
@@ -34,39 +35,31 @@ export function EntryRow({
 
   return (
     <Pressable testID={testID} onPress={onPress} accessibilityRole="button">
-      <Card style={{ marginBottom: theme.spacing.xs }}>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: theme.spacing.sm }}>
-          <View
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: dotColor + "18",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          ><Icon name={kind === "nursing" ? "heart" : kind === "sleep" ? "moon" : kind} size={21} color={dotColor} /></View>
-          <View style={{ flexGrow: 1, flexBasis: "55%", minWidth: 100 }}>
+      <Card style={{ marginBottom: theme.spacing.xs, padding: 16 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: theme.spacing.sm }}>
+          <IconBadge name={kind === "nursing" ? "heart" : kind === "sleep" ? "moon" : kind} color={dotColor} />
+          <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
             <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
             <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{timeLabel}</Text>
-          </View>
-          {detailLabel ? (
-            <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{detailLabel}</Text>
-          ) : null}
           {needsDetail ? (
             <View
               testID="history-needs-detail-badge"
               style={{
-                backgroundColor: theme.colors.warning,
+                backgroundColor: theme.colors.surfaceRaised,
+                alignSelf: "flex-start",
                 borderRadius: theme.radii.pill,
                 paddingHorizontal: theme.spacing.xs,
                 paddingVertical: 2,
               }}
             >
-              <Text style={[theme.type.micro, { color: theme.colors.accentContrast }]}>
+              <Text style={[theme.type.micro, { color: theme.colors.accent }]}>
                 {needsDetailLabel ?? "+ add ml"}
               </Text>
             </View>
+          ) : null}
+          </View>
+          {detailLabel ? (
+            <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{detailLabel}</Text>
           ) : null}
           <Icon name="arrow" size={16} color={theme.colors.textMuted} />
         </View>

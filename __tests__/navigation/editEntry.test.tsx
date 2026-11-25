@@ -1,3 +1,4 @@
+jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }) }));
 import React from "react";
 import { TextInput } from "react-native";
 import { render, fireEvent } from "@testing-library/react-native";

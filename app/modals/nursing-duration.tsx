@@ -1,13 +1,15 @@
+import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
 import { format, parse, isValid } from "date-fns";
 import { DateTimeField } from "@/components/DateTimeField";
 import { NursingSide } from "@/db/types";
+import { EntryHeading } from "@/components/EntryHeading";
 import { Icon } from "@/components/Icon";
 import { Button } from "@/components";
 import { useLogStore } from "@/store/useLogStore";
@@ -48,10 +50,9 @@ export default function NursingDurationModal() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: 24, gap: 16, width: "100%", maxWidth: 580, alignSelf: "center", paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <Screen>
       <ScreenBack dismiss /> 
-      <View style={{ width: 76, height: 76, borderRadius: 38, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center", marginBottom: 8 }}><Icon name="clock" size={32} color={theme.colors.accent} /></View>
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{t("home.chooseDuration")}</Text>
+      <EntryHeading title={t("home.chooseDuration")} icon="heart" color={theme.colors.nursing} />
       {!exact ? <><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("manualNursing.quickHint")}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing.sm }}>
         {PRESET_MINUTES.map((minutes) => (
           <Button
@@ -59,8 +60,9 @@ export default function NursingDurationModal() {
             testID={`nursing-duration-preset-${minutes}`}
             label={t("home.durationPreset", { minutes })}
             tone="nursing"
+            variant="soft"
             onPress={() => handlePreset(minutes)}
-            style={{ width: 88, height: 88, paddingHorizontal: 0, borderRadius: 44 }}
+            style={{ flexBasis: "29%", flexGrow: 1, minHeight: 72, paddingHorizontal: 8, borderRadius: theme.radii.md }}
           />
         ))}
       </View>
@@ -68,13 +70,12 @@ export default function NursingDurationModal() {
         <DateTimeField label={t("manualNursing.started")} value={from} onChange={setFrom} />
         <DateTimeField label={t("manualNursing.ended")} value={to} onChange={setTo} />
         <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("manualNursing.hint")}</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{(["left", "right", "both", "unknown"] as const).map(value => <Button key={value} label={t(`manualNursing.${value}`)} tone="nursing" variant={side === value ? "solid" : "outline"} active={side === value} onPress={() => setSide(value)} style={{ paddingHorizontal: 16, minHeight: 46 }} />)}</View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{(["left", "right", "both", "unknown"] as const).map(value => <Button key={value} label={t(`manualNursing.${value}`)} tone="nursing" variant={side === value ? "soft" : "ghost"} active={side === value} onPress={() => setSide(value)} style={{ paddingHorizontal: 16, minHeight: 46 }} />)}</View>
         {valid ? <Text style={[theme.type.bodyStrong, { color: theme.colors.accent }]}>{t("manualNursing.duration", { minutes: Math.round((ended.getTime() - started.getTime()) / 60000) })}</Text> : <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("manualNursing.invalid")}</Text>}
         {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("manualNursing.failed")}</Text> : null}
         <Button label={t("common.save")} disabled={!valid} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} onPress={handleExact} />
       </View>}
       <Button label={t(exact ? "manualNursing.quick" : "manualNursing.exact")} tone="neutral" variant="outline" onPress={() => setExact(!exact)} />
-      <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
-    </ScrollView>
+      </Screen>
   );
 }

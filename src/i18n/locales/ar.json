@@ -19,7 +19,10 @@
     "oz": "أونصة",
     "minutesShort": "{{count}} د",
     "hoursMinutesShort": "{{hours}} س {{minutes}} د",
-    "hoursShort": "{{count}} س"
+    "hoursShort": "{{count}} س",
+    "loading": "جارٍ التحميل…",
+    "startupError": "تعذّر فتح التطبيق",
+    "restartHint": "يرجى إغلاق Nursing Queen وفتحها مجددًا. لم تتم إعادة تعيين بياناتك المحفوظة."
   },
   "home": {
     "greeting": "أهلاً بكِ أيتها الملكة",
@@ -111,7 +114,9 @@
     "weight": "الوزن",
     "addWeight": "إضافة قياس وزن",
     "weightEmpty": "لا توجد قياسات وزن بعد.",
-    "privacyNote": "يبقى هذا الملف على هذا الجهاز فقط."
+    "privacyNote": "يبقى هذا الملف على هذا الجهاز فقط.",
+    "weightGrams": "الوزن (غ)",
+    "editTitle": "تعديل الملف"
   },
   "settings": {
     "title": "الإعدادات",
@@ -268,7 +273,9 @@
     "sleep": "النوم",
     "chart": "مخطط النشاط لسبعة أيام",
     "hours": "ساعات",
-    "logged": "النشاط المسجل"
+    "logged": "النشاط المسجل",
+    "emptyTitle": "ستظهر أنماطك هنا",
+    "emptyBody": "سجّلي نشاطًا لبدء عرض ملخص هذا الأسبوع."
   },
   "analytics": {
     "title": "التحليلات",
@@ -380,11 +387,11 @@
     "start": "بدء",
     "add": "إضافة",
     "nursingHint": "مؤقت اليسار / اليمين",
-    "pumpHint": "أضيفي الكمية لاحقًا",
+    "pumpHint": "تسجيل سريع",
     "bottleHint": "حليب الأم أو حليب صناعي",
     "sleepHint": "قيلولة أو نوم ليلي",
     "manageProfile": "إدارة الملف",
-    "actions": "الأنشطة الرئيسية",
+    "actions": "سجّلي لحظة",
     "learning": "نتعرّف على روتين طفلك",
     "learningBody": "ستساعدنا بعض الجلسات الإضافية على فهم روتين طفلك.",
     "addSession": "إضافة جلسة",

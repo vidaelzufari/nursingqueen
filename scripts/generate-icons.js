@@ -15,8 +15,8 @@ const SOURCE_SVG = path.join(ASSETS_DIR, "brand", "icon-source.svg");
 
 const TARGETS = [
   { file: "icon.png", size: 1024 },
-  { file: "adaptive-icon-foreground.png", size: 1024 },
-  { file: "splash.png", size: 1284 },
+  { file: "adaptive-icon-foreground.png", size: 1024, source: "adaptive-source.svg" },
+  { file: "splash.png", size: 1284, source: "splash-source.svg" },
   { file: "favicon.png", size: 196 },
 ];
 
@@ -31,14 +31,16 @@ async function main() {
     process.exit(1);
   }
 
-  const svg = fs.readFileSync(SOURCE_SVG);
+
 
   for (const target of TARGETS) {
     const outPath = path.join(ASSETS_DIR, target.file);
-    await sharp(svg, { density: 384 })
-      .resize(target.size, target.size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-      .png()
-      .toFile(outPath);
+    const svg = fs.readFileSync(target.source ? path.join(ASSETS_DIR, "brand", target.source) : SOURCE_SVG);
+    const rendered = sharp(svg, { density: 384 })
+      .resize(target.size, target.size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } });
+    // App Store icons must be opaque; foreground and splash retain transparency.
+    if (target.file === "icon.png" || target.file === "favicon.png") rendered.removeAlpha();
+    await rendered.png().toFile(outPath);
     console.log(`wrote ${path.relative(process.cwd(), outPath)} (${target.size}x${target.size})`);
   }
 }

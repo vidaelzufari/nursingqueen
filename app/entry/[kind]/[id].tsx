@@ -1,7 +1,9 @@
+import { Field } from "@/components/Field";
+import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -95,23 +97,23 @@ export default function EditEntryScreen() {
   const showMlField = Boolean(nursing || pump || bottle);
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, paddingHorizontal: 4 }} behavior={Platform.OS === "ios" ? "padding" : "height"}><ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={{ padding: theme.spacing.md, width: "100%", maxWidth: 580, alignSelf: "center" }}>
+    <Screen>
       <ScreenBack />
-      <Text style={[theme.type.title, { color: theme.colors.textPrimary, marginBottom: 16 }]}>{t("history.editEntry")}</Text>
+      <Text style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t("history.editEntry")}</Text>
       <Card style={{ gap: theme.spacing.sm }}>
         {nursing ? (
           <View style={{ gap: theme.spacing.xs }}>
             <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("home.whichSide")}</Text>
-            <View style={{ flexDirection: "row", gap: theme.spacing.xs }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, padding: 4, borderRadius: 20, backgroundColor: theme.colors.background }}>
               {SIDES.map((s) => (
                 <Button
                   key={s}
                   label={t(`home.side${capitalize(s)}` as const, { defaultValue: s })}
                   tone="nursing"
-                  variant={side === s ? "solid" : "outline"}
+                  variant={side === s ? "soft" : "ghost"}
                   active={side === s}
                   onPress={() => setSide(s)}
-                  style={{ flex: 1, paddingHorizontal: 4 }}
+                  style={{ flexGrow: 1, flexBasis: "40%", minHeight: 44, paddingHorizontal: 8 }}
                 />
               ))}
             </View>
@@ -119,38 +121,17 @@ export default function EditEntryScreen() {
         ) : null}
 
         {showMlField ? (
-          <View style={{ gap: theme.spacing.xs }}>
-            <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>
-              {t(nursing ? "nursingAmount.label" : "bottleEntry.amount")} ({unit})
-            </Text>
-            {nursing ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("nursingAmount.note")}</Text> : null}
-            <TextInput
-              testID="entry-edit-field-ml"
-              value={mlText}
-              onChangeText={setMlText}
-              keyboardType="decimal-pad"
-              placeholder="0"
-              placeholderTextColor={theme.colors.textMuted}
-              style={{
-                borderWidth: 1,
-                borderColor: theme.colors.border,
-                borderRadius: theme.radii.md,
-                padding: theme.spacing.sm,
-                fontSize: 18,
-                color: theme.colors.textPrimary,
-              }}
-            />
-          </View>
+          <Field label={`${t(nursing ? "nursingAmount.label" : "bottleEntry.amount")} (${unit})`} hint={nursing ? t("nursingAmount.note") : undefined} amount testID="entry-edit-field-ml" value={mlText} onChangeText={setMlText} keyboardType="decimal-pad" placeholder="0" />
         ) : null}
 
         <DateTimeField label={t("timers.start")} value={from} onChange={setFrom} />
-        {nursing && !nursing.endedAt ? <Button label={t(finish ? "timers.keepRunning" : "timers.alreadyEnded")} variant="outline" onPress={() => setFinish(!finish)} /> : null}
+        {nursing && !nursing.endedAt ? <Button label={t(finish ? "timers.keepRunning" : "timers.alreadyEnded")} variant="soft" onPress={() => setFinish(!finish)} /> : null}
         {nursing && finish ? <DateTimeField label={t("timers.end")} value={to} onChange={setTo} /> : null}
         {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
         <Button testID="entry-edit-save" disabled={!timeValid || (showMlField && Boolean(mlText.trim()) && parseAmount(mlText, unit) === null)} label={t("common.save")} tone="accent" onPress={handleSave} />
-        <Button label={t("history.deleteEntry")} tone="danger" variant="outline" onPress={handleDelete} />
+        <Button label={t("history.deleteEntry")} tone="danger" variant="ghost" onPress={handleDelete} />
       </Card>
-    </ScrollView></KeyboardAvoidingView>
+    </Screen>
   );
 }
 

@@ -19,7 +19,10 @@
     "oz": "oz",
     "minutesShort": "{{count}} min",
     "hoursMinutesShort": "{{hours}} h {{minutes}} min",
-    "hoursShort": "{{count}} h"
+    "hoursShort": "{{count}} h",
+    "loading": "Chargement…",
+    "startupError": "L’app n’a pas pu s’ouvrir",
+    "restartHint": "Fermez puis rouvrez Nursing Queen. Vos données enregistrées n’ont pas été réinitialisées."
   },
   "home": {
     "greeting": "Bonjour, Reine",
@@ -103,7 +106,9 @@
     "weight": "Poids",
     "addWeight": "Ajouter une mesure de poids",
     "weightEmpty": "Aucune mesure de poids pour l'instant.",
-    "privacyNote": "Ce profil reste uniquement sur cet appareil."
+    "privacyNote": "Ce profil reste uniquement sur cet appareil.",
+    "weightGrams": "Poids (g)",
+    "editTitle": "Modifier le profil"
   },
   "settings": {
     "title": "Réglages",
@@ -260,7 +265,9 @@
     "sleep": "Sommeil",
     "chart": "Activité sur sept jours",
     "hours": "heures",
-    "logged": "Activité enregistrée"
+    "logged": "Activité enregistrée",
+    "emptyTitle": "Vos tendances apparaîtront ici",
+    "emptyBody": "Enregistrez une activité pour commencer à suivre cette semaine."
   },
   "analytics": {
     "title": "Statistiques",
@@ -372,11 +379,11 @@
     "start": "Démarrer",
     "add": "Ajouter",
     "nursingHint": "Minuteur G / D",
-    "pumpHint": "Quantité à compléter",
+    "pumpHint": "Saisie rapide",
     "bottleHint": "Maternel ou formule",
     "sleepHint": "Sieste ou nuit",
     "manageProfile": "Gérer le profil",
-    "actions": "Actions principales",
+    "actions": "Noter un moment",
     "learning": "À la découverte de votre rythme",
     "learningBody": "Quelques sessions de plus nous aideront à repérer les habitudes de votre bébé.",
     "addSession": "Ajouter une session",

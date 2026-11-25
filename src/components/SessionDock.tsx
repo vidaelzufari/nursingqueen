@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useLogStore } from "@/store/useLogStore";
 import { useSleepStore } from "@/store/useSleepStore";
+import { IconBadge } from "./IconBadge";
 import { Icon } from "./Icon";
 
 /** Live sessions remain reachable while browsing the main tabs. No target duration is implied. */
@@ -29,10 +30,10 @@ export function SessionDock() {
       const color = kind === "sleep" ? theme.colors.sleep : theme.colors.nursing;
       return <View key={kind} style={{ flexDirection: "row", alignItems: "center", borderRadius: theme.radii.lg, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: color + "45", padding: 8, ...theme.shadows.card }}>
         <Pressable testID={`session-dock-${kind}`} accessibilityRole="button" accessibilityLabel={t(kind === "sleep" ? "sleep.adjust" : "timers.edit")} onPress={() => router.push(kind === "sleep" ? "/sleep" : `/entry/nursing/${session.id}`)} style={{ flex: 1, flexDirection: "row", gap: 12, alignItems: "center", minHeight: 52, paddingHorizontal: 8 }}>
-          <View style={{ width: 42, height: 42, borderRadius: theme.radii.sm, alignItems: "center", justifyContent: "center", backgroundColor: color + "16" }}><Icon name={kind === "sleep" ? "moon" : "heart"} color={color} size={22} /></View>
+          <IconBadge name={kind === "sleep" ? "moon" : "heart"} color={color} />
           <View style={{ flexShrink: 1 }}><Text style={[theme.type.micro, { color }]}>{t(kind === "sleep" ? "sleep.sleeping" : "modern.nursingNow")}</Text><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, fontVariant: ["tabular-nums"] }]}>{clock}</Text><Text style={[theme.type.micro, { color: theme.colors.textSecondary }]}>{seconds >= (kind === "sleep" ? 7200 : 1800) ? t(`timers.check_${kind}`) : t("timers.edit")}</Text></View>
         </Pressable>
-        <Pressable testID={`session-stop-${kind}`} accessibilityRole="button" accessibilityLabel={t(kind === "sleep" ? "sleep.stop" : "modern.stopNursing")} onPress={() => { if (kind === "sleep") stopSleep(session.id); else stopNursing(); }} style={{ width: 52, height: 52, borderRadius: theme.radii.lg, alignItems: "center", justifyContent: "center", backgroundColor: color }}><Icon name="stop" color={theme.colors.accentContrast} size={20} /></Pressable>
+        <Pressable testID={`session-stop-${kind}`} accessibilityRole="button" accessibilityLabel={t(kind === "sleep" ? "sleep.stop" : "modern.stopNursing")} onPress={() => { if (kind === "sleep") stopSleep(session.id); else stopNursing(); }} style={{ width: 52, height: 52, borderRadius: theme.radii.md, alignItems: "center", justifyContent: "center", backgroundColor: color }}><Icon name="stop" color={theme.colors.accentContrast} size={20} /></Pressable>
       </View>;
     })}
   </View>;

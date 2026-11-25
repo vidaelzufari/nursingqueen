@@ -1,5 +1,6 @@
+import { useLayoutDirection } from "@/i18n/useLayoutDirection";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -22,17 +23,18 @@ const ITEMS: NavItem[] = [
 ];
 
 /** Shared bottom navigation used by every top-level screen (Home/History/Settings). */
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children, showSessionDock = true }: { children: React.ReactNode; showSessionDock?: boolean }) {
   const theme = useTheme();
+  const { direction } = useLayoutDirection();
   const router = useRouter();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.background }}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ direction, flex: 1, paddingTop: insets.top, backgroundColor: theme.colors.background }}>
       <View style={{ flex: 1, minHeight: 0, overflow: "hidden", width: "100%", maxWidth: 580, alignSelf: "center" }}>{children}</View>
-      <SessionDock />
+      {showSessionDock ? <SessionDock /> : null}
       <View
         style={{
           flexDirection: "row",
@@ -64,7 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               style={{ flexGrow: 1, flexBasis: 0, height: 62, alignItems: "center", justifyContent: "center", paddingVertical: theme.spacing.xs }}
             >
               <View style={{ width: 52, height: 30, borderRadius: theme.radii.sm, alignItems: "center", justifyContent: "center", backgroundColor: "transparent" }}>
-                <Icon name={item.key} size={21} color={active ? theme.colors.accent : theme.colors.textMuted} />
+                <Icon name={item.key} size={24} color={active ? theme.colors.accent : theme.colors.textMuted} />
               </View>
               <Text
                 style={[
@@ -78,6 +80,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

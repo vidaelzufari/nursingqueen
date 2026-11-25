@@ -29,13 +29,13 @@ export interface ColorTokens {
 }
 
 const light: ColorTokens = {
-  background: "#F7F5FA",
+  background: "#F8F7FB",
   surface: "#FFFFFF",
-  surfaceRaised: "#F8EFF8",
-  border: "#E8D4E8",
+  surfaceRaised: "#F2EDF7",
+  border: "#E9E3ED",
   textPrimary: "#321A35",
-  textSecondary: "#647892",
-  textMuted: "#72829A",
+  textSecondary: "#71667C",
+  textMuted: "#776A80",
   accent: "#953D8B",
   sleep: "#953D8B",
   accentContrast: "#FFFFFF",
@@ -106,7 +106,7 @@ export const spacing = {
 
 export const radii = {
   sm: 12,
-  md: 18,
+  md: 16,
   lg: 24,
   xl: 28,
   pill: 999,
@@ -114,8 +114,8 @@ export const radii = {
 
 export const typeScale = {
   display: { fontSize: 34, lineHeight: 40, letterSpacing: -0.8, fontWeight: "700" as const },
-  title: { fontSize: 26, lineHeight: 32, fontWeight: "600" as const },
-  subtitle: { fontSize: 20, lineHeight: 26, fontWeight: "600" as const },
+  title: { fontSize: 26, lineHeight: 32, letterSpacing: -0.6, fontWeight: "700" as const },
+  subtitle: { fontSize: 20, lineHeight: 26, letterSpacing: -0.3, fontWeight: "600" as const },
   body: { fontSize: 16, lineHeight: 22, fontWeight: "400" as const },
   bodyStrong: { fontSize: 16, lineHeight: 22, fontWeight: "600" as const },
   caption: { fontSize: 13, lineHeight: 18, fontWeight: "500" as const },
@@ -123,14 +123,23 @@ export const typeScale = {
 } as const;
 
 /** Minimum thumb-reachable hit target, per the product brief. */
-export const MIN_TOUCH_TARGET = 60;
+export const MIN_TOUCH_TARGET = 52;
 
 export const shadows = {
   card: {
     shadowColor: "#30243E",
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.045,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 0,
   },
+} as const;
+
+/** Role-based geometry: controls, surfaces and activity artwork have separate jobs. */
+export const componentMetrics = {
+  button: { height: 52, largeHeight: 60, radius: 26, horizontalPadding: 20 },
+  iconButton: { target: 48, glyph: 22, radius: 24 },
+  field: { height: 56, radius: 16, horizontalPadding: 16 },
+  activity: { glyph: 36, radius: 26, padding: 20 },
+  page: { gutter: 24, sectionGap: 28 },
 } as const;

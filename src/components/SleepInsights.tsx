@@ -1,3 +1,4 @@
+import { useDurationFormatter } from "@/i18n/useDurationFormatter";
 import React, { useMemo, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
 import { format } from "date-fns";
@@ -8,12 +9,12 @@ import { useSleepStore } from "@/store/useSleepStore";
 import { getSleepInsights } from "@/domain/sleepInsights";
 import { dateLocale } from "@/domain/dateLocale";
 import { countdown } from "@/domain/forecast";
-import { formatDurationShort } from "@/domain/dateMath";
 import { Button } from "./Button";
 import { Card } from "./Card";
 import { Icon } from "./Icon";
 
 export function SleepInsights({ now, onReview }: { now: Date; onReview: () => void }) {
+  const formatDurationShort = useDurationFormatter();
   const theme = useTheme(); const { t, i18n } = useTranslation();
   const baby = useActiveBaby(); const sessions = useSleepStore(s => s.sessions);
   const result = useMemo(() => getSleepInsights(sessions, now, baby?.dateOfBirth), [sessions, now, baby?.dateOfBirth]);

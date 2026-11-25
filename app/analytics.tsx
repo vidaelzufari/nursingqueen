@@ -17,7 +17,7 @@ export default function AnalyticsScreen() {
   const { nursingSessions, pumpEvents, bottleEvents } = useLogStore(); const unit = useSettingsStore(s => s.unit);
   const status = computeStatusStrip(nursingSessions, pumpEvents, bottleEvents, now);
   useEffect(() => { const timer = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(timer); }, []);
-  return <AppShell><ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 32 }}><PageHeader title={t("analytics.title")} subtitle={t("analytics.subtitle")} />
+  return <AppShell><ScrollView contentInsetAdjustmentBehavior="never" automaticallyAdjustContentInsets={false} contentContainerStyle={{ padding: 24, gap: 16, paddingBottom: 32 }}><PageHeader title={t("analytics.title")} subtitle={t("analytics.subtitle")} />
     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
     <Card style={{ flexBasis: "44%", flexGrow: 1, padding: 16, gap: 8 }}><Icon name="pump" color={theme.colors.pumping} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.pumpTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.pumping }]}>{formatVolume(status.todayPumpMl, unit)}</Text></Card>
     <Card style={{ flexBasis: "44%", flexGrow: 1, padding: 16, gap: 8 }}><Icon name="bottle" color={theme.colors.bottle} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("analytics.bottleTotal")}</Text><Text style={[theme.type.title, { color: theme.colors.bottle }]}>{formatVolume(status.todayBottleMl, unit)}</Text></Card>

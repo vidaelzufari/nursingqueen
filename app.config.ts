@@ -31,7 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   splash: {
     image: "./assets/splash.png",
     resizeMode: "contain",
-    backgroundColor: "#FBF7F4",
+    backgroundColor: "#F8F7FB",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
@@ -63,7 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: ANDROID_PACKAGE,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon-foreground.png",
-      backgroundColor: "#FBF7F4",
+      backgroundColor: "#873B7D",
     },
     permissions: ["READ_MEDIA_IMAGES", "CAMERA"],
   },

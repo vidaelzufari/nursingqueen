@@ -30,7 +30,7 @@ export function SuggestionCard({
 }: SuggestionCardProps) {
   const theme = useTheme();
   return (
-    <Card raised style={{ borderColor: theme.colors.crown, borderWidth: 1 }}>
+    <Card raised>
       <View style={{ flexDirection: "row", gap: theme.spacing.sm }}>
         {icon}
         <View style={{ flex: 1, gap: 4 }}>
@@ -39,15 +39,15 @@ export function SuggestionCard({
           <Text style={[theme.type.micro, { color: theme.colors.textMuted, marginTop: 4 }]}>
             {footnote}
           </Text>
-          <View style={{ flexDirection: "row", gap: theme.spacing.md, marginTop: theme.spacing.xs }}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing.md, marginTop: theme.spacing.xs }}>
             {actionLabel && onAction ? (
-              <Pressable onPress={onAction} accessibilityRole="button">
+              <Pressable onPress={onAction} accessibilityRole="button" style={{ minHeight: 44, justifyContent: "center" }}>
                 <Text style={[theme.type.caption, { color: theme.colors.accent, fontWeight: "700" }]}>
                   {actionLabel}
                 </Text>
               </Pressable>
             ) : null}
-            <Pressable onPress={onDismiss} accessibilityRole="button">
+            <Pressable onPress={onDismiss} accessibilityRole="button" style={{ minHeight: 44, justifyContent: "center" }}>
               <Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{dismissLabel}</Text>
             </Pressable>
           </View>

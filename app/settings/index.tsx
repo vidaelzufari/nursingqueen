@@ -1,6 +1,7 @@
+import { Field } from "@/components/Field";
 import { DateField } from "@/components/DateField";
 import React from "react";
-import { Platform, ScrollView, Switch, Text, TextInput, View } from "react-native";
+import { Platform, ScrollView, Switch, Text, View } from "react-native";
 import { useFeedbackStore } from "@/store/useFeedbackStore";
 import Constants from "expo-constants";
 import { useTranslation } from "react-i18next";
@@ -74,7 +75,7 @@ export default function SettingsScreen() {
 
   return (
     <AppShell>
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.lg, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
+      <ScrollView contentInsetAdjustmentBehavior="never" automaticallyAdjustContentInsets={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={{ padding: theme.spacing.lg, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
         <PageHeader title={t("settings.title")} subtitle={t("refresh.settingsSubtitle")} />
         <Card style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
           <View style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" color={theme.colors.accent} /></View>
@@ -86,11 +87,11 @@ export default function SettingsScreen() {
             {LANGUAGE_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: language === opt.value ? theme.colors.surface : "transparent" }}
                 testID={`settings-language-option-${opt.value}`}
                 label={opt.value === "system" ? t(opt.label) : opt.label}
-                tone="accent"
-                variant={language === opt.value ? "soft" : "outline"}
+                tone={language === opt.value ? "accent" : "neutral"}
+                variant={language === opt.value ? "soft" : "ghost"}
                 active={language === opt.value}
                 icon={language === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
                 onPress={() => setLanguage(opt.value)}
@@ -104,7 +105,7 @@ export default function SettingsScreen() {
             {UNIT_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: unit === opt.value ? theme.colors.surface : "transparent" }}
                 label={opt.value}
                 tone="accent"
                 variant={unit === opt.value ? "soft" : "ghost"}
@@ -121,10 +122,10 @@ export default function SettingsScreen() {
             {THEME_OPTIONS.map((opt) => (
               <Button
                 key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1 }}
+                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: themePreference === opt.value ? theme.colors.surface : "transparent" }}
                 label={t(opt.labelKey)}
-                tone="accent"
-                variant={themePreference === opt.value ? "soft" : "outline"}
+                tone={themePreference === opt.value ? "accent" : "neutral"}
+                variant={themePreference === opt.value ? "soft" : "ghost"}
                 active={themePreference === opt.value}
                 icon={themePreference === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
                 onPress={() => setThemePreference(opt.value)}
@@ -151,27 +152,7 @@ export default function SettingsScreen() {
         <Section title={t("settings.returnToWork")}>
           <Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{t("settings.returnToWorkNote")}</Text>
           <DateField label={t("datePicker.date")} value={returnToWorkDate ?? ""} onChange={value => setReturnToWorkDate(value || null)} onClear={() => setReturnToWorkDate(null)} />
-          <Text style={[theme.type.caption, { color: theme.colors.textMuted, marginTop: theme.spacing.sm }]}>
-            {t("settings.targetStash", { unit })}
-          </Text>
-          <TextInput
-            value={targetStashMl != null ? String(targetStashMl) : ""}
-            onChangeText={(text) => {
-              const value = Number(text);
-              setTargetStashMl(text.trim() && !Number.isNaN(value) ? value : null);
-            }}
-            keyboardType="number-pad"
-            placeholder="0"
-            placeholderTextColor={theme.colors.textMuted}
-            style={{
-              borderWidth: 1,
-              borderColor: theme.colors.border,
-              borderRadius: theme.radii.md,
-              padding: theme.spacing.sm,
-              color: theme.colors.textPrimary,
-              marginTop: theme.spacing.xs,
-            }}
-          />
+          <Field label={t("settings.targetStash", { unit })} value={targetStashMl != null ? String(targetStashMl) : ""} onChangeText={text => { const value = Number(text); setTargetStashMl(text.trim() && !Number.isNaN(value) ? value : null); }} keyboardType="number-pad" placeholder="0" amount />
         </Section>
 
         <Section title={t("settings.queenUnlock")}>
@@ -203,5 +184,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function OptionRow({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
-  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing.xs }}>{children}</View>;
+  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, padding: 4, borderRadius: 20, backgroundColor: theme.colors.background }}>{children}</View>;
 }

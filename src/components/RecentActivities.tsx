@@ -1,3 +1,5 @@
+import { useDurationFormatter } from "@/i18n/useDurationFormatter";
+import { useLayoutDirection } from "@/i18n/useLayoutDirection";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
@@ -5,10 +7,13 @@ import { useTranslation } from "react-i18next";
 import { useLogStore } from "@/store/useLogStore";
 import { useSleepStore } from "@/store/useSleepStore";
 import { useTheme } from "@/theme/ThemeProvider";
-import { formatDurationShort } from "@/domain/dateMath";
 import { Card } from "./Card";
+import { IconBadge } from "./IconBadge";
 import { Icon, IconName } from "./Icon";
+
 export function RecentActivities({ now }: { now: Date }) {
+  const formatDurationShort = useDurationFormatter();
+  const { isRTL } = useLayoutDirection();
   const theme = useTheme(); const { t } = useTranslation(); const router = useRouter();
   const { nursingSessions, pumpEvents, bottleEvents } = useLogStore(); const sessions = useSleepStore(s => s.sessions);
   const nursing = nursingSessions[0]; const pump = pumpEvents[0]; const bottle = bottleEvents[0]; const sleep = sessions[0];
@@ -18,5 +23,21 @@ export function RecentActivities({ now }: { now: Date }) {
     { key: "bottle", icon: "bottle" as IconName, entry: bottle, at: bottle?.occurredAt, active: false, color: theme.colors.bottle },
     { key: "sleep", icon: "moon" as IconName, entry: sleep, at: sleep?.endedAt ?? sleep?.startedAt, active: sleep && !sleep.endedAt, color: theme.colors.sleep },
   ];
-  return <View style={{ gap: 12, marginBottom: 16 }}><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("recent.title")}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>{rows.map(row => <Pressable key={row.key} accessibilityRole="button" onPress={() => { if (!row.entry) { router.push(row.key === "sleep" ? "/sleep" : "/history"); return; } if (row.key === "sleep") router.push({ pathname: "/sleep", params: { id: row.entry.id } }); else router.push(`/entry/${row.key}/${row.entry.id}`); }} style={{ flexBasis: "45%", flexGrow: 1 }}><Card style={{ gap: 10, padding: 14, flexDirection: "row", alignItems: "center", flexWrap: "wrap" }}><View style={{ width: 38, height: 38, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: row.color + "16" }}><Icon name={row.icon} color={row.color} size={21} /></View><View style={{ flexGrow: 1, flexBasis: 70, gap: 3 }}><Text style={[theme.type.caption, { color: theme.colors.textPrimary }]}>{t(`refresh.${row.key === "nursing" ? "feed" : row.key}`)}</Text><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{row.active ? t("forecast.active") : row.at ? t("recent.ago", { time: formatDurationShort(Math.floor(Math.max(0, now.getTime() - new Date(row.at).getTime()) / 60000)) }) : t("refresh.noData")}</Text></View></Card></Pressable>)}</View></View>;
+  return <View style={{ gap: 14, marginBottom: 28 }}>
+    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+      <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary, flexShrink: 1 }]}>{t("recent.title")}</Text>
+      <Pressable accessibilityRole="button" accessibilityLabel={t("nav.history")} onPress={() => router.push("/history")} style={{ minHeight: 44, justifyContent: "center" }}><Icon name="arrow" size={20} color={theme.colors.accent} /></Pressable>
+    </View>
+    <Card padded={false} style={{ paddingHorizontal: 16 }}>
+      {rows.map((row, index) => <Pressable key={row.key} accessibilityRole="button" onPress={() => {
+        if (!row.entry) { router.push(row.key === "sleep" ? "/sleep" : "/history"); return; }
+        if (row.key === "sleep") router.push({ pathname: "/sleep", params: { id: row.entry.id } });
+        else router.push(`/entry/${row.key}/${row.entry.id}`);
+      }} style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, minHeight: 72, paddingVertical: 12, borderTopWidth: index ? 1 : 0, borderColor: theme.colors.border, opacity: pressed ? 0.65 : 1 })}>
+        <IconBadge name={row.icon} color={row.color} size="small" />
+        <Text style={[theme.type.bodyStrong, { flex: 1, color: theme.colors.textPrimary }]}>{t(`refresh.${row.key === "nursing" ? "feed" : row.key}`)}</Text>
+        <Text style={[theme.type.caption, { maxWidth: "48%", textAlign: isRTL ? "left" : "right", color: row.active ? theme.colors.accent : theme.colors.textSecondary }]}>{row.active ? t("forecast.active") : row.at ? t("recent.ago", { time: formatDurationShort(Math.floor(Math.max(0, now.getTime() - new Date(row.at).getTime()) / 60000)) }) : t("refresh.noData")}</Text>
+      </Pressable>)}
+    </Card>
+  </View>;
 }

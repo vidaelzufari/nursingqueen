@@ -62,8 +62,9 @@ struct LiveActivityWidget: Widget {
         Spacer()
         timer(context.state).font(.title2.bold())
       }.padding(18)
+        .foregroundColor(Color(red: 50.0 / 255, green: 26.0 / 255, blue: 53.0 / 255))
         .activityBackgroundTint(Color(red: 0.95, green: 0.93, blue: 0.97))
-        .activitySystemActionForegroundColor(Color(red: 0.44, green: 0.32, blue: 0.56))
+        .activitySystemActionForegroundColor(Color(red: 149.0 / 255, green: 61.0 / 255, blue: 139.0 / 255))
         .widgetURL(URL(string: context.attributes.deepLinkUrl ?? "nursingqueen:///"))
     } dynamicIsland: { context in
       DynamicIsland {

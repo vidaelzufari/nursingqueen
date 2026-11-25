@@ -40,10 +40,9 @@ export function initI18n(preferredLanguage?: SupportedLanguageCode): void {
 }
 
 /**
- * Mirrors the whole layout for Arabic. Flipping I18nManager only takes full
- * effect after a reload, which we force once per actual change — RTL must
- * be tested by actually switching language and relaunching, not just by
- * eyeballing flex-direction in isolation.
+ * Mirrors the whole layout for Arabic. I18nManager persists the native direction for the next launch. Screen and
+ * AppShell also apply direction reactively so a language change does not
+ * discard an unsaved form. Native relaunch behaviour still needs device QA.
  */
 export function applyDirection(language: SupportedLanguageCode): void {
   const shouldBeRTL = RTL_LANGUAGES.includes(language);
