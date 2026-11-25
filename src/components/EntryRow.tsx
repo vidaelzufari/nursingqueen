@@ -1,14 +1,16 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { IconBadge } from "./IconBadge";
-import { Icon } from "./Icon";
+import { ListRow } from "./ListRow";
+import { SleepPeriod } from "@/db/types";
 import { Card } from "./Card";
 
-export type EntryKind = "nursing" | "pump" | "bottle" | "sleep";
+export type EntryKind = "nursing" | "pump" | "bottle" | "sleep" | "solids";
 
 export interface EntryRowProps {
   kind: EntryKind;
+  sleepPeriod?: SleepPeriod;
   title: string;
   timeLabel: string;
   detailLabel?: string;
@@ -21,6 +23,7 @@ export interface EntryRowProps {
 /** One row in History. Editing an entry is always this one tap away. */
 export function EntryRow({
   kind,
+  sleepPeriod,
   title,
   timeLabel,
   detailLabel,
@@ -31,39 +34,15 @@ export function EntryRow({
 }: EntryRowProps) {
   const theme = useTheme();
   const dotColor =
-    kind === "nursing" ? theme.colors.nursing : kind === "pump" ? theme.colors.pumping : kind === "sleep" ? theme.colors.accent : theme.colors.bottle;
+    kind === "solids" ? theme.colors.nap : kind === "nursing" ? theme.colors.nursing : kind === "pump" ? theme.colors.pumping : kind === "sleep" ? theme.colors.accent : theme.colors.bottle;
 
-  return (
-    <Pressable testID={testID} onPress={onPress} accessibilityRole="button">
-      <Card style={{ marginBottom: theme.spacing.xs, padding: 16 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: theme.spacing.sm }}>
-          <IconBadge name={kind === "nursing" ? "heart" : kind === "sleep" ? "moon" : kind} color={dotColor} />
-          <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
-            <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
-            <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{timeLabel}</Text>
-          {needsDetail ? (
-            <View
-              testID="history-needs-detail-badge"
-              style={{
-                backgroundColor: theme.colors.surfaceRaised,
-                alignSelf: "flex-start",
-                borderRadius: theme.radii.pill,
-                paddingHorizontal: theme.spacing.xs,
-                paddingVertical: 2,
-              }}
-            >
-              <Text style={[theme.type.micro, { color: theme.colors.accent }]}>
-                {needsDetailLabel ?? "+ add ml"}
-              </Text>
-            </View>
-          ) : null}
-          </View>
-          {detailLabel ? (
-            <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{detailLabel}</Text>
-          ) : null}
-          <Icon name="arrow" size={16} color={theme.colors.textMuted} />
-        </View>
-      </Card>
-    </Pressable>
-  );
+  const icon = kind === "nursing" ? "heart" : kind === "sleep" ? sleepPeriod === "nap" ? "nap" : "moon" : kind;
+  const color = kind === "sleep" && sleepPeriod === "nap" ? theme.colors.nap : dotColor;
+  return <Card style={{ marginBottom: theme.spacing.xs, paddingVertical: 0, paddingHorizontal: 16 }}>
+    <ListRow testID={testID} title={title} subtitle={timeLabel} leading={<IconBadge name={icon} color={color} size="small" />} onPress={onPress}
+      trailing={<View style={{ alignItems: "flex-end", maxWidth: "35%", gap: 4 }}>
+        {detailLabel ? <Text style={[theme.type.caption, { color: theme.colors.textSecondary, textAlign: "right" }]}>{detailLabel}</Text> : null}
+        {needsDetail ? <Text testID="history-needs-detail-badge" style={[theme.type.micro, { color: theme.colors.accent, backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radii.sm, paddingHorizontal: 8, paddingVertical: 3 }]}>{needsDetailLabel ?? "+ add ml"}</Text> : null}
+      </View>} />
+  </Card>;
 }

@@ -32,6 +32,7 @@ export const useBabyStore = create<BabyState>()((set, get) => ({
   },
 
   createBaby: (input) => {
+    if (babyRepository.listAll().length) throw new Error("The MVP supports one baby profile.");
     const baby = babyRepository.create(input);
     get().refresh();
     useSettingsStore.getState().setActiveBabyId(baby.id);

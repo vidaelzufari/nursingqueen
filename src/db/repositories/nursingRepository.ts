@@ -49,6 +49,8 @@ export const nursingRepository = {
 
   /** Zero-friction capture: one tap, saved instantly, side defaults to "unknown" (editable later). */
   startSession(babyId: string, side: NursingSide = "unknown"): NursingSession {
+    const open = nursingRepository.getOpenSession(babyId);
+    if (open) return open;
     const db = getDatabase();
     const now = new Date().toISOString();
     const session: NursingSession = {
@@ -62,10 +64,16 @@ export const nursingRepository = {
       createdAt: now,
       updatedAt: now,
     };
+    try {
     db.runSync(
       "INSERT INTO nursing_sessions (id, baby_id, side, started_at, ended_at, duration_seconds, note, created_at, updated_at) VALUES (?, ?, ?, ?, NULL, NULL, NULL, ?, ?);",
       [session.id, session.babyId, session.side, session.startedAt, session.createdAt, session.updatedAt]
     );
+    } catch (error) {
+      const concurrent = nursingRepository.getOpenSession(babyId);
+      if (concurrent) return concurrent;
+      throw error;
+    }
     return session;
   },
 
@@ -73,7 +81,9 @@ export const nursingRepository = {
     const db = getDatabase();
     const row = db.getFirstSync<NursingRow>("SELECT * FROM nursing_sessions WHERE id = ?;", [sessionId]);
     if (!row) return null;
+    if (row.ended_at) return fromRow(row);
     const started = new Date(row.started_at).getTime();
+    if (!Number.isFinite(endedAt.getTime()) || endedAt.getTime() < started || endedAt.getTime() > Date.now()) throw new Error("Invalid nursing time range");
     const durationSeconds = Math.max(0, Math.round((endedAt.getTime() - started) / 1000));
     const updatedAt = new Date().toISOString();
     db.runSync(

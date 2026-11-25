@@ -1,3 +1,4 @@
+import { HOME_ACTIVITIES, HomeActivity } from "@/domain/homePreferences";
 import { useBabyStore } from "@/store/useBabyStore";
 import { babyRepository } from "@/db/repositories";
 import React from "react";
@@ -10,6 +11,7 @@ import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
 
 jest.mock("expo-haptics", () => ({ impactAsync: jest.fn(async () => {}), notificationAsync: jest.fn(async () => {}), ImpactFeedbackStyle: { Light: "light", Medium: "medium" }, NotificationFeedbackType: { Success: "success" } }));
 
+let mockHomeActivities: HomeActivity[] | undefined;
 const mockPush = jest.fn();
 const mockStartNursing = jest.fn();
 const mockState = {
@@ -31,7 +33,7 @@ jest.mock("@/store/useBabyStore", () => {
   const actual = jest.requireActual("@/store/useBabyStore");
   return actual;
 });
-jest.mock("@/store/useSettingsStore", () => ({ useSettingsStore: Object.assign((selector: (state: object) => unknown) => selector({ unit: "ml", activeBabyId: "baby" }), { getState: () => ({ activeBabyId: "baby", setActiveBabyId: jest.fn() }) }) }));
+jest.mock("@/store/useSettingsStore", () => ({ useSettingsStore: Object.assign((selector: (state: object) => unknown) => selector({ unit: "ml", activeBabyId: "baby", homeActivities: mockHomeActivities }), { getState: () => ({ activeBabyId: "baby", setActiveBabyId: jest.fn() }) }) }));
 jest.mock("@/store/useStashStore", () => ({ useStashStore: (selector: (state: object) => unknown) => selector({ items: [] }) }));
 jest.mock("@/store/useSleepStore", () => ({ useSleepStore: Object.assign((selector: (state: object) => unknown) => selector({ sessions: [], start: jest.fn(), stop: jest.fn() }), { getState: () => ({ babyId: "baby", refresh: jest.fn() }) }) }));
 jest.mock("@/components/Forecasts", () => ({ Forecasts: () => null }));
@@ -41,6 +43,7 @@ jest.mock("@/components/RecentActivities", () => ({ RecentActivities: () => null
 const baby = { id: "baby", name: "Baby", dateOfBirth: "2026-01-01", photoUri: null, sortOrder: 0, createdAt: "2026-01-01" };
 beforeEach(() => {
   jest.clearAllMocks();
+  mockHomeActivities = undefined;
   useBabyStore.setState({ babies: [baby], loaded: true });
   (babyRepository.listAll as jest.Mock).mockReturnValue([baby]);
 });
@@ -71,6 +74,7 @@ it("keeps nursing controls available while browsing and stops the existing sessi
 it("uses a profile saved while Home is mounted without redirecting Nurse to setup", () => {
   useBabyStore.setState({ babies: [] });
   const screen = render(<HomeScreen />);
+  (babyRepository.listAll as jest.Mock).mockReturnValueOnce([]);
   (babyRepository.create as jest.Mock).mockReturnValue(baby);
   act(() => useBabyStore.getState().createBaby({ name: baby.name, dateOfBirth: baby.dateOfBirth }));
   fireEvent.press(screen.getByTestId("home-button-start-nursing"));
@@ -124,4 +128,24 @@ it("opens an active feed for editing without stopping it when its timer is tappe
     mockState.nursingSessions = [];
     mockState.openNursingSession = () => null;
   }
+});
+
+it("prevents creating a second baby in the MVP without deleting the saved profile", () => {
+  expect(() => useBabyStore.getState().createBaby({ name: "Another", dateOfBirth: "2026-01-01" })).toThrow("one baby profile");
+  expect(babyRepository.create).not.toHaveBeenCalled();
+  expect(useBabyStore.getState().babies).toEqual([baby]);
+});
+
+it.each(Array.from({length:31},(_,i)=>i+1))("renders precisely the selected activities for combination %i", mask => {
+  mockHomeActivities = HOME_ACTIVITIES.filter((_,index)=>mask & (1<<index));
+  const screen = render(<HomeScreen />);
+  const ids = {nursing:"home-button-start-nursing",pump:"home-button-pump",bottle:"home-button-bottle",sleep:"home-button-sleep",solids:"home-button-solids"};
+  for(const key of HOME_ACTIVITIES) expect(Boolean(screen.queryByTestId(ids[key]))).toBe(mockHomeActivities.includes(key));
+});
+it("keeps a hidden nursing timer accessible until it finishes", () => {
+  mockHomeActivities=["bottle"];
+  const session={id:"active",startedAt:new Date().toISOString(),endedAt:null};
+  mockState.nursingSessions=[session]; mockState.openNursingSession=()=>session;
+  try { const screen=render(<HomeScreen />); expect(screen.getByTestId("home-button-stop-nursing")).toBeTruthy(); expect(screen.queryByTestId("home-button-pump")).toBeNull(); }
+  finally { mockState.nursingSessions=[];mockState.openNursingSession=()=>null; }
 });

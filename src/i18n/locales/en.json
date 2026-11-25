@@ -22,7 +22,8 @@
     "hoursShort": "{{count}}h",
     "loading": "Loading…",
     "startupError": "We couldn’t open the app",
-    "restartHint": "Please close and reopen Nursing Queen. Your saved data has not been reset."
+    "restartHint": "Please close and reopen Nursing Queen. Your saved data has not been reset.",
+    "close": "Close"
   },
   "home": {
     "greeting": "Hello, Queen",
@@ -98,7 +99,20 @@
       "months_one": "{{count}} month old",
       "months_other": "{{count}} months old",
       "months": "{{count}} months old",
-      "weeks": "{{count}} weeks old"
+      "weeks": "{{count}} weeks old",
+      "monthsDays": "{{months}} and {{days}}",
+      "monthPart_one": "{{count}} month",
+      "monthPart_other": "{{count}} months",
+      "dayPart_one": "{{count}} day",
+      "dayPart_other": "{{count}} days",
+      "monthPart_zero": "{{count}} months",
+      "monthPart_two": "{{count}} months",
+      "monthPart_few": "{{count}} months",
+      "monthPart_many": "{{count}} months",
+      "dayPart_zero": "{{count}} days",
+      "dayPart_two": "{{count}} days",
+      "dayPart_few": "{{count}} days",
+      "dayPart_many": "{{count}} days"
     },
     "photo": "Photo",
     "choosePhoto": "Choose from library",
@@ -108,7 +122,11 @@
     "weightEmpty": "No weight entries yet.",
     "privacyNote": "This profile stays on this device only.",
     "weightGrams": "Weight (g)",
-    "editTitle": "Edit profile"
+    "editTitle": "Edit profile",
+    "weightKg": "Weight (kg)",
+    "weightSaved": "Weight saved",
+    "weightError": "Could not save the weight. Please try again.",
+    "latestWeight": "Latest weight"
   },
   "settings": {
     "title": "Settings",
@@ -237,7 +255,10 @@
     "stop": "Stop sleep",
     "adjust": "Adjust sleep start time",
     "timeUpdated": "Sleep start time updated",
-    "startedAt": "Started {{time}}"
+    "startedAt": "Started {{time}}",
+    "period": "Sleep type",
+    "nap": "Nap",
+    "night": "Night sleep"
   },
   "details": {
     "editHint": "Tap an entry to view or change it.",
@@ -267,7 +288,8 @@
     "hours": "hours",
     "logged": "Logged activity",
     "emptyTitle": "Your patterns will appear here",
-    "emptyBody": "Log an activity to start building this week’s summary."
+    "emptyBody": "Log an activity to start building this week’s summary.",
+    "solids": "Solid foods"
   },
   "analytics": {
     "title": "Analytics",
@@ -329,7 +351,8 @@
     "save_bottle": "Save baby & log bottle",
     "save_sleep": "Save baby & start sleep",
     "save_earlier": "Save baby & log earlier feed",
-    "editDate": "Add a valid birth date to show age"
+    "editDate": "Add a valid birth date to show age",
+    "save_solids": "Save baby & choose foods"
   },
   "datePicker": {
     "date": "Date",
@@ -398,7 +421,8 @@
     "feed": "Nursing",
     "pump": "Pumping",
     "bottle": "Bottle",
-    "sleep": "Sleep"
+    "sleep": "Sleep",
+    "solids": "Solid foods"
   },
   "sleepAI": {
     "title": "Sleep insights",
@@ -431,5 +455,79 @@
     "noLogs": "No sleep logged yet",
     "duration": "{{time}} asleep",
     "logEarlier": "Log an earlier sleep"
+  },
+  "apple": {
+    "refresh": "Refresh",
+    "phoneRequired": "Open Nursing Queen on your iPhone, then try again.",
+    "notConfirmed": "Action not confirmed. Refresh before trying again.",
+    "confirming": "Confirming on iPhone…"
+  },
+  "homeSetup": {
+    "title": "Personalize Home",
+    "settingsHint": "Choose the activities that fit your routine",
+    "intro": "What would you like to track?",
+    "body": "Keep only what matters to you on Home. You can change this anytime.",
+    "saved": "Changes are saved automatically.",
+    "minimum": "Keep at least one activity selected.",
+    "history": "Hiding an activity keeps all its history. A running timer stays visible until you finish it.",
+    "all": "Show all activities",
+    "nursing": "Nursing",
+    "pump": "Pumping",
+    "bottle": "Bottle",
+    "sleep": "Sleep",
+    "nursingHint": "Left and right feeding sessions",
+    "pumpHint": "Milk expressed by pumping",
+    "bottleHint": "Breast milk or formula",
+    "sleepHint": "Naps and nighttime sleep",
+    "solids": "Solid foods",
+    "solidsHint": "Foods and mealtimes"
+  },
+  "solids": {
+    "title": "Solid foods",
+    "homeHint": "Foods and mealtimes",
+    "intro": "Your food notebook. Choose what to try and record what baby tasted, once.",
+    "logMeal": "Log a meal",
+    "editMeal": "Edit meal",
+    "planned": "To try",
+    "tasted": "Tasted",
+    "catalog": "All foods",
+    "search": "Search foods",
+    "searchHint": "Sweet potato, egg…",
+    "category": "Category",
+    "catalogCount": "{{count}} foods in the catalogue",
+    "first": "First tasted",
+    "last": "Last tasted",
+    "empty": "No foods here yet. Try the catalogue or a different search.",
+    "browse": "Browse foods",
+    "plan": "Add to try",
+    "custom": "Add a custom food",
+    "recent": "Recent meals",
+    "photoCredits": "Photo credits",
+    "choosePhoto": "Choose a photo · optional",
+    "foodName": "Food name",
+    "error": "Could not save. Check the details and try again. For photos, allow access in your phone settings.",
+    "time": "Meal date and time",
+    "spoons": "Number of spoonfuls · optional",
+    "ml": "Amount in ml · optional",
+    "note": "Texture, what baby enjoyed… · optional",
+    "selected": "Selected foods: {{count}}",
+    "saved": "Meal saved · food notebook updated",
+    "notFound": "This meal could not be found.",
+    "confirmDelete": "Delete this meal? Tap to confirm",
+    "spoonValue": "{{count}} spoonfuls",
+    "today": "Meals today",
+    "categories": {
+      "all": "All categories",
+      "vegetables": "Vegetables",
+      "fruits": "Fruit",
+      "grains": "Grains",
+      "legumes": "Pulses",
+      "proteins": "Meat, fish & eggs",
+      "dairy": "Dairy",
+      "nuts": "Nuts & seeds",
+      "other": "Other"
+    },
+    "more": "Show more foods",
+    "positiveQuantity": "Enter a positive amount, or leave the field empty."
   }
 }

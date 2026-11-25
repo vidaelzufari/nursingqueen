@@ -1,3 +1,6 @@
+import { parseWeightKg } from "@/domain/weight";
+import { useFeedbackStore } from "@/store/useFeedbackStore";
+import { ListRow } from "@/components/ListRow";
 import { Field } from "@/components/Field";
 import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
@@ -20,14 +23,14 @@ import { weightRepository } from "@/db/repositories";
 export default function EditProfileScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id, intent } = useLocalSearchParams<{ id?: string; intent?: string }>();
-  const loggingIntent = ["nurse", "pump", "bottle", "sleep", "earlier"].includes(intent ?? "") ? intent : undefined;
+  const loggingIntent = ["nurse", "pump", "bottle", "sleep", "earlier", "solids"].includes(intent ?? "") ? intent : undefined;
   const babies = useBabyStore((s) => s.babies);
   const createBaby = useBabyStore((s) => s.createBaby);
   const updateBaby = useBabyStore((s) => s.updateBaby);
 
-  const existing = id ? babies.find((b) => b.id === id) : undefined;
+  const existing = babies.find((b) => b.id === id) ?? babies[0];
 
   const [name, setName] = useState(existing?.name ?? "");
   const [dateOfBirth, setDateOfBirth] = useState(existing?.dateOfBirth ?? "");
@@ -58,7 +61,8 @@ export default function EditProfileScreen() {
       useLogStore.getState().refresh(baby.id);
       useSleepStore.getState().refresh(baby.id);
       if (loggingIntent) {
-        if (loggingIntent === "nurse") { useLogStore.getState().startNursing(); router.replace("/"); }
+        if (loggingIntent === "solids") { router.replace("/foods"); }
+        else if (loggingIntent === "nurse") { useLogStore.getState().startNursing(); router.replace("/"); }
         else if (loggingIntent === "sleep") { useSleepStore.getState().start(); router.replace("/"); }
         else if (loggingIntent === "bottle") router.replace("/modals/bottle-entry");
         else if (loggingIntent === "earlier") router.replace("/modals/nursing-duration");
@@ -69,11 +73,19 @@ export default function EditProfileScreen() {
     goBackOrHome(router);
   };
 
+  const [weightRevision, setWeightRevision] = useState(0);
+  const grams = parseWeightKg(weightText);
+  const weights = existing ? weightRepository.listByBaby(existing.id) : [];
+  const latestWeight = weights[weights.length - 1];
   const handleAddWeight = () => {
-    const grams = Number(weightText);
-    if (!existing || !weightText.trim() || Number.isNaN(grams)) return;
-    weightRepository.create(existing.id, grams);
-    setWeightText("");
+    if (!existing || grams === null) return;
+    try {
+      weightRepository.create(existing.id, grams);
+      setWeightText(""); setWeightRevision(weightRevision + 1);
+      useBabyStore.getState().refresh();
+      Keyboard.dismiss();
+      useFeedbackStore.getState().show(t("profile.weightSaved"));
+    } catch { useFeedbackStore.getState().show(t("profile.weightError")); }
   };
 
   return (
@@ -99,8 +111,9 @@ export default function EditProfileScreen() {
       {existing ? (
         <Card style={{ gap: theme.spacing.xs }}>
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("profile.addWeight")}</Text>
-          <Field label={t("profile.weightGrams")} value={weightText} onChangeText={setWeightText} keyboardType="number-pad" placeholder="0" amount />
-          <Button label={t("common.add")} tone="accent" variant="soft" onPress={handleAddWeight} />
+          <Field label={t("profile.weightKg")} value={weightText} onChangeText={setWeightText} keyboardType="decimal-pad" placeholder="5,2" amount testID="profile-weight-input" />
+          <Button testID="profile-add-weight" label={t("common.add")} disabled={grams === null} tone="accent" variant="soft" onPress={handleAddWeight} />
+          {latestWeight ? <ListRow title={t("profile.latestWeight")} subtitle={new Date(latestWeight.measuredAt).toLocaleDateString(i18n?.resolvedLanguage ?? i18n?.language)} trailing={<Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{(latestWeight.weightGrams / 1000).toLocaleString(i18n?.resolvedLanguage ?? i18n?.language, { maximumFractionDigits: 3 })} kg</Text>} /> : null}
         </Card>
       ) : null}
     </Screen>

@@ -22,6 +22,7 @@ export interface ColorTokens {
   pumping: string;
   bottle: string;
   sleep: string;
+  nap: string;
   success: string;
   warning: string;
   danger: string;
@@ -38,6 +39,7 @@ const light: ColorTokens = {
   textMuted: "#776A80",
   accent: "#953D8B",
   sleep: "#953D8B",
+  nap: "#A36728",
   accentContrast: "#FFFFFF",
   crown: "#AB87C5",
   nursing: "#B95C80",
@@ -59,6 +61,7 @@ const dark: ColorTokens = {
   textMuted: "#8B7E74",
   accent: "#C4A5E0",
   sleep: "#C4A5E0",
+  nap: "#E3B26F",
   accentContrast: "#241632",
   crown: "#E0BD7C",
   nursing: "#D992A0",
@@ -81,6 +84,7 @@ const night: ColorTokens = {
   textMuted: "#5C5249",
   accent: "#B69BC8",
   sleep: "#B69BC8",
+  nap: "#B08C60",
   accentContrast: "#0D0A11",
   crown: "#8A6B3D",
   nursing: "#8C5A5F",
@@ -139,6 +143,7 @@ export const shadows = {
 export const componentMetrics = {
   button: { height: 52, largeHeight: 60, radius: 26, horizontalPadding: 20 },
   iconButton: { target: 48, glyph: 22, radius: 24 },
+  list: { radius: 24, rowHeight: 72, horizontalPadding: 16, verticalPadding: 14 },
   field: { height: 56, radius: 16, horizontalPadding: 16 },
   activity: { glyph: 36, radius: 26, padding: 20 },
   page: { gutter: 24, sectionGap: 28 },

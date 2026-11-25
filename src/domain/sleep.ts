@@ -1,5 +1,5 @@
 import { startOfDay } from "date-fns";
-import { SleepSession } from "@/db/types";
+import { SleepSession, SleepPeriod } from "@/db/types";
 
 export function sleepSecondsToday(sessions: SleepSession[], now: Date): number {
   return sleepSecondsBetween(sessions, startOfDay(now), now);
@@ -14,4 +14,13 @@ export function sleepSecondsBetween(sessions: SleepSession[], from: Date, now: D
 }
 export function validSleepRange(start: Date, end: Date, now = new Date()): boolean {
   return Number.isFinite(start.getTime()) && Number.isFinite(end.getTime()) && start < end && end <= now;
+}
+
+/** Legacy records get a display default only; caregivers can explicitly override it. */
+export function defaultSleepPeriod(start: Date): SleepPeriod {
+  const hour = start.getHours();
+  return hour >= 19 || hour < 7 ? "night" : "nap";
+}
+export function sleepPeriod(session: Pick<SleepSession, "period" | "startedAt">): SleepPeriod {
+  return session.period ?? defaultSleepPeriod(new Date(session.startedAt));
 }

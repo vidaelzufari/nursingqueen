@@ -1,3 +1,5 @@
+import { ListRow } from "@/components/ListRow";
+import { SelectField } from "@/components/SelectField";
 import { Field } from "@/components/Field";
 import { DateField } from "@/components/DateField";
 import React from "react";
@@ -8,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { AppShell } from "@/navigation/AppShell";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useRouter } from "expo-router";
-import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
+import { useActiveBaby } from "@/store/useBabyStore";
 import { PageHeader } from "@/components/PageHeader";
 import { Icon } from "@/components/Icon";
 import { Button, Card } from "@/components";
@@ -38,7 +40,6 @@ const LANGUAGE_OPTIONS: { value: SupportedLanguage | "system"; label: string }[]
 export default function SettingsScreen() {
   const router = useRouter();
   const baby = useActiveBaby();
-  const babies = useBabyStore(s => s.babies);
   const theme = useTheme();
   const { t } = useTranslation();
   const themePreference = useSettingsStore((s) => s.themePreference);
@@ -79,59 +80,18 @@ export default function SettingsScreen() {
         <PageHeader title={t("settings.title")} subtitle={t("refresh.settingsSubtitle")} />
         <Card style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
           <View style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" color={theme.colors.accent} /></View>
-          <View style={{ flex: 1, minWidth: 100, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("refresh.profiles")} ({babies.length})</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{baby?.name ?? t("profile.addBaby")}</Text></View>
+          <View style={{ flex: 1, minWidth: 100, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("profile.title")}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{baby?.name ?? t("profile.addBaby")}</Text></View>
           <Button label={t("common.edit")} onPress={() => router.push("/profile")} style={{ minHeight: 44, paddingHorizontal: 16 }} />
         </Card>
+        <Card padded={false} style={{ paddingHorizontal: 16 }}><ListRow testID="settings-personalize-home" title={t("homeSetup.title")} subtitle={t("homeSetup.settingsHint")} leading={<Icon name="home" color={theme.colors.accent} />} onPress={() => router.push("/settings/home")} /></Card>
         <Section title={t("settings.language")}>
-          <OptionRow>
-            {LANGUAGE_OPTIONS.map((opt) => (
-              <Button
-                key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: language === opt.value ? theme.colors.surface : "transparent" }}
-                testID={`settings-language-option-${opt.value}`}
-                label={opt.value === "system" ? t(opt.label) : opt.label}
-                tone={language === opt.value ? "accent" : "neutral"}
-                variant={language === opt.value ? "soft" : "ghost"}
-                active={language === opt.value}
-                icon={language === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
-                onPress={() => setLanguage(opt.value)}
-              />
-            ))}
-          </OptionRow>
+          <SelectField label={t("settings.language")} testID="settings-language" value={language} options={LANGUAGE_OPTIONS.map(o => ({ value: o.value, label: o.value === "system" ? t(o.label) : o.label }))} onChange={setLanguage} />
         </Section>
-
         <Section title={t("settings.units")}>
-          <OptionRow>
-            {UNIT_OPTIONS.map((opt) => (
-              <Button
-                key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: unit === opt.value ? theme.colors.surface : "transparent" }}
-                label={opt.value}
-                tone="accent"
-                variant={unit === opt.value ? "soft" : "ghost"}
-                active={unit === opt.value}
-                icon={unit === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
-                onPress={() => setUnit(opt.value)}
-              />
-            ))}
-          </OptionRow>
+          <SelectField label={t("settings.units")} value={unit} options={UNIT_OPTIONS.map(o => ({ value: o.value, label: o.value }))} onChange={setUnit} />
         </Section>
-
         <Section title={t("settings.appearance")}>
-          <OptionRow>
-            {THEME_OPTIONS.map((opt) => (
-              <Button
-                key={opt.value}
-                style={{ minHeight: 46, paddingHorizontal: 12, flexBasis: "45%", flexGrow: 1, backgroundColor: themePreference === opt.value ? theme.colors.surface : "transparent" }}
-                label={t(opt.labelKey)}
-                tone={themePreference === opt.value ? "accent" : "neutral"}
-                variant={themePreference === opt.value ? "soft" : "ghost"}
-                active={themePreference === opt.value}
-                icon={themePreference === opt.value ? <Icon name="check" size={16} color={theme.colors.accent} /> : undefined}
-                onPress={() => setThemePreference(opt.value)}
-              />
-            ))}
-          </OptionRow>
+          <SelectField label={t("settings.appearance")} value={themePreference} options={THEME_OPTIONS.map(o => ({ value: o.value, label: t(o.labelKey) }))} onChange={setThemePreference} />
         </Section>
 
         <Section title={t("timers.title")}>
@@ -180,9 +140,4 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       {children}
     </Card>
   );
-}
-
-function OptionRow({ children }: { children: React.ReactNode }) {
-  const theme = useTheme();
-  return <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, padding: 4, borderRadius: 20, backgroundColor: theme.colors.background }}>{children}</View>;
 }

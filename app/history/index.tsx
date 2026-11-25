@@ -1,3 +1,7 @@
+import { useFoodStore } from "@/store/useFoodStore";
+import { foodName } from "@/domain/foods";
+import { sleepPeriod } from "@/domain/sleep";
+import { SleepPeriod } from "@/db/types";
 import { useDurationFormatter } from "@/i18n/useDurationFormatter";
 import { EmptyState } from "@/components/EmptyState";
 import { dateLocale } from "@/domain/dateLocale";
@@ -19,6 +23,7 @@ import { formatVolume } from "@/domain/units";
 interface HistoryRow {
   id: string;
   kind: EntryKind;
+  sleepPeriod?: SleepPeriod;
   at: Date;
   title: string;
   detailLabel?: string;
@@ -36,6 +41,8 @@ export default function HistoryScreen() {
   const [query, setQuery] = useState("");
   const unit = useSettingsStore((s) => s.unit);
 
+  const solidMeals = useFoodStore(s => s.meals);
+  const foods = useFoodStore(s => s.foods);
   const sleepSessions = useSleepStore(s => s.sessions);
   const nursingSessions = useLogStore((s) => s.nursingSessions);
   const pumpEvents = useLogStore((s) => s.pumpEvents);
@@ -66,9 +73,10 @@ export default function HistoryScreen() {
       detailLabel: b.ml != null ? formatVolume(b.ml, unit) : undefined,
       needsDetail: b.ml == null,
     }));
-    const sleepRows: HistoryRow[] = sleepSessions.map(s => ({ id: s.id, kind: "sleep", at: new Date(s.startedAt), title: t("sleep.title"), detailLabel: s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : t("sleep.sleeping"), needsDetail: false }));
-    return [...nursingRows, ...pumpRows, ...bottleRows, ...sleepRows].sort((a, b) => b.at.getTime() - a.at.getTime());
-  }, [nursingSessions, pumpEvents, bottleEvents, sleepSessions, unit, t, formatDurationShort]);
+    const sleepRows: HistoryRow[] = sleepSessions.map(s => ({ id: s.id, kind: "sleep", sleepPeriod: sleepPeriod(s), at: new Date(s.startedAt), title: t(`sleep.${sleepPeriod(s)}`), detailLabel: s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : t("sleep.sleeping"), needsDetail: false }));
+    const solidRows: HistoryRow[] = solidMeals.map(meal => ({id:meal.id,kind:"solids",at:new Date(meal.occurredAt),title:meal.foodIds.map(id=>foodName(foods.find(f=>f.id===id)??{id},i18n?.resolvedLanguage??i18n?.language??"en")).join(", "),detailLabel:[meal.spoons!=null?t("solids.spoonValue",{count:meal.spoons}):null,meal.ml!=null?`${meal.ml} ml`:null].filter(Boolean).join(" · "),needsDetail:false,note:meal.note}));
+    return [...nursingRows, ...pumpRows, ...bottleRows, ...sleepRows, ...solidRows].sort((a, b) => b.at.getTime() - a.at.getTime());
+  }, [nursingSessions, pumpEvents, bottleEvents, sleepSessions, solidMeals, foods, i18n?.language, i18n?.resolvedLanguage, unit, t, formatDurationShort]);
 
   const filtered = rows.filter(row => (filter === "all" || row.kind === filter) && `${row.title} ${row.note ?? ""}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   return (
@@ -76,7 +84,7 @@ export default function HistoryScreen() {
       <View style={{ padding: theme.spacing.lg, paddingBottom: 8, paddingTop: 24, gap: 14 }}>
         <PageHeader title={t("history.title")} subtitle={t("refresh.historySubtitle")} action={<Button label={t("refresh.add")} icon={<Icon name="plus" color={theme.colors.accentContrast} size={16} />} onPress={() => router.push("/")} style={{ minHeight: 44, paddingHorizontal: 12 }} />} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-          {(["all", "nursing", "pump", "bottle", "sleep"] as const).map(kind => <Pressable key={kind} accessibilityRole="button" accessibilityState={{ selected: filter === kind }} onPress={() => setFilter(kind)} style={{ minHeight: 44, paddingHorizontal: 18, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: filter === kind ? theme.colors.accent : theme.colors.surface, borderWidth: 1, borderColor: filter === kind ? theme.colors.accent : theme.colors.border }}><Text style={[theme.type.bodyStrong, { color: filter === kind ? theme.colors.accentContrast : theme.colors.textSecondary }]}>{t(kind === "all" ? "refresh.all" : `refresh.${kind === "nursing" ? "feed" : kind}`)}</Text></Pressable>)}
+          {(["all", "nursing", "pump", "bottle", "sleep", "solids"] as const).map(kind => <Pressable key={kind} accessibilityRole="button" accessibilityState={{ selected: filter === kind }} onPress={() => setFilter(kind)} style={{ minHeight: 44, paddingHorizontal: 18, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: filter === kind ? theme.colors.accent : theme.colors.surface, borderWidth: 1, borderColor: filter === kind ? theme.colors.accent : theme.colors.border }}><Text style={[theme.type.bodyStrong, { color: filter === kind ? theme.colors.accentContrast : theme.colors.textSecondary }]}>{t(kind === "all" ? "refresh.all" : `refresh.${kind === "nursing" ? "feed" : kind}`)}</Text></Pressable>)}
         </ScrollView>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 14, borderRadius: theme.radii.md, borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface }}><Icon name="search" size={20} color={theme.colors.textMuted} /><TextInput accessibilityLabel={t("refresh.search")} placeholder={t("refresh.search")} placeholderTextColor={theme.colors.textMuted} value={query} onChangeText={setQuery} style={[theme.type.body, { color: theme.colors.textPrimary, flex: 1, minWidth: 0, minHeight: 48, paddingVertical: 12 }]} /></View>
       </View>
@@ -92,12 +100,13 @@ export default function HistoryScreen() {
         renderItem={({ item, index }) => (
           <EntryRow
             kind={item.kind}
+            sleepPeriod={item.sleepPeriod}
             title={item.title}
             timeLabel={format(item.at, "PPp", { locale })}
             detailLabel={item.detailLabel}
             needsDetail={item.needsDetail}
             needsDetailLabel={t("history.needsMl")}
-            onPress={() => item.kind === "sleep" ? router.push({ pathname: "/sleep", params: { id: item.id } }) : router.push(`/entry/${item.kind}/${item.id}`)}
+            onPress={() => item.kind === "solids" ? router.push({pathname:"/modals/meal-entry",params:{id:item.id}}) : item.kind === "sleep" ? router.push({ pathname: "/sleep", params: { id: item.id } }) : router.push(`/entry/${item.kind}/${item.id}`)}
             testID={index === 0 ? "history-entry-row-0" : `history-entry-row-${index}`}
           />
         )}

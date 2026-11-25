@@ -97,6 +97,27 @@ export const migrations: Migration[] = [
     ],
   },
   { version: 3, statements: [`ALTER TABLE nursing_sessions ADD COLUMN milk_ml REAL CHECK (milk_ml IS NULL OR milk_ml > 0);`] },
+  { version: 4, statements: [`ALTER TABLE sleep_sessions ADD COLUMN period TEXT CHECK (period IS NULL OR period IN ('nap', 'night'));`] },
+  { version: 5, statements: [`CREATE TABLE IF NOT EXISTS external_commands (id TEXT PRIMARY KEY NOT NULL, created_at TEXT NOT NULL);`] },
+  { version: 6, statements: [
+    `CREATE TABLE foods (id TEXT PRIMARY KEY NOT NULL, baby_id TEXT REFERENCES babies(id) ON DELETE CASCADE, catalog_key TEXT UNIQUE, name TEXT, normalized_name TEXT, photo_uri TEXT, created_at TEXT NOT NULL, UNIQUE(baby_id, normalized_name));`,
+    `CREATE TABLE food_plans (baby_id TEXT NOT NULL REFERENCES babies(id) ON DELETE CASCADE, food_id TEXT NOT NULL REFERENCES foods(id), PRIMARY KEY(baby_id,food_id));`,
+    `CREATE TABLE solid_meals (id TEXT PRIMARY KEY NOT NULL,baby_id TEXT NOT NULL REFERENCES babies(id) ON DELETE CASCADE,occurred_at TEXT NOT NULL,note TEXT,spoons REAL CHECK(spoons IS NULL OR spoons>0),ml REAL CHECK(ml IS NULL OR ml>0),created_at TEXT NOT NULL,updated_at TEXT NOT NULL);`,
+    `CREATE TABLE meal_foods (meal_id TEXT NOT NULL REFERENCES solid_meals(id) ON DELETE CASCADE,food_id TEXT NOT NULL REFERENCES foods(id),position INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(meal_id,food_id));`,
+    `CREATE INDEX idx_solid_meals_baby_time ON solid_meals(baby_id,occurred_at);`,
+    `CREATE INDEX idx_meal_foods_food ON meal_foods(food_id,meal_id);`
+  ] },
+  { version: 7, statements: [
+    // Keep legacy rows untouched while enforcing exclusivity for all new writes,
+    // including writes from the Watch bridge's separate SQLite connection.
+    `CREATE TRIGGER nursing_one_active_insert BEFORE INSERT ON nursing_sessions
+     WHEN NEW.ended_at IS NULL AND EXISTS(SELECT 1 FROM nursing_sessions WHERE baby_id=NEW.baby_id AND ended_at IS NULL)
+     BEGIN SELECT RAISE(ABORT,'nursing_session_already_active'); END;`,
+    `CREATE TRIGGER nursing_one_active_update BEFORE UPDATE OF baby_id,ended_at ON nursing_sessions
+     WHEN NEW.ended_at IS NULL AND EXISTS(SELECT 1 FROM nursing_sessions WHERE baby_id=NEW.baby_id AND ended_at IS NULL AND id<>NEW.id)
+     BEGIN SELECT RAISE(ABORT,'nursing_session_already_active'); END;`
+  ] },
+
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations[migrations.length - 1]?.version ?? 0;

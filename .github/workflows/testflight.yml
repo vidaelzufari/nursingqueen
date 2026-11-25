@@ -1,5 +1,8 @@
-name: Build and submit to TestFlight
+name: Build and submit beta releases
 on:
+  push:
+    branches: [main]
+    paths-ignore: ['store/**', '**/*.md']
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,6 +17,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ios, android]
     env:
       ASC_APP_ID: ${{ vars.ASC_APP_ID }}
       EXPO_APPLE_TEAM_ID: XR3BKK4C9Y
@@ -26,6 +33,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Validate App Store app and version
+        if: matrix.platform == 'ios'
         run: node scripts/configure-release.cjs --submission-only
       - uses: expo/expo-github-action@v8
         with:
@@ -33,5 +41,5 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Verify Expo project
         run: eas project:info
-      - name: Build iOS and enqueue TestFlight submission
-        run: eas build --platform ios --profile production --auto-submit-with-profile internal --non-interactive --wait
+      - name: Build and enqueue beta store submission
+        run: eas build --platform ${{ matrix.platform }} --profile production --auto-submit-with-profile internal --non-interactive --wait

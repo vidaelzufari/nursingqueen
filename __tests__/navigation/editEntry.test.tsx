@@ -1,9 +1,9 @@
-jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }) }));
 import React from "react";
 import { TextInput } from "react-native";
 import { render, fireEvent } from "@testing-library/react-native";
 import EditEntry from "../../app/entry/[kind]/[id]";
 import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
+jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }) }));
 const mockTheme = { colors:palettes.light, spacing,radii,type:typeScale,shadows };
 const MockTextInput = TextInput;
 const mockRouter = { back: jest.fn(), canGoBack: () => true, replace: jest.fn() };

@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(path.dirname(require.resolve('lucide-react-native')), '../..');
 const names = {
-  play:'play', search:'search', chevron:'chevron-left', close:'x', calendar:'calendar-days',
+  solids:'utensils', nap:'sun', weight:'weight', play:'play', search:'search', chevron:'chevron-left', close:'x', calendar:'calendar-days',
   analytics:'chart-no-axes-column-increasing', home:'house', history:'history', settings:'settings-2',
   heart:'heart-handshake', pump:'droplets', bottle:'milk', plus:'plus', arrow:'arrow-right', back:'arrow-left',
   baby:'baby', clock:'clock-3', check:'check', sparkles:'sparkles', moon:'moon-star', photo:'camera', stop:'square',

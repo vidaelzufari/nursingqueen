@@ -22,7 +22,8 @@
     "hoursShort": "{{count}} h",
     "loading": "Chargement…",
     "startupError": "L’app n’a pas pu s’ouvrir",
-    "restartHint": "Fermez puis rouvrez Nursing Queen. Vos données enregistrées n’ont pas été réinitialisées."
+    "restartHint": "Fermez puis rouvrez Nursing Queen. Vos données enregistrées n’ont pas été réinitialisées.",
+    "close": "Fermer"
   },
   "home": {
     "greeting": "Bonjour, Reine",
@@ -98,7 +99,20 @@
       "months_one": "{{count}} mois",
       "months_other": "{{count}} mois",
       "months": "{{count}} mois",
-      "weeks": "{{count}} semaines"
+      "weeks": "{{count}} semaines",
+      "monthsDays": "{{months}} et {{days}}",
+      "monthPart_one": "{{count}} mois",
+      "monthPart_other": "{{count}} mois",
+      "dayPart_one": "{{count}} jour",
+      "dayPart_other": "{{count}} jours",
+      "monthPart_zero": "{{count}} mois",
+      "monthPart_two": "{{count}} mois",
+      "monthPart_few": "{{count}} mois",
+      "monthPart_many": "{{count}} mois",
+      "dayPart_zero": "{{count}} jours",
+      "dayPart_two": "{{count}} jours",
+      "dayPart_few": "{{count}} jours",
+      "dayPart_many": "{{count}} jours"
     },
     "photo": "Photo",
     "choosePhoto": "Choisir dans la photothèque",
@@ -108,7 +122,11 @@
     "weightEmpty": "Aucune mesure de poids pour l'instant.",
     "privacyNote": "Ce profil reste uniquement sur cet appareil.",
     "weightGrams": "Poids (g)",
-    "editTitle": "Modifier le profil"
+    "editTitle": "Modifier le profil",
+    "weightKg": "Poids (kg)",
+    "weightSaved": "Poids enregistré",
+    "weightError": "Impossible d’enregistrer le poids. Réessayez.",
+    "latestWeight": "Dernier poids"
   },
   "settings": {
     "title": "Réglages",
@@ -237,7 +255,10 @@
     "stop": "Terminer le sommeil",
     "adjust": "Ajuster le début du sommeil",
     "timeUpdated": "Début du sommeil modifié",
-    "startedAt": "Début : {{time}}"
+    "startedAt": "Début : {{time}}",
+    "period": "Type de sommeil",
+    "nap": "Sieste",
+    "night": "Nuit"
   },
   "details": {
     "editHint": "Touchez une entrée pour la consulter ou la modifier.",
@@ -267,7 +288,8 @@
     "hours": "heures",
     "logged": "Activité enregistrée",
     "emptyTitle": "Vos tendances apparaîtront ici",
-    "emptyBody": "Enregistrez une activité pour commencer à suivre cette semaine."
+    "emptyBody": "Enregistrez une activité pour commencer à suivre cette semaine.",
+    "solids": "Diversification"
   },
   "analytics": {
     "title": "Statistiques",
@@ -329,7 +351,8 @@
     "save_bottle": "Enregistrer et noter le biberon",
     "save_sleep": "Enregistrer et démarrer le sommeil",
     "save_earlier": "Enregistrer et noter une tétée passée",
-    "editDate": "Ajoutez une date de naissance valide pour afficher l’âge"
+    "editDate": "Ajoutez une date de naissance valide pour afficher l’âge",
+    "save_solids": "Enregistrer bébé et choisir les aliments"
   },
   "datePicker": {
     "date": "Date",
@@ -398,7 +421,8 @@
     "feed": "Allaitement",
     "pump": "Tirage",
     "bottle": "Biberon",
-    "sleep": "Sommeil"
+    "sleep": "Sommeil",
+    "solids": "Diversification"
   },
   "sleepAI": {
     "title": "Comprendre son sommeil",
@@ -431,5 +455,79 @@
     "noLogs": "Aucun sommeil enregistré",
     "duration": "{{time}} de sommeil",
     "logEarlier": "Ajouter un sommeil passé"
+  },
+  "apple": {
+    "refresh": "Actualiser",
+    "phoneRequired": "Ouvrez Nursing Queen sur votre iPhone, puis réessayez.",
+    "notConfirmed": "Action non confirmée. Actualisez avant de réessayer.",
+    "confirming": "Confirmation sur l’iPhone…"
+  },
+  "homeSetup": {
+    "title": "Personnaliser l’accueil",
+    "settingsHint": "Choisissez les activités adaptées à votre quotidien",
+    "intro": "Que souhaitez-vous suivre ?",
+    "body": "Gardez sur l’accueil ce qui vous est utile. Vous pouvez changer ce choix à tout moment.",
+    "saved": "Les modifications sont enregistrées automatiquement.",
+    "minimum": "Gardez au moins une activité sélectionnée.",
+    "history": "Masquer une activité conserve tout son historique. Un minuteur en cours reste visible jusqu’à son arrêt.",
+    "all": "Afficher toutes les activités",
+    "nursing": "Allaitement",
+    "pump": "Tirage",
+    "bottle": "Biberon",
+    "sleep": "Sommeil",
+    "nursingHint": "Tétées à gauche et à droite",
+    "pumpHint": "Lait exprimé au tire-lait",
+    "bottleHint": "Lait maternel ou formule",
+    "sleepHint": "Siestes et sommeil de nuit",
+    "solids": "Diversification",
+    "solidsHint": "Aliments et repas"
+  },
+  "solids": {
+    "title": "Diversification",
+    "homeHint": "Aliments et repas",
+    "intro": "Votre carnet d’aliments. Choisissez quoi tester et notez ce que bébé a goûté, en une seule saisie.",
+    "logMeal": "Enregistrer un repas",
+    "editMeal": "Modifier le repas",
+    "planned": "À tester",
+    "tasted": "Déjà goûtés",
+    "catalog": "Tous les aliments",
+    "search": "Rechercher un aliment",
+    "searchHint": "Patate douce, œuf…",
+    "category": "Catégorie",
+    "catalogCount": "{{count}} aliments dans le catalogue",
+    "first": "Première fois",
+    "last": "Dernière fois",
+    "empty": "Aucun aliment ici pour le moment. Essayez le catalogue ou une autre recherche.",
+    "browse": "Parcourir le catalogue",
+    "plan": "Ajouter à tester",
+    "custom": "Ajouter un aliment personnalisé",
+    "recent": "Derniers repas",
+    "photoCredits": "Crédits des photos",
+    "choosePhoto": "Choisir une photo · facultatif",
+    "foodName": "Nom de l’aliment",
+    "error": "Impossible d’enregistrer. Vérifiez les informations et réessayez. Pour les photos, autorisez l’accès dans les réglages du téléphone.",
+    "time": "Date et heure du repas",
+    "spoons": "Nombre de cuillères · facultatif",
+    "ml": "Quantité en ml · facultatif",
+    "note": "Texture, ce que bébé a aimé… · facultatif",
+    "selected": "Aliments sélectionnés : {{count}}",
+    "saved": "Repas enregistré · carnet d’aliments mis à jour",
+    "notFound": "Ce repas est introuvable.",
+    "confirmDelete": "Supprimer ce repas ? Touchez pour confirmer",
+    "spoonValue": "{{count}} cuillères",
+    "today": "Repas du jour",
+    "categories": {
+      "all": "Toutes les catégories",
+      "vegetables": "Légumes",
+      "fruits": "Fruits",
+      "grains": "Céréales",
+      "legumes": "Légumineuses",
+      "proteins": "Viandes, poissons et œufs",
+      "dairy": "Produits laitiers",
+      "nuts": "Noix et graines",
+      "other": "Autres"
+    },
+    "more": "Afficher plus d’aliments",
+    "positiveQuantity": "Indiquez une quantité supérieure à zéro, ou laissez le champ vide."
   }
 }

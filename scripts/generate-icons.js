@@ -3,7 +3,7 @@
  * Rasterizes assets/brand/icon-source.svg into every PNG asset app.config.ts
  * references. Run after any change to the source SVG:
  *   npm run generate:icons
- * Requires the `sharp` dev dependency (not installed by default — this
+ * Requires the optional `sharp` dependency (this
  * script is intentionally the only thing that needs it, so it's not a
  * runtime dependency of the app).
  */
@@ -26,7 +26,7 @@ async function main() {
     sharp = require("sharp");
   } catch {
     console.error(
-      "Missing dev dependency `sharp`. Install it once with `npm install --save-dev sharp`, then re-run `npm run generate:icons`."
+      "Optional image tool `sharp` is unavailable. Install it with `npm install --no-save sharp@0.34.5` on your design machine, then re-run `npm run generate:icons`."
     );
     process.exit(1);
   }

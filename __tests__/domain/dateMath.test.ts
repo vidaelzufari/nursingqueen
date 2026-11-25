@@ -73,3 +73,14 @@ describe("dateMath", () => {
     });
   });
 });
+it.each([
+  ['2026-06-04','2026-11-25',5,21],
+  ['2026-01-31','2026-02-28',1,0],
+  ['2026-01-31','2026-03-30',1,30],
+  ['2024-02-29','2025-02-28',12,0],
+  ['2026-11-25','2026-11-25',0,0],
+  ['2026-11-01','2026-11-25',0,24],
+  ['2026-12-01','2026-11-25',0,0],
+])('uses calendar months and remaining days from %s to %s', (birth, today, months, daysAfterMonths) => {
+  expect(computeAge(new Date(birth+'T00:00:00'),new Date(today+'T23:59:00'))).toMatchObject({months,daysAfterMonths});
+});

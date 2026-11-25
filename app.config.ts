@@ -54,7 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     infoPlist: {
       // Concrete fallback strings are required by App Store Connect.
       // Xcode expands undefined $(KEY) references to empty strings.
-      NSPhotoLibraryUsageDescription: "Choose a photo from your library to personalize your baby's profile. The photo is stored only on this device.",
+      NSPhotoLibraryUsageDescription: "Choose a photo for your baby's profile or a custom food. Photos are stored only on this device.",
       NSCameraUsageDescription: "Take a photo to personalize your baby's profile. The photo is stored only on this device.",
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -75,6 +75,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     "expo-router",
     "./plugins/withLocalNotificationsOnly.js",
+    "./plugins/withAppleSurfaces.js",
     "expo-notifications",
     "expo-live-activity",
     ["expo-build-properties", { ios: { deploymentTarget: "15.1" }, android: { minSdkVersion: 24 } }],
@@ -85,7 +86,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // bug in this expo-sqlite version and fails the whole config read.
     "expo-updates",
     ["expo-image-picker", {
-      photosPermission: "Choose a photo from your library to personalize your baby's profile. The photo is stored only on this device.",
+      photosPermission: "Choose a photo for your baby's profile or a custom food. Photos are stored only on this device.",
       cameraPermission: "Take a photo to personalize your baby's profile. The photo is stored only on this device.",
     }],
     "./plugins/withLocalizedPermissions.js",

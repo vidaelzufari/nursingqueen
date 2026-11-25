@@ -46,6 +46,7 @@ export const bottleRepository = {
     stashItemId?: string | null;
     occurredAt?: Date;
   }): BottleEvent {
+    if (input.ml !== null && (!Number.isFinite(input.ml) || input.ml <= 0)) throw new Error("Invalid bottle amount");
     const db = getDatabase();
     const now = new Date().toISOString();
     const event: BottleEvent = {
@@ -86,6 +87,7 @@ export const bottleRepository = {
     if (!row) return;
     const current = fromRow(row);
     const next = { ...current, ...patch };
+    if (next.ml !== null && (!Number.isFinite(next.ml) || next.ml <= 0)) throw new Error("Invalid bottle amount");
     const updatedAt = new Date().toISOString();
     db.runSync(
       "UPDATE bottle_events SET ml = ?, milk_type = ?, needs_detail = ?, occurred_at = ?, note = ?, updated_at = ? WHERE id = ?;",

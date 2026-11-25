@@ -1,8 +1,9 @@
-import { differenceInCalendarDays, differenceInMinutes, differenceInMonths, differenceInWeeks } from "date-fns";
+import { addMonths, startOfDay, differenceInCalendarMonths, differenceInCalendarDays, differenceInMinutes, differenceInWeeks } from "date-fns";
 
 export interface AgeBreakdown {
   days: number;
   weeks: number;
+  daysAfterMonths: number;
   months: number;
   /** Whole-months-only once past ~8 weeks, otherwise weeks — matches how parents naturally describe age. */
   isMonthsPhase: boolean;
@@ -15,8 +16,12 @@ export interface AgeBreakdown {
 export function computeAge(dateOfBirth: Date, now: Date): AgeBreakdown {
   const days = Math.max(0, differenceInCalendarDays(now, dateOfBirth));
   const weeks = Math.floor(days / 7);
-  const months = Math.max(0, differenceInMonths(now, dateOfBirth));
-  return { days, weeks, months, isMonthsPhase: weeks >= 8 };
+  const birth = startOfDay(dateOfBirth);
+  const today = startOfDay(now);
+  let months = Math.max(0, differenceInCalendarMonths(today, birth));
+  if (addMonths(birth, months) > today) months = Math.max(0, months - 1);
+  const daysAfterMonths = Math.max(0, differenceInCalendarDays(today, addMonths(birth, months)));
+  return { days, weeks, months, daysAfterMonths, isMonthsPhase: weeks >= 8 };
 }
 
 export function minutesSince(from: Date, now: Date): number {

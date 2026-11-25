@@ -1,3 +1,4 @@
+import { HomeActivity, HOME_ACTIVITIES, normalizeHomeActivities } from "@/domain/homePreferences";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -8,6 +9,8 @@ export type ThemePreference = ThemeMode | "system";
 export type SupportedLanguage = "en" | "fr" | "ar";
 
 interface SettingsState {
+  homeActivities: HomeActivity[];
+  setHomeActivities: (activities: HomeActivity[]) => void;
   timerReminders: boolean;
   liveActivities: boolean;
   setTimerReminders: (enabled: boolean) => void;
@@ -37,6 +40,8 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
+      homeActivities: [...HOME_ACTIVITIES],
+      setHomeActivities: activities => set({ homeActivities: normalizeHomeActivities(activities) }),
       timerReminders: false,
       liveActivities: false,
       setTimerReminders: timerReminders => set({ timerReminders }),
@@ -59,6 +64,10 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: "nursing-queen-settings",
       storage: createJSONStorage(() => AsyncStorage),
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<SettingsState> | undefined;
+        return { ...current, ...saved, homeActivities: normalizeHomeActivities(saved?.homeActivities) };
+      },
     }
   )
 );

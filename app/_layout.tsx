@@ -1,7 +1,10 @@
+import { useFoodStore } from "@/store/useFoodStore";
+import { useMinimumLaunchTime } from "@/hooks/useMinimumLaunchTime";
+import { AppleSurfaces } from "@/components/AppleSurfaces";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { View } from "react-native";
 import { EmptyState } from "@/components/EmptyState";
-import { BrandMark } from "@/components/BrandMark";
+import { LaunchScreen } from "@/components/LaunchScreen";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -26,6 +29,7 @@ initI18n();
 function Bootstrap({ children }: { children: React.ReactNode }) {
   const theme = useTheme(); const { t } = useTranslation();
   const [ready, setReady] = useState(false);
+  const minimumLaunchElapsed = useMinimumLaunchTime();
   const [startupError, setStartupError] = useState<string | null>(null);
   const language = useSettingsStore((s) => s.language);
   const refreshBabies = useBabyStore((s) => s.refresh);
@@ -63,12 +67,13 @@ function Bootstrap({ children }: { children: React.ReactNode }) {
       refreshLog(baby.id);
       refreshStash(baby.id);
       refreshSleep(baby.id);
+      useFoodStore.getState().refresh(baby.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, babies, activeBabyId]);
 
   if (startupError) return <View accessibilityRole="alert" style={{ flex: 1, backgroundColor: theme.colors.background, justifyContent: "center", padding: 24 }}><EmptyState icon="close" title={t("common.startupError")} message={t("common.restartHint")} /></View>;
-  if (!ready) return <View style={{ flex: 1, backgroundColor: theme.colors.background, alignItems: "center", justifyContent: "center", gap: 20 }}><BrandMark size={56} /><ActivityIndicator color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("common.loading")}</Text></View>;
+  if (!ready || !minimumLaunchElapsed) return <LaunchScreen />;
   return <>{children}</>;
 }
 
@@ -87,6 +92,7 @@ export default function RootLayout() {
             <Bootstrap>
               <ThemedStatusBar />
               <TimerIntegrations />
+              <AppleSurfaces />
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="history/index" />

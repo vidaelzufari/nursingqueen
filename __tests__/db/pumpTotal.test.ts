@@ -1,3 +1,6 @@
+import { weightRepository } from "@/db/repositories/weightRepository";
+import { parseWeightKg } from "@/domain/weight";
+import { sleepPeriod } from "@/domain/sleep";
 import { nursingRepository } from "@/db/repositories/nursingRepository";
 import { sleepRepository } from "@/db/repositories/sleepRepository";
 import { pumpRepository } from "@/db/repositories/pumpRepository";
@@ -110,4 +113,34 @@ it("stores an optional nursing milk amount independently of the timer", () => {
  nursingRepository.update(session.id,{milkMl:null});
  expect(nursingRepository.listByBaby("baby")[0]?.milkMl).toBeNull();
  expect(() => nursingRepository.update(session.id,{milkMl:-10})).toThrow();
+});
+
+it("converts localized kg once, persists grams, and reads the same value after reload", () => {
+  for (const text of ["5.25", "5,25", "٥٫٢٥"]) {
+    weightRepository.create("baby-a", parseWeightKg(text)!);
+  }
+  expect(weightRepository.listByBaby("baby-a").map(w => w.weightGrams)).toEqual([5250, 5250, 5250]);
+  expect(() => weightRepository.create("baby-a", 0)).toThrow("Invalid weight entry");
+  expect(() => weightRepository.create("baby-a", Infinity)).toThrow("Invalid weight entry");
+});
+it.each(["", "0", "-1", "5..2", "Infinity", "1e3", "5,1234"])("rejects invalid kg entry %s", text => {
+  expect(parseWeightKg(text)).toBeNull();
+});
+it("preserves an explicit nap/night choice across timer stop and later edits", () => {
+  sleepRepository.start("baby-a", "nap");
+  const active = sleepRepository.list("baby-a")[0]!;
+  expect(active.period).toBe("nap");
+  sleepRepository.setPeriod(active.id, "night");
+  sleepRepository.stop(active.id);
+  expect(sleepRepository.list("baby-a")[0]?.period).toBe("night");
+  const start = new Date("2026-01-01T10:00Z"), end = new Date("2026-01-01T11:00Z");
+  sleepRepository.save("baby-a", start, end, active.id, "night");
+  expect(sleepPeriod(sleepRepository.list("baby-a")[0]!)).toBe("night");
+});
+it("keeps legacy sleep records readable after the period migration", () => {
+  const db = mockDatabase as { runSync: (s: string, p: unknown[]) => void };
+  db.runSync("INSERT INTO sleep_sessions(id,baby_id,started_at,ended_at,created_at,updated_at) VALUES (?,?,?,?,?,?);", ["legacy", "baby-a", "2026-01-01T21:00:00", "2026-01-02T05:00:00", "2026-01-01", "2026-01-01"]);
+  const entry = sleepRepository.list("baby-a")[0]!;
+  expect(entry.period).toBeNull();
+  expect(sleepPeriod(entry)).toBe("night");
 });

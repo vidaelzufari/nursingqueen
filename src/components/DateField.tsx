@@ -43,7 +43,7 @@ export function DateField({ label, value, onChange, maximumDate, withTime, onCle
     <View style={{ flexDirection: "row", gap: 8 }}>
       {(withTime ? ["date", "time"] as const : ["date"] as const).map(part => (
         <Pressable key={part} accessibilityRole="button" accessibilityLabel={`${label} · ${t(`datePicker.${part}`)}`} onPress={() => open(part)}
-          style={({ pressed }) => ({ flex: 1, minHeight: 56, borderRadius: theme.radii.md, padding: 12, gap: 8, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface, opacity: pressed ? 0.7 : 1 })}>
+          style={({ pressed }) => ({ flex: 1, minHeight: 56, borderRadius: theme.radii.md, padding: 12, gap: 8, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.background, opacity: pressed ? 0.7 : 1 })}>
           <Icon name={part === "date" ? "calendar" : "clock"} size={18} color={theme.colors.accent} />
           <Text style={[theme.type.caption, { color: theme.colors.textPrimary, flexShrink: 1 }]}>{current ? current.toLocaleString(i18n?.resolvedLanguage ?? i18n?.language, part === "date" ? { day: "numeric", month: "short", year: "numeric" } : { hour: "numeric", minute: "2-digit" }) : t("datePicker.choose")}</Text>
         </Pressable>

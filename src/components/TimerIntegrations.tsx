@@ -1,3 +1,4 @@
+import { sleepPeriod } from "@/domain/sleep";
 import { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -42,7 +43,8 @@ export function TimerIntegrations() {
     const sync = () => {
       queue = queue.catch(() => {}).then(async () => {
         const active = [{ session: nursing, kind: "nursing", minutes: 30 }, { session: sleep, kind: "sleep", minutes: 120 }].filter(x => x.session);
-    // eslint-disable-next-line @typescript-eslint/no-var-requires -- Load native modules lazily so older binaries can still log.
+        try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires -- Load native modules lazily so older binaries can still log.
         const notifications = require("expo-notifications") as typeof import("expo-notifications");
         const permission = await notifications.getPermissionsAsync();
         const scheduled = await notifications.getAllScheduledNotificationsAsync();
@@ -57,6 +59,7 @@ export function TimerIntegrations() {
             trigger: at,
           });
         }
+        } catch { /* Reminder failures must not prevent Live Activity synchronization. */ }
         if (Platform.OS !== "ios" || parseFloat(String(Platform.Version)) < 16.2) return;
         // This is optional on older installed binaries without the extension.
     // eslint-disable-next-line @typescript-eslint/no-var-requires -- Load native modules lazily so older binaries can still log.
@@ -69,7 +72,7 @@ export function TimerIntegrations() {
           else remaining[sessionId] = value;
         }
         if (live && AppState.currentState === "active") for (const item of active) {
-          const state = { title: t(item.kind === "sleep" ? "sleep.sleeping" : "modern.nursingNow"), subtitle: t("timers.tap"), progressBar: { date: new Date(item.session!.startedAt).getTime() } };
+          const state = { title: item.kind === "sleep" && sleep ? `${t(`sleep.${sleepPeriod(sleep)}`)} · ${t("forecast.active")}` : t("modern.nursingNow"), subtitle: t("timers.tap"), progressBar: { date: new Date(item.session!.startedAt).getTime() } };
           const existing = remaining[item.session!.id];
           try {
             if (existing) activity.updateActivity(existing.id, state);

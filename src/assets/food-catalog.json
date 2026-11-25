@@ -1,0 +1,1186 @@
+[
+  {
+    "id": "carrot",
+    "category": "vegetables",
+    "en": "Carrot",
+    "fr": "Carotte",
+    "ar": "جزر",
+    "wiki": "Carrot"
+  },
+  {
+    "id": "zucchini",
+    "category": "vegetables",
+    "en": "Zucchini",
+    "fr": "Courgette",
+    "ar": "كوسا",
+    "wiki": "Zucchini"
+  },
+  {
+    "id": "sweet_potato",
+    "category": "vegetables",
+    "en": "Sweet potato",
+    "fr": "Patate douce",
+    "ar": "بطاطا حلوة",
+    "wiki": "Sweet potato"
+  },
+  {
+    "id": "potato",
+    "category": "vegetables",
+    "en": "Potato",
+    "fr": "Pomme de terre",
+    "ar": "بطاطس",
+    "wiki": "Potato"
+  },
+  {
+    "id": "broccoli",
+    "category": "vegetables",
+    "en": "Broccoli",
+    "fr": "Brocoli",
+    "ar": "بروكلي",
+    "wiki": "Broccoli"
+  },
+  {
+    "id": "cauliflower",
+    "category": "vegetables",
+    "en": "Cauliflower",
+    "fr": "Chou-fleur",
+    "ar": "قرنبيط",
+    "wiki": "Cauliflower"
+  },
+  {
+    "id": "spinach",
+    "category": "vegetables",
+    "en": "Spinach",
+    "fr": "Épinards",
+    "ar": "سبانخ",
+    "wiki": "Spinach"
+  },
+  {
+    "id": "pea",
+    "category": "vegetables",
+    "en": "Pea",
+    "fr": "Petits pois",
+    "ar": "بازلاء",
+    "wiki": "Pea"
+  },
+  {
+    "id": "green_bean",
+    "category": "vegetables",
+    "en": "Green bean",
+    "fr": "Haricots verts",
+    "ar": "فاصوليا خضراء",
+    "wiki": "Green bean"
+  },
+  {
+    "id": "pumpkin",
+    "category": "vegetables",
+    "en": "Pumpkin",
+    "fr": "Potiron",
+    "ar": "قرع",
+    "wiki": "Pumpkin"
+  },
+  {
+    "id": "butternut_squash",
+    "category": "vegetables",
+    "en": "Butternut squash",
+    "fr": "Courge butternut",
+    "ar": "قرع عسلي",
+    "wiki": "Butternut squash"
+  },
+  {
+    "id": "beetroot",
+    "category": "vegetables",
+    "en": "Beetroot",
+    "fr": "Betterave",
+    "ar": "شمندر",
+    "wiki": "Beetroot"
+  },
+  {
+    "id": "parsnip",
+    "category": "vegetables",
+    "en": "Parsnip",
+    "fr": "Panais",
+    "ar": "جزر أبيض",
+    "wiki": "Parsnip"
+  },
+  {
+    "id": "turnip",
+    "category": "vegetables",
+    "en": "Turnip",
+    "fr": "Navet",
+    "ar": "لفت",
+    "wiki": "Turnip"
+  },
+  {
+    "id": "leek",
+    "category": "vegetables",
+    "en": "Leek",
+    "fr": "Poireau",
+    "ar": "كراث",
+    "wiki": "Leek"
+  },
+  {
+    "id": "cucumber",
+    "category": "vegetables",
+    "en": "Cucumber",
+    "fr": "Concombre",
+    "ar": "خيار",
+    "wiki": "Cucumber"
+  },
+  {
+    "id": "tomato",
+    "category": "vegetables",
+    "en": "Tomato",
+    "fr": "Tomate",
+    "ar": "طماطم",
+    "wiki": "Tomato"
+  },
+  {
+    "id": "bell_pepper",
+    "category": "vegetables",
+    "en": "Bell pepper",
+    "fr": "Poivron",
+    "ar": "فلفل حلو",
+    "wiki": "Bell pepper"
+  },
+  {
+    "id": "eggplant",
+    "category": "vegetables",
+    "en": "Eggplant",
+    "fr": "Aubergine",
+    "ar": "باذنجان",
+    "wiki": "Eggplant"
+  },
+  {
+    "id": "asparagus",
+    "category": "vegetables",
+    "en": "Asparagus",
+    "fr": "Asperge",
+    "ar": "هليون",
+    "wiki": "Asparagus"
+  },
+  {
+    "id": "artichoke",
+    "category": "vegetables",
+    "en": "Artichoke",
+    "fr": "Artichaut",
+    "ar": "خرشوف",
+    "wiki": "Artichoke"
+  },
+  {
+    "id": "cabbage",
+    "category": "vegetables",
+    "en": "Cabbage",
+    "fr": "Chou",
+    "ar": "ملفوف",
+    "wiki": "Cabbage"
+  },
+  {
+    "id": "brussels_sprout",
+    "category": "vegetables",
+    "en": "Brussels sprout",
+    "fr": "Chou de Bruxelles",
+    "ar": "كرنب بروكسل",
+    "wiki": "Brussels sprout"
+  },
+  {
+    "id": "fennel",
+    "category": "vegetables",
+    "en": "Fennel",
+    "fr": "Fenouil",
+    "ar": "شمر",
+    "wiki": "Fennel"
+  },
+  {
+    "id": "celery",
+    "category": "vegetables",
+    "en": "Celery",
+    "fr": "Céleri",
+    "ar": "كرفس",
+    "wiki": "Celery"
+  },
+  {
+    "id": "chard",
+    "category": "vegetables",
+    "en": "Chard",
+    "fr": "Blette",
+    "ar": "سلق",
+    "wiki": "Chard"
+  },
+  {
+    "id": "kale",
+    "category": "vegetables",
+    "en": "Kale",
+    "fr": "Chou kale",
+    "ar": "كرنب أجعد",
+    "wiki": "Kale"
+  },
+  {
+    "id": "onion",
+    "category": "vegetables",
+    "en": "Onion",
+    "fr": "Oignon",
+    "ar": "بصل",
+    "wiki": "Onion"
+  },
+  {
+    "id": "garlic",
+    "category": "vegetables",
+    "en": "Garlic",
+    "fr": "Ail",
+    "ar": "ثوم",
+    "wiki": "Garlic"
+  },
+  {
+    "id": "maize",
+    "category": "vegetables",
+    "en": "Maize",
+    "fr": "Maïs",
+    "ar": "ذرة",
+    "wiki": "Maize"
+  },
+  {
+    "id": "lettuce",
+    "category": "vegetables",
+    "en": "Lettuce",
+    "fr": "Laitue",
+    "ar": "خس",
+    "wiki": "Lettuce"
+  },
+  {
+    "id": "radish",
+    "category": "vegetables",
+    "en": "Radish",
+    "fr": "Radis",
+    "ar": "فجل",
+    "wiki": "Radish"
+  },
+  {
+    "id": "okra",
+    "category": "vegetables",
+    "en": "Okra",
+    "fr": "Gombo",
+    "ar": "بامية",
+    "wiki": "Okra"
+  },
+  {
+    "id": "yam_vegetable",
+    "category": "vegetables",
+    "en": "Yam",
+    "fr": "Igname",
+    "ar": "يام",
+    "wiki": "Yam (vegetable)"
+  },
+  {
+    "id": "cassava",
+    "category": "vegetables",
+    "en": "Cassava",
+    "fr": "Manioc",
+    "ar": "كسافا",
+    "wiki": "Cassava"
+  },
+  {
+    "id": "apple",
+    "category": "fruits",
+    "en": "Apple",
+    "fr": "Pomme",
+    "ar": "تفاح",
+    "wiki": "Apple"
+  },
+  {
+    "id": "pear",
+    "category": "fruits",
+    "en": "Pear",
+    "fr": "Poire",
+    "ar": "كمثرى",
+    "wiki": "Pear"
+  },
+  {
+    "id": "banana",
+    "category": "fruits",
+    "en": "Banana",
+    "fr": "Banane",
+    "ar": "موز",
+    "wiki": "Banana"
+  },
+  {
+    "id": "avocado",
+    "category": "fruits",
+    "en": "Avocado",
+    "fr": "Avocat",
+    "ar": "أفوكادو",
+    "wiki": "Avocado"
+  },
+  {
+    "id": "peach",
+    "category": "fruits",
+    "en": "Peach",
+    "fr": "Pêche",
+    "ar": "خوخ",
+    "wiki": "Peach"
+  },
+  {
+    "id": "nectarine",
+    "category": "fruits",
+    "en": "Nectarine",
+    "fr": "Nectarine",
+    "ar": "نكتارين",
+    "wiki": "Nectarine"
+  },
+  {
+    "id": "apricot",
+    "category": "fruits",
+    "en": "Apricot",
+    "fr": "Abricot",
+    "ar": "مشمش",
+    "wiki": "Apricot"
+  },
+  {
+    "id": "plum",
+    "category": "fruits",
+    "en": "Plum",
+    "fr": "Prune",
+    "ar": "برقوق",
+    "wiki": "Plum"
+  },
+  {
+    "id": "prune",
+    "category": "fruits",
+    "en": "Prune",
+    "fr": "Pruneau",
+    "ar": "قراصيا",
+    "wiki": "Prune"
+  },
+  {
+    "id": "mango",
+    "category": "fruits",
+    "en": "Mango",
+    "fr": "Mangue",
+    "ar": "مانجو",
+    "wiki": "Mango"
+  },
+  {
+    "id": "papaya",
+    "category": "fruits",
+    "en": "Papaya",
+    "fr": "Papaye",
+    "ar": "بابايا",
+    "wiki": "Papaya"
+  },
+  {
+    "id": "melon",
+    "category": "fruits",
+    "en": "Melon",
+    "fr": "Melon",
+    "ar": "شمام",
+    "wiki": "Melon"
+  },
+  {
+    "id": "watermelon",
+    "category": "fruits",
+    "en": "Watermelon",
+    "fr": "Pastèque",
+    "ar": "بطيخ",
+    "wiki": "Watermelon"
+  },
+  {
+    "id": "strawberry",
+    "category": "fruits",
+    "en": "Strawberry",
+    "fr": "Fraise",
+    "ar": "فراولة",
+    "wiki": "Strawberry"
+  },
+  {
+    "id": "raspberry",
+    "category": "fruits",
+    "en": "Raspberry",
+    "fr": "Framboise",
+    "ar": "توت العليق",
+    "wiki": "Raspberry"
+  },
+  {
+    "id": "blueberry",
+    "category": "fruits",
+    "en": "Blueberry",
+    "fr": "Myrtille",
+    "ar": "توت أزرق",
+    "wiki": "Blueberry"
+  },
+  {
+    "id": "blackberry",
+    "category": "fruits",
+    "en": "Blackberry",
+    "fr": "Mûre",
+    "ar": "توت أسود",
+    "wiki": "Blackberry"
+  },
+  {
+    "id": "cherry",
+    "category": "fruits",
+    "en": "Cherry",
+    "fr": "Cerise",
+    "ar": "كرز",
+    "wiki": "Cherry"
+  },
+  {
+    "id": "grape",
+    "category": "fruits",
+    "en": "Grape",
+    "fr": "Raisin",
+    "ar": "عنب",
+    "wiki": "Grape"
+  },
+  {
+    "id": "kiwi_fruit",
+    "category": "fruits",
+    "en": "Kiwi",
+    "fr": "Kiwi",
+    "ar": "كيوي",
+    "wiki": "Kiwi fruit"
+  },
+  {
+    "id": "orange_fruit",
+    "category": "fruits",
+    "en": "Orange",
+    "fr": "Orange",
+    "ar": "برتقال",
+    "wiki": "Orange (fruit)"
+  },
+  {
+    "id": "mandarin_orange",
+    "category": "fruits",
+    "en": "Mandarin orange",
+    "fr": "Mandarine",
+    "ar": "يوسفي",
+    "wiki": "Mandarin orange"
+  },
+  {
+    "id": "clementine",
+    "category": "fruits",
+    "en": "Clementine",
+    "fr": "Clémentine",
+    "ar": "كلمنتينا",
+    "wiki": "Clementine"
+  },
+  {
+    "id": "pineapple",
+    "category": "fruits",
+    "en": "Pineapple",
+    "fr": "Ananas",
+    "ar": "أناناس",
+    "wiki": "Pineapple"
+  },
+  {
+    "id": "fig",
+    "category": "fruits",
+    "en": "Fig",
+    "fr": "Figue",
+    "ar": "تين",
+    "wiki": "Fig"
+  },
+  {
+    "id": "date_palm",
+    "category": "fruits",
+    "en": "Date",
+    "fr": "Datte",
+    "ar": "تمر",
+    "wiki": "Date palm"
+  },
+  {
+    "id": "guava",
+    "category": "fruits",
+    "en": "Guava",
+    "fr": "Goyave",
+    "ar": "جوافة",
+    "wiki": "Guava"
+  },
+  {
+    "id": "passion_fruit",
+    "category": "fruits",
+    "en": "Passion fruit",
+    "fr": "Fruit de la passion",
+    "ar": "باشن فروت",
+    "wiki": "Passion fruit"
+  },
+  {
+    "id": "pomegranate",
+    "category": "fruits",
+    "en": "Pomegranate",
+    "fr": "Grenade",
+    "ar": "رمان",
+    "wiki": "Pomegranate"
+  },
+  {
+    "id": "lychee",
+    "category": "fruits",
+    "en": "Lychee",
+    "fr": "Litchi",
+    "ar": "ليتشي",
+    "wiki": "Lychee"
+  },
+  {
+    "id": "persimmon",
+    "category": "fruits",
+    "en": "Persimmon",
+    "fr": "Kaki",
+    "ar": "كاكي",
+    "wiki": "Persimmon"
+  },
+  {
+    "id": "coconut",
+    "category": "fruits",
+    "en": "Coconut",
+    "fr": "Noix de coco",
+    "ar": "جوز الهند",
+    "wiki": "Coconut"
+  },
+  {
+    "id": "lemon",
+    "category": "fruits",
+    "en": "Lemon",
+    "fr": "Citron",
+    "ar": "ليمون",
+    "wiki": "Lemon"
+  },
+  {
+    "id": "plantain",
+    "category": "fruits",
+    "en": "Plantain",
+    "fr": "Banane plantain",
+    "ar": "موز الجنة",
+    "wiki": "Plantain"
+  },
+  {
+    "id": "dragon_fruit",
+    "category": "fruits",
+    "en": "Dragon fruit",
+    "fr": "Fruit du dragon",
+    "ar": "فاكهة التنين",
+    "wiki": "Dragon fruit"
+  },
+  {
+    "id": "rice",
+    "category": "grains",
+    "en": "Rice",
+    "fr": "Riz",
+    "ar": "أرز",
+    "wiki": "Rice"
+  },
+  {
+    "id": "oat",
+    "category": "grains",
+    "en": "Oat",
+    "fr": "Avoine",
+    "ar": "شوفان",
+    "wiki": "Oat"
+  },
+  {
+    "id": "wheat",
+    "category": "grains",
+    "en": "Wheat",
+    "fr": "Blé",
+    "ar": "قمح",
+    "wiki": "Wheat"
+  },
+  {
+    "id": "barley",
+    "category": "grains",
+    "en": "Barley",
+    "fr": "Orge",
+    "ar": "شعير",
+    "wiki": "Barley"
+  },
+  {
+    "id": "rye",
+    "category": "grains",
+    "en": "Rye",
+    "fr": "Seigle",
+    "ar": "جاودار",
+    "wiki": "Rye"
+  },
+  {
+    "id": "millet",
+    "category": "grains",
+    "en": "Millet",
+    "fr": "Millet",
+    "ar": "دخن",
+    "wiki": "Millet"
+  },
+  {
+    "id": "quinoa",
+    "category": "grains",
+    "en": "Quinoa",
+    "fr": "Quinoa",
+    "ar": "كينوا",
+    "wiki": "Quinoa"
+  },
+  {
+    "id": "buckwheat",
+    "category": "grains",
+    "en": "Buckwheat",
+    "fr": "Sarrasin",
+    "ar": "حنطة سوداء",
+    "wiki": "Buckwheat"
+  },
+  {
+    "id": "amaranth_grain",
+    "category": "grains",
+    "en": "Amaranth grain",
+    "fr": "Amarante",
+    "ar": "قطيفة",
+    "wiki": "Amaranth grain"
+  },
+  {
+    "id": "semolina",
+    "category": "grains",
+    "en": "Semolina",
+    "fr": "Semoule",
+    "ar": "سميد",
+    "wiki": "Semolina"
+  },
+  {
+    "id": "couscous",
+    "category": "grains",
+    "en": "Couscous",
+    "fr": "Couscous",
+    "ar": "كسكس",
+    "wiki": "Couscous"
+  },
+  {
+    "id": "pasta",
+    "category": "grains",
+    "en": "Pasta",
+    "fr": "Pâtes",
+    "ar": "معكرونة",
+    "wiki": "Pasta"
+  },
+  {
+    "id": "bread",
+    "category": "grains",
+    "en": "Bread",
+    "fr": "Pain",
+    "ar": "خبز",
+    "wiki": "Bread"
+  },
+  {
+    "id": "polenta",
+    "category": "grains",
+    "en": "Polenta",
+    "fr": "Polenta",
+    "ar": "بولينتا",
+    "wiki": "Polenta"
+  },
+  {
+    "id": "bulgur",
+    "category": "grains",
+    "en": "Bulgur",
+    "fr": "Boulgour",
+    "ar": "برغل",
+    "wiki": "Bulgur"
+  },
+  {
+    "id": "teff",
+    "category": "grains",
+    "en": "Teff",
+    "fr": "Teff",
+    "ar": "تيف",
+    "wiki": "Teff"
+  },
+  {
+    "id": "lentil",
+    "category": "legumes",
+    "en": "Lentil",
+    "fr": "Lentilles",
+    "ar": "عدس",
+    "wiki": "Lentil"
+  },
+  {
+    "id": "chickpea",
+    "category": "legumes",
+    "en": "Chickpea",
+    "fr": "Pois chiches",
+    "ar": "حمص",
+    "wiki": "Chickpea"
+  },
+  {
+    "id": "white_bean",
+    "category": "legumes",
+    "en": "White bean",
+    "fr": "Haricots blancs",
+    "ar": "فاصوليا بيضاء",
+    "wiki": "White bean"
+  },
+  {
+    "id": "kidney_bean",
+    "category": "legumes",
+    "en": "Kidney bean",
+    "fr": "Haricots rouges",
+    "ar": "فاصوليا حمراء",
+    "wiki": "Kidney bean"
+  },
+  {
+    "id": "black_turtle_bean",
+    "category": "legumes",
+    "en": "Black turtle bean",
+    "fr": "Haricots noirs",
+    "ar": "فاصوليا سوداء",
+    "wiki": "Black turtle bean"
+  },
+  {
+    "id": "fava_bean",
+    "category": "legumes",
+    "en": "Fava bean",
+    "fr": "Fèves",
+    "ar": "فول",
+    "wiki": "Fava bean"
+  },
+  {
+    "id": "split_pea",
+    "category": "legumes",
+    "en": "Split pea",
+    "fr": "Pois cassés",
+    "ar": "بازلاء مجروشة",
+    "wiki": "Split pea"
+  },
+  {
+    "id": "mung_bean",
+    "category": "legumes",
+    "en": "Mung bean",
+    "fr": "Haricot mungo",
+    "ar": "فاصوليا مونج",
+    "wiki": "Mung bean"
+  },
+  {
+    "id": "edamame",
+    "category": "legumes",
+    "en": "Edamame",
+    "fr": "Edamame",
+    "ar": "إدامامي",
+    "wiki": "Edamame"
+  },
+  {
+    "id": "tofu",
+    "category": "legumes",
+    "en": "Tofu",
+    "fr": "Tofu",
+    "ar": "توفو",
+    "wiki": "Tofu"
+  },
+  {
+    "id": "tempeh",
+    "category": "legumes",
+    "en": "Tempeh",
+    "fr": "Tempeh",
+    "ar": "تمبيه",
+    "wiki": "Tempeh"
+  },
+  {
+    "id": "soybean",
+    "category": "legumes",
+    "en": "Soybean",
+    "fr": "Soja",
+    "ar": "صويا",
+    "wiki": "Soybean"
+  },
+  {
+    "id": "egg_as_food",
+    "category": "proteins",
+    "en": "Egg",
+    "fr": "Œuf",
+    "ar": "بيض",
+    "wiki": "Egg as food"
+  },
+  {
+    "id": "chicken_as_food",
+    "category": "proteins",
+    "en": "Chicken",
+    "fr": "Poulet",
+    "ar": "دجاج",
+    "wiki": "Chicken as food"
+  },
+  {
+    "id": "turkey_meat",
+    "category": "proteins",
+    "en": "Turkey",
+    "fr": "Dinde",
+    "ar": "ديك رومي",
+    "wiki": "Turkey meat"
+  },
+  {
+    "id": "beef",
+    "category": "proteins",
+    "en": "Beef",
+    "fr": "Bœuf",
+    "ar": "لحم بقري",
+    "wiki": "Beef"
+  },
+  {
+    "id": "lamb_and_mutton",
+    "category": "proteins",
+    "en": "Lamb and mutton",
+    "fr": "Agneau",
+    "ar": "لحم ضأن",
+    "wiki": "Lamb and mutton"
+  },
+  {
+    "id": "veal",
+    "category": "proteins",
+    "en": "Veal",
+    "fr": "Veau",
+    "ar": "لحم عجل",
+    "wiki": "Veal"
+  },
+  {
+    "id": "duck_as_food",
+    "category": "proteins",
+    "en": "Duck",
+    "fr": "Canard",
+    "ar": "بط",
+    "wiki": "Duck as food"
+  },
+  {
+    "id": "rabbit_meat",
+    "category": "proteins",
+    "en": "Rabbit",
+    "fr": "Lapin",
+    "ar": "لحم أرنب",
+    "wiki": "Rabbit meat"
+  },
+  {
+    "id": "salmon_as_food",
+    "category": "proteins",
+    "en": "Salmon",
+    "fr": "Saumon",
+    "ar": "سلمون",
+    "wiki": "Salmon as food"
+  },
+  {
+    "id": "cod_as_food",
+    "category": "proteins",
+    "en": "Cod",
+    "fr": "Cabillaud",
+    "ar": "سمك القد",
+    "wiki": "Cod as food"
+  },
+  {
+    "id": "hake",
+    "category": "proteins",
+    "en": "Hake",
+    "fr": "Merlu",
+    "ar": "نازلي",
+    "wiki": "Hake"
+  },
+  {
+    "id": "trout",
+    "category": "proteins",
+    "en": "Trout",
+    "fr": "Truite",
+    "ar": "تروتة",
+    "wiki": "Trout"
+  },
+  {
+    "id": "sardine",
+    "category": "proteins",
+    "en": "Sardine",
+    "fr": "Sardine",
+    "ar": "سردين",
+    "wiki": "Sardine"
+  },
+  {
+    "id": "mackerel_as_food",
+    "category": "proteins",
+    "en": "Mackerel",
+    "fr": "Maquereau",
+    "ar": "ماكريل",
+    "wiki": "Mackerel as food"
+  },
+  {
+    "id": "sole_fish",
+    "category": "proteins",
+    "en": "Sole",
+    "fr": "Sole",
+    "ar": "سمك موسى",
+    "wiki": "Sole (fish)"
+  },
+  {
+    "id": "sea_bass",
+    "category": "proteins",
+    "en": "Sea bass",
+    "fr": "Bar",
+    "ar": "قاروص",
+    "wiki": "Sea bass"
+  },
+  {
+    "id": "haddock",
+    "category": "proteins",
+    "en": "Haddock",
+    "fr": "Églefin",
+    "ar": "حدوق",
+    "wiki": "Haddock"
+  },
+  {
+    "id": "shrimp",
+    "category": "proteins",
+    "en": "Shrimp",
+    "fr": "Crevette",
+    "ar": "روبيان",
+    "wiki": "Shrimp"
+  },
+  {
+    "id": "scallop",
+    "category": "proteins",
+    "en": "Scallop",
+    "fr": "Coquille Saint-Jacques",
+    "ar": "إسكالوب",
+    "wiki": "Scallop"
+  },
+  {
+    "id": "tuna",
+    "category": "proteins",
+    "en": "Tuna",
+    "fr": "Thon",
+    "ar": "تونة",
+    "wiki": "Tuna"
+  },
+  {
+    "id": "yogurt",
+    "category": "dairy",
+    "en": "Yogurt",
+    "fr": "Yaourt nature",
+    "ar": "زبادي طبيعي",
+    "wiki": "Yogurt"
+  },
+  {
+    "id": "greek_yogurt",
+    "category": "dairy",
+    "en": "Greek yogurt",
+    "fr": "Yaourt grec",
+    "ar": "زبادي يوناني",
+    "wiki": "Greek yogurt"
+  },
+  {
+    "id": "fromage_blanc",
+    "category": "dairy",
+    "en": "Fromage blanc",
+    "fr": "Fromage blanc",
+    "ar": "جبن أبيض طري",
+    "wiki": "Fromage blanc"
+  },
+  {
+    "id": "cottage_cheese",
+    "category": "dairy",
+    "en": "Cottage cheese",
+    "fr": "Cottage cheese",
+    "ar": "جبن قريش",
+    "wiki": "Cottage cheese"
+  },
+  {
+    "id": "ricotta",
+    "category": "dairy",
+    "en": "Ricotta",
+    "fr": "Ricotta",
+    "ar": "ريكوتا",
+    "wiki": "Ricotta"
+  },
+  {
+    "id": "mozzarella",
+    "category": "dairy",
+    "en": "Mozzarella",
+    "fr": "Mozzarella",
+    "ar": "موزاريلا",
+    "wiki": "Mozzarella"
+  },
+  {
+    "id": "cream_cheese",
+    "category": "dairy",
+    "en": "Cream cheese",
+    "fr": "Fromage frais",
+    "ar": "جبن كريمي",
+    "wiki": "Cream cheese"
+  },
+  {
+    "id": "kefir",
+    "category": "dairy",
+    "en": "Kefir",
+    "fr": "Kéfir",
+    "ar": "كفير",
+    "wiki": "Kefir"
+  },
+  {
+    "id": "cheddar_cheese",
+    "category": "dairy",
+    "en": "Cheddar cheese",
+    "fr": "Cheddar",
+    "ar": "شيدر",
+    "wiki": "Cheddar cheese"
+  },
+  {
+    "id": "emmental_cheese",
+    "category": "dairy",
+    "en": "Emmental cheese",
+    "fr": "Emmental",
+    "ar": "إمنتال",
+    "wiki": "Emmental cheese"
+  },
+  {
+    "id": "peanut_butter",
+    "category": "nuts",
+    "en": "Peanut butter",
+    "fr": "Purée de cacahuète",
+    "ar": "زبدة الفول السوداني",
+    "wiki": "Peanut butter"
+  },
+  {
+    "id": "almond_butter",
+    "category": "nuts",
+    "en": "Almond butter",
+    "fr": "Purée d’amande",
+    "ar": "زبدة اللوز",
+    "wiki": "Almond butter"
+  },
+  {
+    "id": "tahini",
+    "category": "nuts",
+    "en": "Tahini",
+    "fr": "Tahin",
+    "ar": "طحينة",
+    "wiki": "Tahini"
+  },
+  {
+    "id": "cashew",
+    "category": "nuts",
+    "en": "Cashew",
+    "fr": "Noix de cajou",
+    "ar": "كاجو",
+    "wiki": "Cashew"
+  },
+  {
+    "id": "walnut",
+    "category": "nuts",
+    "en": "Walnut",
+    "fr": "Noix",
+    "ar": "جوز",
+    "wiki": "Walnut"
+  },
+  {
+    "id": "hazelnut",
+    "category": "nuts",
+    "en": "Hazelnut",
+    "fr": "Noisette",
+    "ar": "بندق",
+    "wiki": "Hazelnut"
+  },
+  {
+    "id": "pistachio",
+    "category": "nuts",
+    "en": "Pistachio",
+    "fr": "Pistache",
+    "ar": "فستق",
+    "wiki": "Pistachio"
+  },
+  {
+    "id": "pecan",
+    "category": "nuts",
+    "en": "Pecan",
+    "fr": "Noix de pécan",
+    "ar": "جوز البقان",
+    "wiki": "Pecan"
+  },
+  {
+    "id": "sunflower_seed",
+    "category": "nuts",
+    "en": "Sunflower seed",
+    "fr": "Graines de tournesol",
+    "ar": "بذور دوار الشمس",
+    "wiki": "Sunflower seed"
+  },
+  {
+    "id": "pumpkin_seed",
+    "category": "nuts",
+    "en": "Pumpkin seed",
+    "fr": "Graines de courge",
+    "ar": "بذور اليقطين",
+    "wiki": "Pumpkin seed"
+  },
+  {
+    "id": "chia_seed",
+    "category": "nuts",
+    "en": "Chia seed",
+    "fr": "Graines de chia",
+    "ar": "بذور الشيا",
+    "wiki": "Chia seed"
+  },
+  {
+    "id": "flax",
+    "category": "nuts",
+    "en": "Flax",
+    "fr": "Graines de lin",
+    "ar": "بذور الكتان",
+    "wiki": "Flax"
+  },
+  {
+    "id": "olive_oil",
+    "category": "other",
+    "en": "Olive oil",
+    "fr": "Huile d’olive",
+    "ar": "زيت الزيتون",
+    "wiki": "Olive oil"
+  },
+  {
+    "id": "rapeseed_oil",
+    "category": "other",
+    "en": "Rapeseed oil",
+    "fr": "Huile de colza",
+    "ar": "زيت الكانولا",
+    "wiki": "Rapeseed oil"
+  },
+  {
+    "id": "butter",
+    "category": "other",
+    "en": "Butter",
+    "fr": "Beurre",
+    "ar": "زبدة",
+    "wiki": "Butter"
+  },
+  {
+    "id": "basil",
+    "category": "other",
+    "en": "Basil",
+    "fr": "Basilic",
+    "ar": "ريحان",
+    "wiki": "Basil"
+  },
+  {
+    "id": "parsley",
+    "category": "other",
+    "en": "Parsley",
+    "fr": "Persil",
+    "ar": "بقدونس",
+    "wiki": "Parsley"
+  },
+  {
+    "id": "coriander",
+    "category": "other",
+    "en": "Coriander",
+    "fr": "Coriandre",
+    "ar": "كزبرة",
+    "wiki": "Coriander"
+  },
+  {
+    "id": "cinnamon",
+    "category": "other",
+    "en": "Cinnamon",
+    "fr": "Cannelle",
+    "ar": "قرفة",
+    "wiki": "Cinnamon"
+  },
+  {
+    "id": "cumin",
+    "category": "other",
+    "en": "Cumin",
+    "fr": "Cumin",
+    "ar": "كمون",
+    "wiki": "Cumin"
+  }
+]

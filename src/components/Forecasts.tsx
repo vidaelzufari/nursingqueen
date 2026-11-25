@@ -1,3 +1,4 @@
+import { HomeActivity, HOME_ACTIVITIES } from "@/domain/homePreferences";
 import { dateLocale } from "@/domain/dateLocale";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -13,18 +14,20 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { IconBadge } from "./IconBadge";
 import { Card } from "./Card";
 import { Icon, IconName } from "./Icon";
-export function Forecasts({ now, compact = false, onAddSession }: { now: Date; compact?: boolean; onAddSession?: () => void }) {
+export function Forecasts({ now, compact = false, onAddSession, activities = [...HOME_ACTIVITIES] }: { now: Date; activities?: HomeActivity[]; compact?: boolean; onAddSession?: () => void }) {
   const theme = useTheme(); const { t, i18n } = useTranslation();
   const locale = dateLocale(i18n?.resolvedLanguage ?? i18n?.language); const router = useRouter();
   const { nursingSessions, bottleEvents, pumpEvents } = useLogStore();
   const sessions = useSleepStore(s => s.sessions);
   const baby = useActiveBaby();
   const sleep = getSleepInsights(sessions, now, baby?.dateOfBirth);
+  const feedSessions = activities.includes("nursing") ? nursingSessions : [];
+  const feedBottles = activities.includes("bottle") ? bottleEvents : [];
   const rows = [
-    { key: "feed", icon: "heart" as IconName, active: nursingSessions.some(s => !s.endedAt), forecast: forecastNext([...nursingSessions.filter(s => s.endedAt && (s.durationSeconds ?? 0) > 0).map(s => new Date(s.startedAt)), ...bottleEvents.map(s => new Date(s.occurredAt))], now), color: theme.colors.nursing },
+    { key: "feed", icon: (activities.includes("nursing") ? "heart" : "bottle") as IconName, active: feedSessions.some(s => !s.endedAt), forecast: forecastNext([...feedSessions.filter(s => s.endedAt && (s.durationSeconds ?? 0) > 0).map(s => new Date(s.startedAt)), ...feedBottles.map(s => new Date(s.occurredAt))], now), color: theme.colors.nursing },
     { key: "pump", icon: "pump" as IconName, active: false, forecast: forecastNext(pumpEvents.filter(s => (s.totalMl ?? 0) > 0).map(s => new Date(s.startedAt)), now), color: theme.colors.pumping },
     { key: "sleep", icon: "moon" as IconName, active: sessions.some(s => !s.endedAt), forecast: sleep.forecast, color: theme.colors.sleep },
-  ];
+  ].filter(row => row.key === "feed" ? activities.includes("nursing") || activities.includes("bottle") : activities.includes(row.key as HomeActivity));
   const active = rows.find(row => row.active);
   const sorted = [...rows].filter(row => row.forecast && !row.active).sort((a,b) => a.forecast!.at.getTime() - b.forecast!.at.getTime());
   const next = sorted.find(row => row.forecast!.at > now) ?? sorted[sorted.length - 1];

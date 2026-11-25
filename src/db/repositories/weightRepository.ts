@@ -28,6 +28,7 @@ export const weightRepository = {
   },
 
   create(babyId: string, weightGrams: number, measuredAt: Date = new Date()): WeightEntry {
+    if (!Number.isSafeInteger(weightGrams) || weightGrams <= 0 || !Number.isFinite(measuredAt.getTime())) throw new Error("Invalid weight entry");
     const db = getDatabase();
     const entry: WeightEntry = {
       id: generateId(),

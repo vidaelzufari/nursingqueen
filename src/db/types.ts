@@ -73,7 +73,10 @@ export interface StashItem {
   updatedAt: string;
 }
 
+export type SleepPeriod = "nap" | "night";
+
 export interface SleepSession {
+  period?: SleepPeriod | null;
   id: string;
   babyId: string;
   startedAt: string;

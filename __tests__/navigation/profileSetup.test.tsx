@@ -1,22 +1,27 @@
-jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }) }));
 import React from "react";
 import * as Haptics from "expo-haptics";
 import { render, fireEvent } from "@testing-library/react-native";
 import EditProfileScreen from "../../app/profile/edit";
 import { palettes, spacing, radii, typeScale, shadows } from "@/theme/tokens";
+jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }) }));
+const mockBabies: { id: string; name: string; dateOfBirth: string; photoUri: null }[] = [];
+const mockWeights: { id: string; weightGrams: number; measuredAt: string }[] = [];
+const mockParams: { intent?: string; id?: string } = { intent: "nurse" };
+const mockBabyRefresh = jest.fn();
+const mockAddWeight = jest.fn((_: string, weightGrams: number) => { mockWeights.push({ id: "weight", weightGrams, measuredAt: "2026-11-25T10:00:00Z" }); });
 const mockReplace = jest.fn(); const mockStart = jest.fn(); const mockRefresh = jest.fn(); const mockCreate = jest.fn(() => ({ id: "new-baby" }));
 const mockTheme = { colors: palettes.light, spacing, radii, type: typeScale, shadows, mode: "light" };
-jest.mock("expo-router", () => ({ useRouter: () => ({ replace: mockReplace }), useLocalSearchParams: () => ({ intent: "nurse" }) }));
+jest.mock("expo-router", () => ({ useRouter: () => ({ replace: mockReplace }), useLocalSearchParams: () => mockParams }));
 jest.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock("@/theme/ThemeProvider", () => ({ useTheme: () => mockTheme }));
 jest.mock("expo-image-picker", () => ({}));
 jest.mock("@/components/ScreenBack", () => ({ ScreenBack: () => null }));
 jest.mock("@/components/BirthDateField", () => { const { Pressable, Text } = jest.requireActual("react-native"); return { BirthDateField: ({ onChange }: { onChange: (s: string) => void }) => <Pressable onPress={() => onChange("2026-05-06")}><Text>Choose birth date</Text></Pressable> }; });
-jest.mock("@/store/useBabyStore", () => ({ useBabyStore: (selector: (s: object) => unknown) => selector({ babies: [], createBaby: mockCreate, updateBaby: jest.fn() }) }));
+jest.mock("@/store/useBabyStore", () => ({ useBabyStore: Object.assign((selector: (s: object) => unknown) => selector({ babies: mockBabies, createBaby: mockCreate, updateBaby: jest.fn() }), { getState: () => ({ refresh: mockBabyRefresh }) }) }));
 jest.mock("@/store/useLogStore", () => ({ useLogStore: { getState: () => ({ refresh: mockRefresh, startNursing: mockStart }) } }));
 jest.mock("@/store/useSleepStore", () => ({ useSleepStore: { getState: () => ({ refresh: jest.fn() }) } }));
-jest.mock("@/db/repositories", () => ({ weightRepository: {} }));
-beforeEach(() => { jest.clearAllMocks(); (Haptics.impactAsync as jest.Mock).mockResolvedValue(undefined); });
+jest.mock("@/db/repositories", () => ({ weightRepository: { listByBaby: () => mockWeights, create: (babyId: string, grams: number) => mockAddWeight(babyId, grams) } }));
+beforeEach(() => { mockBabies.splice(0); mockWeights.splice(0); mockParams.intent = "nurse"; mockParams.id = undefined; jest.clearAllMocks(); (Haptics.impactAsync as jest.Mock).mockResolvedValue(undefined); });
 it("explains setup, waits for a selected birth date, then continues the requested log", () => {
   const screen = render(<EditProfileScreen />);
   expect(screen.getByText("setup.reason")).toBeTruthy();
@@ -30,4 +35,18 @@ it("explains setup, waits for a selected birth date, then continues the requeste
   expect(mockRefresh).toHaveBeenCalledWith("new-baby");
   expect(mockStart).toHaveBeenCalledTimes(1);
   expect(mockReplace).toHaveBeenCalledWith("/");
+});
+
+it("saves decimal kg as grams, refreshes the mounted profile and confirms the latest weight", () => {
+  mockParams.intent = undefined; mockParams.id = "baby";
+  mockBabies.push({ id: "baby", name: "Jad", dateOfBirth: "2026-05-06", photoUri: null });
+  const screen = render(<EditProfileScreen />);
+  fireEvent.changeText(screen.getByTestId("profile-weight-input"), "5,25");
+  expect(screen.getByTestId("profile-weight-input").props.value).toBe("5,25");
+  expect(screen.getByTestId("profile-add-weight").props.accessibilityState.disabled).toBe(false);
+  fireEvent.press(screen.getByTestId("profile-add-weight"));
+  expect(mockAddWeight).toHaveBeenCalledWith("baby", 5250);
+  expect(mockBabyRefresh).toHaveBeenCalledTimes(1);
+  expect(screen.getByText("5.25 kg")).toBeTruthy();
+  expect(screen.getByTestId("profile-weight-input").props.value).toBe("");
 });
