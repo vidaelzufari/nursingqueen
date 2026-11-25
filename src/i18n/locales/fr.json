@@ -528,6 +528,46 @@
       "other": "Autres"
     },
     "more": "Afficher plus d’aliments",
-    "positiveQuantity": "Indiquez une quantité supérieure à zéro, ou laissez le champ vide."
+    "positiveQuantity": "Indiquez une quantité supérieure à zéro, ou laissez le champ vide.",
+    "mealTypes": {
+      "unspecified": "Choisir le repas",
+      "breakfast": "Petit-déjeuner",
+      "lunch": "Déjeuner",
+      "snack": "Goûter",
+      "dinner": "Dîner"
+    },
+    "mealType": "Type de repas",
+    "addNamed": "Ajouter « {{name}} »",
+    "customQuantity": "Autre quantité de cuillères · facultatif",
+    "spoonValue_zero": "{{count}} cuillères",
+    "spoonValue_one": "{{count}} cuillère",
+    "spoonValue_two": "{{count}} cuillères",
+    "spoonValue_few": "{{count}} cuillères",
+    "spoonValue_many": "{{count}} cuillères",
+    "spoonValue_other": "{{count}} cuillères"
+  },
+  "foodAI": {
+    "title": "Reconnaître un aliment",
+    "intro": "Photographie l’assiette, puis vérifie et modifie les aliments proposés.",
+    "photo": "Photo à analyser",
+    "camera": "Prendre une photo",
+    "library": "Choisir une photo",
+    "privacy": "En appuyant sur Analyser, cette photo est envoyée à notre service IA (OpenAI). Le nom, la date de naissance et le journal de bébé ne sont pas envoyés. Évite les visages sur la photo.",
+    "analyze": "Analyser la photo",
+    "analyzing": "Analyse en cours…",
+    "review": "À toi de vérifier",
+    "reviewHint": "Ce sont des suggestions. Corrige les noms, retire un aliment ou complète la liste. Les quantités se renseignent à l’étape suivante. Rien n’est encore enregistré dans le journal.",
+    "empty": "Aucun aliment reconnu. Tu peux en ajouter manuellement ou essayer une autre photo.",
+    "food": "Aliment {{number}}",
+    "uncertain": "Suggestion incertaine · à vérifier",
+    "remove": "Retirer",
+    "add": "Ajouter un aliment",
+    "continue": "Continuer vers le repas",
+    "manual": "Saisir le repas sans IA",
+    "not_configured": "La reconnaissance IA n’est pas encore activée. Tu peux ajouter ton repas manuellement.",
+    "too_large": "La photo est trop volumineuse. Recadre-la ou choisis une photo plus légère.",
+    "limit": "La limite d’analyses est atteinte pour aujourd’hui. Tu peux saisir le repas manuellement.",
+    "permission": "Autorise l’accès à la caméra ou aux photos dans les réglages du téléphone.",
+    "unavailable": "L’analyse n’a pas abouti. Réessaie ou ajoute les aliments manuellement."
   }
 }

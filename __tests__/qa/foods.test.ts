@@ -33,3 +33,10 @@ it('provides one licensed bundled photo for every catalogue food',()=>{
  expect(new Set(credits.map(p=>p.id)).size).toBe(FOOD_CATALOG.length);
  for(const food of FOOD_CATALOG){const photo=credits.find(p=>p.id===food.id)!;expect(photo).toBeDefined();expect(photo.source).toMatch(/^https:\/\/commons.wikimedia.org\/wiki\/File:/);expect(photo.license.length).toBeGreaterThan(0);expect(fs.statSync('assets/foods/'+photo.file).size).toBeGreaterThan(100);}
 });
+it.each(['breakfast','lunch','snack','dinner'] as const)('persists %s and allows changing the meal type later',mealType=>{
+ const id=foodRepository.save('qa',{...meal(),mealType});expect(foodRepository.meals('qa')[0]?.mealType).toBe(mealType);
+ foodRepository.save('qa',{id,...meal(),mealType:'snack'});expect(foodRepository.meals('qa')).toHaveLength(1);expect(foodRepository.meals('qa')[0]?.mealType).toBe('snack');
+});
+it('rejects an unknown meal type without writing',()=>{
+ expect(()=>foodRepository.save('qa',{...meal(),mealType:'invalid' as never})).toThrow('Invalid meal type');expect(foodRepository.meals('qa')).toEqual([]);
+});

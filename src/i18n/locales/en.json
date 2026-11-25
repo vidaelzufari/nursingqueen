@@ -528,6 +528,46 @@
       "other": "Other"
     },
     "more": "Show more foods",
-    "positiveQuantity": "Enter a positive amount, or leave the field empty."
+    "positiveQuantity": "Enter a positive amount, or leave the field empty.",
+    "mealTypes": {
+      "unspecified": "Choose a meal",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "snack": "Snack",
+      "dinner": "Dinner"
+    },
+    "mealType": "Meal type",
+    "addNamed": "Add “{{name}}”",
+    "customQuantity": "Other spoonful amount · optional",
+    "spoonValue_zero": "{{count}} spoonfuls",
+    "spoonValue_one": "{{count}} spoonful",
+    "spoonValue_two": "{{count}} spoonfuls",
+    "spoonValue_few": "{{count}} spoonfuls",
+    "spoonValue_many": "{{count}} spoonfuls",
+    "spoonValue_other": "{{count}} spoonfuls"
+  },
+  "foodAI": {
+    "title": "Recognize food",
+    "intro": "Take a photo of the plate, then review and edit the suggested foods.",
+    "photo": "Photo to analyze",
+    "camera": "Take a photo",
+    "library": "Choose a photo",
+    "privacy": "By tapping Analyze, you send this photo to our AI service (OpenAI). Your baby’s name, birth date and journal are not sent. Avoid faces in the photo.",
+    "analyze": "Analyze photo",
+    "analyzing": "Analyzing…",
+    "review": "Your turn to check",
+    "reviewHint": "These are suggestions. Correct names, remove foods or add missing items. Enter amounts on the next screen. Nothing has been saved to the journal yet.",
+    "empty": "No food recognized. Add it manually or try another photo.",
+    "food": "Food {{number}}",
+    "uncertain": "Uncertain suggestion · please check",
+    "remove": "Remove",
+    "add": "Add a food",
+    "continue": "Continue to meal",
+    "manual": "Enter meal without AI",
+    "not_configured": "AI recognition is not activated yet. You can enter your meal manually.",
+    "too_large": "This photo is too large. Crop it or choose a smaller photo.",
+    "limit": "Today’s analysis limit has been reached. You can enter your meal manually.",
+    "permission": "Allow camera or photo access in your phone settings.",
+    "unavailable": "The analysis did not complete. Try again or add the foods manually."
   }
 }

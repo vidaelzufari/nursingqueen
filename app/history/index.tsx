@@ -74,7 +74,7 @@ export default function HistoryScreen() {
       needsDetail: b.ml == null,
     }));
     const sleepRows: HistoryRow[] = sleepSessions.map(s => ({ id: s.id, kind: "sleep", sleepPeriod: sleepPeriod(s), at: new Date(s.startedAt), title: t(`sleep.${sleepPeriod(s)}`), detailLabel: s.endedAt ? formatDurationShort(Math.round((new Date(s.endedAt).getTime() - new Date(s.startedAt).getTime()) / 60000)) : t("sleep.sleeping"), needsDetail: false }));
-    const solidRows: HistoryRow[] = solidMeals.map(meal => ({id:meal.id,kind:"solids",at:new Date(meal.occurredAt),title:meal.foodIds.map(id=>foodName(foods.find(f=>f.id===id)??{id},i18n?.resolvedLanguage??i18n?.language??"en")).join(", "),detailLabel:[meal.spoons!=null?t("solids.spoonValue",{count:meal.spoons}):null,meal.ml!=null?`${meal.ml} ml`:null].filter(Boolean).join(" · "),needsDetail:false,note:meal.note}));
+    const solidRows: HistoryRow[] = solidMeals.map(meal => ({id:meal.id,kind:"solids",at:new Date(meal.occurredAt),title:(meal.mealType?t(`solids.mealTypes.${meal.mealType}`)+" · ":"")+meal.foodIds.map(id=>foodName(foods.find(f=>f.id===id)??{id},i18n?.resolvedLanguage??i18n?.language??"en")).join(", "),detailLabel:[meal.spoons!=null?t("solids.spoonValue",{count:meal.spoons}):null,meal.ml!=null?`${meal.ml} ml`:null].filter(Boolean).join(" · "),needsDetail:false,note:meal.note}));
     return [...nursingRows, ...pumpRows, ...bottleRows, ...sleepRows, ...solidRows].sort((a, b) => b.at.getTime() - a.at.getTime());
   }, [nursingSessions, pumpEvents, bottleEvents, sleepSessions, solidMeals, foods, i18n?.language, i18n?.resolvedLanguage, unit, t, formatDurationShort]);
 

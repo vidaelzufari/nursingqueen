@@ -27,6 +27,7 @@ export default function FoodsScreen(){
  const when=(value:string)=>format(new Date(value),'PP',{locale});
  return <Screen><ScreenBack/><Text accessibilityRole="header" style={[theme.type.title,{color:theme.colors.textPrimary}]}>{t('solids.title')}</Text><Text style={[theme.type.body,{color:theme.colors.textSecondary}]}>{t('solids.intro')}</Text>
  {!baby?<><Text style={[theme.type.body,{color:theme.colors.textSecondary}]}>{t('setup.reason')}</Text><Button label={t('profile.addBaby')} onPress={()=>router.push({pathname:'/profile/edit',params:{intent:'solids'}})}/></>:<>
+ <Button label={t('foodAI.title')} variant="soft" onPress={()=>router.push('/foods/scan')}/>
  <Button testID="foods-new-meal" label={t('solids.logMeal')} onPress={()=>router.push('/modals/meal-entry')}/>
  <View style={{flexDirection:'row',flexWrap:'wrap',gap:6}}>{(['planned','tasted','catalog'] as const).map(key=><Button key={key} testID={`foods-tab-${key}`} label={t(`solids.${key}`)} active={tab===key} variant={tab===key?'soft':'ghost'} onPress={()=>setTab(key)} style={{flexGrow:1,paddingHorizontal:10}}/>)}</View>
  <Field testID="foods-search" label={t('solids.search')} value={query} onChangeText={setQuery} placeholder={t('solids.searchHint')}/>

@@ -1,0 +1,26 @@
+const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
+const exports_={};new Function('exports',ts.transpile(fs.readFileSync('server/food-recognition/handler.ts','utf8'),{module:ts.ModuleKind.CommonJS}))(exports_);
+const {createFoodRecognitionHandler}=exports_;
+(async()=>{
+ let inferred=0,reserved=0;const seen=[];
+ const deps={authenticate:async token=>token==='valid'?'qa-user':null,reserve:async()=>{reserved++;return true;},infer:async(image,language)=>{inferred++;seen.push({image,language});return {foods:[]};}};
+ const handler=createFoodRecognitionHandler(deps);let count=0;
+ const call=(body,token='valid',method='POST',headers={})=>handler(new Request('https://example.test',{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json',...headers},...(method==='POST'?{body:typeof body==='string'?body:JSON.stringify(body)}:{})}));
+ const jpeg='/9j/'+Buffer.from('synthetic-test-only').toString('base64');
+ const check=async(response,status)=>{assert.equal((await response).status,status);count++;};
+ await check(call({},'','GET'),405);
+ await check(call({},''),401);await check(call({},'invalid'),401);
+ await check(call(null),400);await check(call('{'),400);await check(call({imageBase64:'https://evil.test/photo.jpg'}),400);
+ await check(call({imageBase64:'abcd'.repeat(8)}),415);
+ await check(call({imageBase64:jpeg},'valid','POST',{'Content-Type':'text/plain'}),415);
+ await check(call({imageBase64:'a'.repeat(4*1024*1024+2048)}),413);
+ assert.equal(inferred,0);assert.equal(reserved,0);count+=2;
+ await check(call({imageBase64:jpeg,language:'fr'}),200);assert.equal(seen[0].language,'fr');assert.match(seen[0].image,/^data:image\/jpeg;base64,/);count+=2;
+ await check(call({imageBase64:jpeg,language:'injected'}),200);assert.equal(seen[1].language,'en');count++;
+ const limited=createFoodRecognitionHandler({...deps,reserve:async()=>false});
+ await check(limited(new Request('https://example.test',{method:'POST',headers:{Authorization:'Bearer valid','Content-Type':'application/json'},body:JSON.stringify({imageBase64:jpeg})})),429);
+ const broken=createFoodRecognitionHandler({...deps,infer:async()=>{throw Error('private-provider-detail');}});
+ const failed=await broken(new Request('https://example.test',{method:'POST',headers:{Authorization:'Bearer valid','Content-Type':'application/json'},body:JSON.stringify({imageBase64:jpeg})}));assert.equal(failed.status,503);assert(!await failed.text().then(s=>s.includes('private-provider-detail')));count+=2;
+ const result={checks:count,status:'PASS',scope:'Handler with synthetic image and mocked auth, quota and inference; no live AI or remote database called'};
+ fs.writeFileSync('artifacts/release-2026-11-25/food-ai-handler-check.json',JSON.stringify(result,null,2));console.log(result);
+})().catch(e=>{console.error(e);process.exitCode=1;});

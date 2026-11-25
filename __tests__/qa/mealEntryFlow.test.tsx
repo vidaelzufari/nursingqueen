@@ -1,0 +1,33 @@
+import React from 'react';import * as Haptics from 'expo-haptics';
+import {render,fireEvent} from '@testing-library/react-native';import {TextInput} from 'react-native';
+import MealEntry from '../../app/modals/meal-entry';import {palettes,spacing,radii,typeScale,shadows} from '@/theme/tokens';
+const mockTheme={colors:palettes.light,spacing,radii,type:typeScale,shadows,mode:'light'};
+const mockSave=jest.fn(),mockRefresh=jest.fn(),mockReplace=jest.fn();
+const mockFoods=['carrot','zucchini'].map(id=>({id,catalogKey:id,name:null,photoUri:null,planned:false}));
+jest.mock('react-native-safe-area-context',()=>({useSafeAreaInsets:()=>({top:0,bottom:20,left:0,right:0})}));
+jest.mock('expo-router',()=>({useRouter:()=>({replace:mockReplace,canGoBack:()=>false}),useLocalSearchParams:()=>({})}));
+jest.mock('react-i18next',()=>({useTranslation:()=>({t:(key:string)=>key,i18n:{resolvedLanguage:'en',language:'en'}})}));
+jest.mock('@/theme/ThemeProvider',()=>({useTheme:()=>mockTheme}));
+jest.mock('@/components/ScreenBack',()=>({ScreenBack:()=>null}));
+jest.mock('@/components/DateTimeField',()=>({DateTimeField:()=>null}));
+jest.mock('@/store/useBabyStore',()=>({useActiveBaby:()=>({id:'qa'})}));
+jest.mock('@/store/useFoodStore',()=>({useFoodStore:()=>({foods:mockFoods,meals:[],refresh:mockRefresh})}));
+jest.mock('@/store/useFeedbackStore',()=>({useFeedbackStore:{getState:()=>({show:jest.fn()})}}));
+jest.mock('@/db/repositories/foodRepository',()=>({MEAL_TYPES:['breakfast','lunch','snack','dinner'],foodRepository:{save:(...args:unknown[])=>mockSave(...args)}}));
+beforeEach(()=>{jest.clearAllMocks();(Haptics.impactAsync as jest.Mock).mockResolvedValue(undefined);});
+it('starts with search and no catalogue, supports several foods, clears suggestions after selection and saves only on confirmation',()=>{
+ const screen=render(<MealEntry/>);
+ expect(screen.UNSAFE_getAllByType(TextInput)[0]?.props.testID).toBe('meal-search');expect(screen.queryByTestId('meal-food-carrot')).toBeNull();
+ fireEvent.changeText(screen.getByTestId('meal-search'),'car');fireEvent.press(screen.getByTestId('meal-food-carrot'));
+ expect(screen.getByText('× Carrot')).toBeTruthy();expect(screen.getByTestId('meal-search').props.value).toBe('');expect(screen.queryByTestId('meal-food-zucchini')).toBeNull();
+ fireEvent.changeText(screen.getByTestId('meal-search'),'zuc');fireEvent.press(screen.getByTestId('meal-food-zucchini'));
+ expect(screen.getByText('× Carrot')).toBeTruthy();expect(screen.getByText('× Zucchini')).toBeTruthy();expect(mockSave).not.toHaveBeenCalled();
+ fireEvent.press(screen.getByTestId('meal-spoon-3'));expect(screen.getByTestId('meal-spoons').props.value).toBe('3');
+ fireEvent.changeText(screen.getByTestId('meal-spoons'),'3,5');fireEvent.changeText(screen.getByTestId('meal-ml'),'45');
+ fireEvent.press(screen.getByTestId('meal-type'));fireEvent.press(screen.getByTestId('meal-type-option-lunch'));
+ fireEvent.press(screen.getByTestId('meal-save'));
+ expect(mockSave).toHaveBeenCalledWith('qa',expect.objectContaining({foodIds:['carrot','zucchini'],spoons:3.5,ml:45,mealType:'lunch'}));expect(mockReplace).toHaveBeenCalledWith('/');
+});
+it('can remove a selected food and cannot save an empty meal',()=>{
+ const screen=render(<MealEntry/>);fireEvent.changeText(screen.getByTestId('meal-search'),'car');fireEvent.press(screen.getByTestId('meal-food-carrot'));fireEvent.press(screen.getByText('× Carrot'));fireEvent.press(screen.getByTestId('meal-save'));expect(mockSave).not.toHaveBeenCalled();
+});

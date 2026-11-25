@@ -118,6 +118,8 @@ export const migrations: Migration[] = [
      BEGIN SELECT RAISE(ABORT,'nursing_session_already_active'); END;`
   ] },
 
+  { version: 8, statements: [`ALTER TABLE solid_meals ADD COLUMN meal_type TEXT CHECK(meal_type IS NULL OR meal_type IN ('breakfast','lunch','snack','dinner'));`] },
+
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations[migrations.length - 1]?.version ?? 0;
