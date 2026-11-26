@@ -1,6 +1,7 @@
 // Hermes does not provide PluralRules on all supported iOS versions.
 // Load before i18next initializes its v4 plural resolver (FR/EN/AR).
 import "intl-pluralrules";
+import { MULTILINGUAL_ENABLED } from "@/config/release";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
@@ -16,6 +17,7 @@ export const RTL_LANGUAGES: SupportedLanguageCode[] = ["ar"];
 const resources = { en: { translation: en }, fr: { translation: fr }, ar: { translation: ar } };
 
 export function resolveDeviceLanguage(): SupportedLanguageCode {
+  if (!MULTILINGUAL_ENABLED) return "en";
   const deviceTags = Localization.getLocales().map((l) => l.languageCode);
   const match = deviceTags.find((tag): tag is SupportedLanguageCode =>
     SUPPORTED_LANGUAGES.includes(tag as SupportedLanguageCode)
@@ -26,7 +28,7 @@ export function resolveDeviceLanguage(): SupportedLanguageCode {
 let initialized = false;
 
 export function initI18n(preferredLanguage?: SupportedLanguageCode): void {
-  const language = preferredLanguage ?? resolveDeviceLanguage();
+  const language = MULTILINGUAL_ENABLED ? preferredLanguage ?? resolveDeviceLanguage() : "en";
   if (!initialized) {
     i18n.use(initReactI18next).init({
       resources,

@@ -1,3 +1,6 @@
+import { MULTILINGUAL_ENABLED } from "@/config/release";
+import { BILLING_ENABLED } from "@/config/monetization";
+import { Linking } from "react-native";
 import { ListRow } from "@/components/ListRow";
 import { SelectField } from "@/components/SelectField";
 import { Field } from "@/components/Field";
@@ -84,9 +87,9 @@ export default function SettingsScreen() {
           <Button label={t("common.edit")} onPress={() => router.push("/profile")} style={{ minHeight: 44, paddingHorizontal: 16 }} />
         </Card>
         <Card padded={false} style={{ paddingHorizontal: 16 }}><ListRow testID="settings-personalize-home" title={t("homeSetup.title")} subtitle={t("homeSetup.settingsHint")} leading={<Icon name="home" color={theme.colors.accent} />} onPress={() => router.push("/settings/home")} /></Card>
-        <Section title={t("settings.language")}>
+        {MULTILINGUAL_ENABLED ? <Section title={t("settings.language")}>
           <SelectField label={t("settings.language")} testID="settings-language" value={language} options={LANGUAGE_OPTIONS.map(o => ({ value: o.value, label: o.value === "system" ? t(o.label) : o.label }))} onChange={setLanguage} />
-        </Section>
+        </Section> : null}
         <Section title={t("settings.units")}>
           <SelectField label={t("settings.units")} value={unit} options={UNIT_OPTIONS.map(o => ({ value: o.value, label: o.value }))} onChange={setUnit} />
         </Section>
@@ -115,13 +118,14 @@ export default function SettingsScreen() {
           <Field label={t("settings.targetStash", { unit })} value={targetStashMl != null ? String(targetStashMl) : ""} onChangeText={text => { const value = Number(text); setTargetStashMl(text.trim() && !Number.isNaN(value) ? value : null); }} keyboardType="number-pad" placeholder="0" amount />
         </Section>
 
-        <Section title={t("settings.queenUnlock")}>
+        {BILLING_ENABLED ? <Section title={t("settings.queenUnlock")}>
           <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>
             {isUnlocked ? t("settings.queenUnlockOwned") : t("recommendations.unlockPrompt")}
           </Text>
           {!isUnlocked ? <Button label={t("settings.restorePurchases")} tone="neutral" variant="outline" onPress={() => void restore()} /> : null}
-        </Section>
+        </Section> : <Section title={t("launchFree.title")}><Text style={[theme.type.body,{color:theme.colors.textSecondary}]}>{t("launchFree.description")}</Text></Section>}
 
+        <Card padded={false} style={{paddingHorizontal:16}}>{([['privacy','privacy'],['support','support'],['terms','terms'],['deleteData','delete-data']] as const).map(([key,path],index)=><ListRow key={key} testID={`legal-${key}`} title={t(`legal.${key}`)} divider={index>0} onPress={()=>void Linking.openURL(`https://blumea.ae/nursing-queen/${path}`).catch(()=>useFeedbackStore.getState().show(t("legal.openError")))}/>)}</Card>
         <Section title={t("settings.about")}>
           <Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>
             {t("settings.version", { version: Constants.expoConfig?.version ?? "1.0.0" })}

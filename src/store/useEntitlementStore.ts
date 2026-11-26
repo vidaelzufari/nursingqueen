@@ -1,3 +1,4 @@
+import { BILLING_ENABLED } from "@/config/monetization";
 import { create } from "zustand";
 import { CustomerInfo } from "react-native-purchases";
 import {
@@ -17,10 +18,11 @@ interface EntitlementState {
 }
 
 export const useEntitlementStore = create<EntitlementState>()((set) => ({
-  isUnlocked: false,
-  isLoading: true,
+  isUnlocked: !BILLING_ENABLED,
+  isLoading: BILLING_ENABLED,
 
   init: async () => {
+    if (!BILLING_ENABLED) { set({ isUnlocked: true, isLoading: false }); return; }
     configureRevenueCat();
     try {
       const info = await fetchCustomerInfo();
@@ -32,11 +34,13 @@ export const useEntitlementStore = create<EntitlementState>()((set) => ({
   },
 
   purchase: async () => {
+    if (!BILLING_ENABLED) { set({ isUnlocked: true }); return; }
     const info: CustomerInfo = await purchaseQueenUnlock();
     set({ isUnlocked: isQueenUnlocked(info) });
   },
 
   restore: async () => {
+    if (!BILLING_ENABLED) { set({ isUnlocked: true }); return; }
     const info = await restorePurchases();
     set({ isUnlocked: isQueenUnlocked(info) });
   },

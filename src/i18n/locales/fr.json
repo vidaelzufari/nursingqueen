@@ -573,5 +573,16 @@
     "limit": "La limite d’analyses est atteinte pour aujourd’hui. Tu peux saisir le repas manuellement.",
     "permission": "Autorise l’accès à la caméra ou aux photos dans les réglages du téléphone.",
     "unavailable": "L’analyse n’a pas abouti. Réessaie ou ajoute les aliments manuellement."
+  },
+  "launchFree": {
+    "title": "Gratuit au lancement",
+    "description": "Toutes les fonctions actuellement disponibles sont gratuites. Aucun achat ni abonnement n’est nécessaire."
+  },
+  "legal": {
+    "privacy": "Politique de confidentialité",
+    "support": "Aide et assistance",
+    "terms": "Conditions d’utilisation",
+    "deleteData": "Supprimer vos données",
+    "openError": "Impossible d’ouvrir cette page. Réessayez."
   }
 }

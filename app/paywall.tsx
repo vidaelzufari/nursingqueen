@@ -1,3 +1,4 @@
+import { BILLING_ENABLED } from "@/config/monetization";
 import { goBackOrHome } from "@/navigation/back";
 import { Screen } from "@/components/Screen";
 import { ScreenBack } from "@/components/ScreenBack";
@@ -15,6 +16,8 @@ export default function PaywallScreen() {
   const { t } = useTranslation();
   const purchase = useEntitlementStore((s) => s.purchase);
   const restore = useEntitlementStore((s) => s.restore);
+
+  if (!BILLING_ENABLED) return <Screen><ScreenBack/><Text style={[theme.type.title,{color:theme.colors.textPrimary}]}>{t("launchFree.title")}</Text><Text style={[theme.type.body,{color:theme.colors.textSecondary}]}>{t("launchFree.description")}</Text><Button label={t("common.back")} onPress={()=>goBackOrHome(router)}/></Screen>;
 
   return (
     <Screen>

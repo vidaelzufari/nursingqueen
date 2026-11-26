@@ -573,5 +573,16 @@
     "limit": "Today’s analysis limit has been reached. You can enter your meal manually.",
     "permission": "Allow camera or photo access in your phone settings.",
     "unavailable": "The analysis did not complete. Try again or add the foods manually."
+  },
+  "launchFree": {
+    "title": "Free at launch",
+    "description": "All currently available app features are free. No purchase or subscription is required."
+  },
+  "legal": {
+    "privacy": "Privacy policy",
+    "support": "Help & support",
+    "terms": "Terms of use",
+    "deleteData": "Delete your data",
+    "openError": "This page could not be opened. Please try again."
   }
 }

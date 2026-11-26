@@ -1,4 +1,5 @@
 import ar from '@/i18n/locales/ar.json';
+jest.mock('@/config/release', () => ({ MULTILINGUAL_ENABLED: true }));
 
 // The normal Node test runtime has PluralRules; the supported Hermes runtime may not.
 it('initializes the real translation bootstrap without native PluralRules', () => {
