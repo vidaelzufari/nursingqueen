@@ -1,3 +1,4 @@
+import { BabyAvatar } from "@/components/BabyAvatar";
 import { formatAge } from "@/i18n/formatAge";
 import { ListRow } from "@/components/ListRow";
 import { IconBadge } from "@/components/IconBadge";
@@ -5,12 +6,11 @@ import { EmptyState } from "@/components/EmptyState";
 import { Screen } from "@/components/Screen";
 import { ScreenBack } from "@/components/ScreenBack";
 import React from "react";
-import { Image, Text, View } from "react-native";
+import { Text } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Button, Card } from "@/components";
-import { Icon } from "@/components/Icon";
 import { parseBirthDate, validBirthDate } from "@/domain/birthDate";
 import { useActiveBaby, useBabyStore } from "@/store/useBabyStore";
 import { computeAge } from "@/domain/dateMath";
@@ -35,22 +35,7 @@ export default function ProfileScreen() {
 
       {activeBaby ? (
         <Card style={{ alignItems: "center", gap: theme.spacing.sm }}>
-          {activeBaby.photoUri ? (
-            <Image source={{ uri: activeBaby.photoUri }} style={{ width: 80, height: 80, borderRadius: 40 }} />
-          ) : (
-            <View
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                backgroundColor: theme.colors.surfaceRaised,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="baby" size={36} color={theme.colors.accent} />
-            </View>
-          )}
+          <BabyAvatar uri={activeBaby.photoUri} size={80} label={activeBaby.name} />
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{activeBaby.name}</Text>
           {age ? (
             <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>

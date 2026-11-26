@@ -11,7 +11,7 @@ const mockBabyRefresh = jest.fn();
 const mockAddWeight = jest.fn((_: string, weightGrams: number) => { mockWeights.push({ id: "weight", weightGrams, measuredAt: "2026-11-25T10:00:00Z" }); });
 const mockReplace = jest.fn(); const mockStart = jest.fn(); const mockRefresh = jest.fn(); const mockCreate = jest.fn(() => ({ id: "new-baby" }));
 const mockTheme = { colors: palettes.light, spacing, radii, type: typeScale, shadows, mode: "light" };
-jest.mock("expo-router", () => ({ useRouter: () => ({ replace: mockReplace }), useLocalSearchParams: () => mockParams }));
+jest.mock("expo-router", () => ({ useRouter: () => ({ replace: mockReplace, canGoBack: () => false }), useLocalSearchParams: () => mockParams }));
 jest.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock("@/theme/ThemeProvider", () => ({ useTheme: () => mockTheme }));
 jest.mock("expo-image-picker", () => ({}));
@@ -49,4 +49,23 @@ it("saves decimal kg as grams, refreshes the mounted profile and confirms the la
   expect(mockBabyRefresh).toHaveBeenCalledTimes(1);
   expect(screen.getByText("5.25 kg")).toBeTruthy();
   expect(screen.getByTestId("profile-weight-input").props.value).toBe("");
+});
+
+it("includes a typed weight when saving the whole profile", () => {
+  mockParams.intent = undefined; mockParams.id = "baby";
+  mockBabies.push({ id: "baby", name: "Jad", dateOfBirth: "2026-05-06", photoUri: null });
+  const screen = render(<EditProfileScreen />);
+  fireEvent.changeText(screen.getByTestId("profile-weight-input"), "5,2");
+  fireEvent.press(screen.getByText("common.save"));
+  expect(mockAddWeight).toHaveBeenCalledWith("baby", 5200);
+  expect(mockReplace).toHaveBeenCalledWith("/");
+});
+it("does not silently discard an invalid typed weight on profile save", () => {
+  mockParams.intent = undefined; mockParams.id = "baby";
+  mockBabies.push({ id: "baby", name: "Jad", dateOfBirth: "2026-05-06", photoUri: null });
+  const screen = render(<EditProfileScreen />);
+  fireEvent.changeText(screen.getByTestId("profile-weight-input"), "-5");
+  fireEvent.press(screen.getByText("common.save"));
+  expect(mockAddWeight).not.toHaveBeenCalled();
+  expect(mockReplace).not.toHaveBeenCalled();
 });

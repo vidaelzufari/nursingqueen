@@ -1,3 +1,6 @@
+// Hermes does not provide PluralRules on all supported iOS versions.
+// Load before i18next initializes its v4 plural resolver (FR/EN/AR).
+import "intl-pluralrules";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";

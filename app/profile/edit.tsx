@@ -1,3 +1,5 @@
+import { BabyAvatar } from "@/components/BabyAvatar";
+import { persistProfilePhoto } from "@/services/profilePhoto";
 import { parseWeightKg } from "@/domain/weight";
 import { useFeedbackStore } from "@/store/useFeedbackStore";
 import { ListRow } from "@/components/ListRow";
@@ -6,7 +8,7 @@ import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useState } from "react";
-import { Image, Keyboard, Text, View } from "react-native";
+import { Keyboard, Platform, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
@@ -40,22 +42,29 @@ export default function EditProfileScreen() {
   const handlePickPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) return;
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8, allowsEditing: true, aspect: [1, 1] });
-    if (!result.canceled && result.assets[0]) setPhotoUri(result.assets[0].uri);
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8, base64: Platform.OS === "web", allowsEditing: true, aspect: [1, 1] });
+    if (!result.canceled && result.assets[0]) { try { setPhotoUri(await persistProfilePhoto(result.assets[0].uri, result.assets[0].base64)); } catch { useFeedbackStore.getState().show(t("profile.photoError")); } }
   };
 
   const handleTakePhoto = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) return;
-    const result = await ImagePicker.launchCameraAsync({ quality: 0.8, allowsEditing: true, aspect: [1, 1] });
-    if (!result.canceled && result.assets[0]) setPhotoUri(result.assets[0].uri);
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.8, base64: Platform.OS === "web", allowsEditing: true, aspect: [1, 1] });
+    if (!result.canceled && result.assets[0]) { try { setPhotoUri(await persistProfilePhoto(result.assets[0].uri, result.assets[0].base64)); } catch { useFeedbackStore.getState().show(t("profile.photoError")); } }
   };
 
   const handleSave = () => {
-    if (!name.trim() || !validBirthDate(dateOfBirth)) return;
+    if (!name.trim() || !validBirthDate(dateOfBirth) || (existing && weightText.trim() && parseWeightKg(weightText) === null)) return;
     Keyboard.dismiss();
     if (existing) {
-      updateBaby(existing.id, { name: name.trim(), dateOfBirth: dateOfBirth.trim(), photoUri });
+      try {
+        updateBaby(existing.id, { name: name.trim(), dateOfBirth: dateOfBirth.trim(), photoUri });
+        if (weightText.trim()) {
+          weightRepository.create(existing.id, parseWeightKg(weightText)!);
+          setWeightText("");
+          useBabyStore.getState().refresh();
+        }
+      } catch { useFeedbackStore.getState().show(t("profile.saveError")); return; }
     } else {
       const baby = createBaby({ name: name.trim(), dateOfBirth, photoUri });
       useLogStore.getState().refresh(baby.id);
@@ -89,12 +98,12 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <Screen>
-      <ScreenBack />
+    <Screen footer={<Button label={t(loggingIntent ? `setup.save_${loggingIntent}` : existing ? "common.save" : "design.saveBaby")} disabled={!name.trim() || !validBirthDate(dateOfBirth) || Boolean(existing && weightText.trim() && grams === null)} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />}>
+      <ScreenBack dismiss />
       <Text style={[theme.type.display, { color: theme.colors.textPrimary }]}>{t(existing ? "profile.editTitle" : "design.babySetup")}</Text>
       {!existing ? <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t(loggingIntent ? "setup.reason" : "setup.intro")}</Text> : null}
       {!loggingIntent ? <Card style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 16 }}>
-        {photoUri ? <Image source={{ uri: photoUri }} style={{ width: 72, height: 72, borderRadius: 36 }} /> : <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" size={32} color={theme.colors.accent} /></View>}
+        <BabyAvatar uri={photoUri} size={72} label={name || t("profile.title")} />
         <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
           <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("design.photoHint")}</Text>
           <Button compact icon={<Icon name="photo" size={16} color={theme.colors.accent} />} label={t("profile.choosePhoto")} variant="ghost" onPress={handlePickPhoto} style={{ paddingHorizontal: 4 }} />
@@ -105,7 +114,6 @@ export default function EditProfileScreen() {
       <Card style={{ gap: theme.spacing.sm }}>
         <Field label={t("profile.name")} value={name} onChangeText={setName} returnKeyType="done" onSubmitEditing={() => Keyboard.dismiss()} />
         <BirthDateField value={dateOfBirth} onChange={setDateOfBirth} />
-        <Button label={t(loggingIntent ? `setup.save_${loggingIntent}` : existing ? "common.save" : "design.saveBaby")} disabled={!name.trim() || !validBirthDate(dateOfBirth)} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} tone="accent" onPress={handleSave} />
       </Card>
 
       {existing ? (

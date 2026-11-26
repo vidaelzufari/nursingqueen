@@ -65,20 +65,22 @@ export function TimerIntegrations() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires -- Load native modules lazily so older binaries can still log.
         const activity = require("expo-live-activity") as typeof import("expo-live-activity");
         const key = "nq-live-session-ids";
-        const saved = JSON.parse(await AsyncStorage.getItem(key) ?? "{}") as Record<string, { id: string; start: string }>;
+        const saved = JSON.parse(await AsyncStorage.getItem(key) ?? "{}") as Record<string, { id: string; start: string; kind?: string }>;
         const remaining: typeof saved = {};
         for (const [sessionId, value] of Object.entries(saved)) {
           if (!live || !active.some(x => x.session!.id === sessionId)) { try { activity.stopActivity(value.id, { title: t("timers.finished") }); } catch { /* Already dismissed by iOS. */ } }
           else remaining[sessionId] = value;
         }
         if (live && AppState.currentState === "active") for (const item of active) {
-          const state = { title: item.kind === "sleep" && sleep ? `${t(`sleep.${sleepPeriod(sleep)}`)} · ${t("forecast.active")}` : t("modern.nursingNow"), subtitle: t("timers.tap"), progressBar: { date: new Date(item.session!.startedAt).getTime() } };
+          const kind = item.kind === "sleep" && sleep ? sleepPeriod(sleep) : "nursing";
+          const state = { title: kind === "nursing" ? t("refresh.feed") : t(`sleep.${kind}`), subtitle: t("timers.tap"), progressBar: { date: new Date(item.session!.startedAt).getTime() } };
           const existing = remaining[item.session!.id];
           try {
-            if (existing) activity.updateActivity(existing.id, state);
+            if (existing?.kind === kind) activity.updateActivity(existing.id, state);
             else {
-              const id = activity.startActivity(state, { deepLinkUrl: item.kind === "sleep" ? "nursingqueen:///sleep" : `nursingqueen:///entry/nursing/${item.session!.id}`, timerType: "digital" });
-              if (id) remaining[item.session!.id] = { id, start: item.session!.startedAt };
+              if (existing) { try { activity.stopActivity(existing.id, { title: t("timers.finished") }); } catch { /* Already ended. */ } }
+              const id = activity.startActivity(state, { deepLinkUrl: item.kind === "sleep" ? `nursingqueen:///sleep?period=${kind}` : `nursingqueen:///entry/nursing/${item.session!.id}`, timerType: "digital" });
+              if (id) remaining[item.session!.id] = { id, start: item.session!.startedAt, kind };
             }
           } catch { delete remaining[item.session!.id]; }
         }

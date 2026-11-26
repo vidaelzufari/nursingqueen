@@ -126,7 +126,9 @@
     "weightKg": "Weight (kg)",
     "weightSaved": "Weight saved",
     "weightError": "Could not save the weight. Please try again.",
-    "latestWeight": "Latest weight"
+    "latestWeight": "Latest weight",
+    "photoError": "This photo could not be saved. Please choose it again.",
+    "saveError": "Could not save your changes. Please try again."
   },
   "settings": {
     "title": "Settings",

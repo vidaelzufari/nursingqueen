@@ -126,7 +126,9 @@
     "weightKg": "Poids (kg)",
     "weightSaved": "Poids enregistré",
     "weightError": "Impossible d’enregistrer le poids. Réessayez.",
-    "latestWeight": "Dernier poids"
+    "latestWeight": "Dernier poids",
+    "photoError": "Impossible d’enregistrer cette photo. Choisis-la à nouveau.",
+    "saveError": "Impossible d’enregistrer les modifications. Réessaie."
   },
   "settings": {
     "title": "Réglages",

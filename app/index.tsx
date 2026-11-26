@@ -1,3 +1,4 @@
+import { BabyAvatar } from "@/components/BabyAvatar";
 import { formatAge } from "@/i18n/formatAge";
 import { useFoodStore } from "@/store/useFoodStore";
 import { normalizeHomeActivities, visibleHomeActivities } from "@/domain/homePreferences";
@@ -5,7 +6,7 @@ import { defaultSleepPeriod, sleepPeriod } from "@/domain/sleep";
 import { useDurationFormatter } from "@/i18n/useDurationFormatter";
 import { dateLocale } from "@/domain/dateLocale";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Image, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { format, isSameDay } from "date-fns";
@@ -120,7 +121,7 @@ export default function HomeScreen() {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 24 }}><BrandMark size={28} /><Text style={[theme.type.caption, { color: theme.colors.accent, letterSpacing: 0.4 }]}>Nursing Queen</Text></View>
         <Pressable accessibilityRole="button" accessibilityLabel={t(activeBaby ? "profile.title" : "profile.addBaby")} testID={activeBaby ? "home-avatar-button" : "home-add-baby-cta"} onPress={() => router.push(activeBaby ? "/profile" : "/profile/edit")} style={{ marginTop: 0, marginBottom: 28 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-            {activeBaby?.photoUri ? <Image source={{ uri: activeBaby.photoUri }} style={{ width: 56, height: 56, borderRadius: 28 }} /> : <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: theme.colors.surface, alignItems: "center", justifyContent: "center" }}><Icon name="baby" size={26} color={theme.colors.accent} /></View>}
+            <BabyAvatar uri={activeBaby?.photoUri} size={56} label={activeBaby?.name ?? t("profile.title")} />
             <View style={{ flex: 1, gap: 4 }}>
               <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "baseline", gap: 8 }}><Text style={[theme.type.title, { color: theme.colors.textPrimary }]}>{activeBaby?.name ?? t("profile.addBaby")}</Text>{age ? <Text style={[theme.type.caption, { color: theme.colors.accent }]}>{formatAge(age, t)}</Text> : null}</View>
               <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{t("refresh.manageProfile")}</Text>

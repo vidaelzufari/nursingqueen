@@ -12,7 +12,7 @@ export function ScreenBack({ dismiss = false }: { dismiss?: boolean }) {
   const router = useRouter();
   const { t } = useTranslation();
   return (
-    <View style={{ alignSelf: "stretch", marginTop: insets.top, minHeight: 48, flexDirection: "row", justifyContent: dismiss ? "flex-end" : "flex-start", marginBottom: 4 }}>
+    <View style={{ alignSelf: "stretch", marginTop: dismiss ? 0 : insets.top, minHeight: 48, flexDirection: "row", justifyContent: dismiss ? "flex-end" : "flex-start", marginBottom: 4 }}>
       <IconButton name={dismiss ? "close" : "back"} label={t(dismiss ? "common.cancel" : "navigation.back")} directional={!dismiss} onPress={() => goBackOrHome(router)} />
     </View>
   );
