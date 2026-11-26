@@ -76,8 +76,15 @@ export function TimerIntegrations() {
           const state = { title: kind === "nursing" ? t("refresh.feed") : t(`sleep.${kind}`), subtitle: t("timers.tap"), progressBar: { date: new Date(item.session!.startedAt).getTime() } };
           const existing = remaining[item.session!.id];
           try {
-            if (existing?.kind === kind) activity.updateActivity(existing.id, state);
-            else {
+            let updated = false;
+            if (existing?.kind === kind) {
+              try {
+                activity.updateActivity(existing.id, state);
+                updated = true;
+              } catch { /* iOS may have removed the saved activity; recreate it below. */ }
+            }
+            if (!updated) {
+              delete remaining[item.session!.id];
               if (existing) { try { activity.stopActivity(existing.id, { title: t("timers.finished") }); } catch { /* Already ended. */ } }
               const id = activity.startActivity(state, { deepLinkUrl: item.kind === "sleep" ? `nursingqueen:///sleep?period=${kind}` : `nursingqueen:///entry/nursing/${item.session!.id}`, timerType: "digital" });
               if (id) remaining[item.session!.id] = { id, start: item.session!.startedAt, kind };

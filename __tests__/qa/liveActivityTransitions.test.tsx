@@ -48,3 +48,35 @@ it('keeps concurrent timers independent when correcting a nap to night sleep and
     if (state) Object.defineProperty(AppState, 'currentState', state);
   }
 });
+
+it('recreates a saved activity removed by iOS on the first synchronization, keeping the original timer start', async () => {
+  const version = Object.getOwnPropertyDescriptor(Platform, 'Version');
+  const state = Object.getOwnPropertyDescriptor(AppState, 'currentState');
+  Object.defineProperty(Platform, 'Version', { configurable: true, value: '17.0' });
+  Object.defineProperty(AppState, 'currentState', { configurable: true, value: 'active' });
+  mockNursing = [{ id: 'n1', startedAt: '2026-11-26T10:00:00Z', endedAt: null }];
+  mockSleep = [{ id: 's1', startedAt: '2026-11-26T09:00:00Z', endedAt: null, period: 'nap' }];
+  mockData.clear();
+  mockData.set('nq-live-session-ids', JSON.stringify({
+    n1: { id: 'missing', start: mockNursing[0]!.startedAt, kind: 'nursing' },
+    s1: { id: 'still-active', start: mockSleep[0]!.startedAt, kind: 'nap' },
+  }));
+  mockStart.mockReset(); mockUpdate.mockReset(); mockStop.mockReset();
+  mockStart.mockReturnValue('replacement');
+  mockUpdate.mockImplementation((id: string) => { if (id === 'missing') throw Error('Activity not found'); });
+  mockStop.mockImplementation((id: string) => { if (id === 'missing') throw Error('Activity not found'); });
+  const screen = render(<TimerIntegrations />);
+  try {
+    await waitFor(() => expect(JSON.parse(mockData.get('nq-live-session-ids') ?? '{}').n1.id).toBe('replacement'));
+    expect(mockStart).toHaveBeenCalledTimes(1);
+    expect(mockStart.mock.calls[0][0].progressBar.date).toBe(Date.parse(mockNursing[0]!.startedAt));
+    expect(mockUpdate).toHaveBeenCalledWith('still-active', expect.anything());
+    expect(mockStop).not.toHaveBeenCalledWith('still-active', expect.anything());
+    expect(JSON.parse(mockData.get('nq-live-session-ids') ?? '{}').s1.id).toBe('still-active');
+  } finally {
+    screen.unmount();
+    mockStart.mockReset(); mockUpdate.mockReset(); mockStop.mockReset();
+    if (version) Object.defineProperty(Platform, 'Version', version);
+    if (state) Object.defineProperty(AppState, 'currentState', state);
+  }
+});
