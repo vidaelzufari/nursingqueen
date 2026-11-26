@@ -459,6 +459,8 @@
     "logEarlier": "Ajouter un sommeil passé"
   },
   "apple": {
+    "startNursing": "Allaitement",
+    "stopNursing": "Terminer la tétée",
     "refresh": "Actualiser",
     "phoneRequired": "Ouvrez Nursing Queen sur votre iPhone, puis réessayez.",
     "notConfirmed": "Action non confirmée. Actualisez avant de réessayer.",

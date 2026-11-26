@@ -43,7 +43,7 @@ final class AppleSessionStore {
       if let row = try query("SELECT * FROM \(table) WHERE baby_id = ? AND ended_at IS NULL ORDER BY started_at DESC LIMIT 1", [babyID]).first {
         let iso = ISO8601DateFormatter(); iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let date = iso.date(from: row["started_at"] as? String ?? "") ?? ISO8601DateFormatter().date(from: row["started_at"] as? String ?? "")
-        result[key] = ["id": row["id"] ?? "", "startedAt": date?.timeIntervalSince1970 ?? 0, "period": row["period"] ?? "night"]
+        result[key] = ["id": row["id"] ?? "", "startedAt": date?.timeIntervalSince1970 ?? 0, "period": row["period"] ?? "night", "side": row["side"] ?? "unknown"]
       }
     }
     return result

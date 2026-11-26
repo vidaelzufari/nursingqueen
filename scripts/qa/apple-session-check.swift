@@ -8,6 +8,7 @@ import SQLite3
   let startID=UUID().uuidString
   let first=try store.perform(["action":"startNursing","commandID":startID,"side":"left"],babyID:"qa-baby")
   let nurse=first["nursing"] as! [String:Any]; let id=nurse["id"] as! String
+  check(nurse["side"] as? String == "left", "snapshot preserves the selected nursing side")
   let retry=try store.perform(["action":"startNursing","commandID":startID,"side":"left"],babyID:"qa-baby")
   check((retry["nursing"] as? [String:Any])?["id"] as? String == id,"duplicate command does not duplicate nursing")
   let again=try store.perform(["action":"startNursing","commandID":UUID().uuidString,"side":"right"],babyID:"qa-baby")
@@ -25,6 +26,18 @@ import SQLite3
   }
   do { _=try store.perform(["action":"startSleep","commandID":"invalid"],babyID:"qa-baby"); fatalError("invalid command accepted") } catch { check(true,"rejects malformed command id") }
   do { _=try store.perform(["action":"startSleep","commandID":UUID().uuidString],babyID:"missing"); fatalError("missing child accepted") } catch { check(true,"rejects missing child") }
+  let feeding = try store.perform(["action":"startNursing","commandID":UUID().uuidString,"side":"right"],babyID:"qa-baby")
+  let feedID = (feeding["nursing"] as! [String:Any])["id"] as! String
+  let together = try store.perform(["action":"startSleep","commandID":UUID().uuidString,"period":"nap"],babyID:"qa-baby")
+  let napID = (together["sleep"] as! [String:Any])["id"] as! String
+  check(together["nursing"] != nil && together["sleep"] != nil, "feeding and sleep have independent active sessions")
+  let afterSleep = try store.perform(["action":"stopSleep","commandID":UUID().uuidString,"sessionID":napID],babyID:"qa-baby")
+  check(afterSleep["sleep"] == nil && (afterSleep["nursing"] as? [String:Any])?["id"] as? String == feedID, "stopping sleep cannot finish a feed")
+  let secondNap = try store.perform(["action":"startSleep","commandID":UUID().uuidString,"period":"nap"],babyID:"qa-baby")
+  let secondNapID = (secondNap["sleep"] as! [String:Any])["id"] as! String
+  let afterFeed = try store.perform(["action":"stopNursing","commandID":UUID().uuidString,"sessionID":feedID],babyID:"qa-baby")
+  check(afterFeed["nursing"] == nil && (afterFeed["sleep"] as? [String:Any])?["id"] as? String == secondNapID, "finishing a feed cannot end sleep")
+  _ = try store.perform(["action":"stopSleep","commandID":UUID().uuidString,"sessionID":secondNapID],babyID:"qa-baby")
   print("\(count) native SQLite checks passed")
  }
 }

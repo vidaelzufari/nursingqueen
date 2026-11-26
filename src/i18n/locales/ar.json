@@ -467,6 +467,8 @@
     "logEarlier": "إضافة نوم سابق"
   },
   "apple": {
+    "startNursing": "الرضاعة",
+    "stopNursing": "إنهاء الرضعة",
     "refresh": "تحديث",
     "phoneRequired": "افتحي Nursing Queen على iPhone، ثم حاولي مجددًا.",
     "notConfirmed": "لم يتم تأكيد الإجراء. حدّثي قبل المحاولة مجددًا.",

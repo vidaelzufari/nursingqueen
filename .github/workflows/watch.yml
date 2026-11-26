@@ -1,0 +1,26 @@
+name: Watch UI and activity regression checks
+on:
+  push:
+    paths: ['native/watch/**', 'modules/nursing-queen-apple/ios/AppleSessionStore.swift', 'scripts/qa/*-check.swift', 'src/components/AppleSurfaces.tsx', 'src/i18n/locales/**', '.github/workflows/watch.yml']
+  pull_request:
+    paths: ['native/watch/**', 'modules/nursing-queen-apple/ios/AppleSessionStore.swift', 'scripts/qa/*-check.swift', 'src/components/AppleSurfaces.tsx', 'src/i18n/locales/**', '.github/workflows/watch.yml']
+permissions:
+  contents: read
+jobs:
+  watch:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Typecheck Watch UI
+        run: |
+          xcrun --sdk watchsimulator swiftc -parse-as-library -typecheck -target arm64-apple-watchos9.0-simulator -sdk "$(xcrun --sdk watchsimulator --show-sdk-path)" native/watch/NursingQueenWatchApp.swift
+      - name: Check activity-specific labels in three languages
+        run: |
+          swiftc -D NQ_WATCH_LOGIC_TEST native/watch/NursingQueenWatchApp.swift scripts/qa/watch-labels-check.swift -o "$RUNNER_TEMP/watch-labels"
+          "$RUNNER_TEMP/watch-labels"
+      - name: Verify native start and stop isolation
+        run: |
+          python3 scripts/qa/create-apple-fixture.py "$RUNNER_TEMP/watch-fixture.db"
+          swiftc modules/nursing-queen-apple/ios/AppleSessionStore.swift scripts/qa/apple-session-check.swift -o "$RUNNER_TEMP/watch-sessions"
+          "$RUNNER_TEMP/watch-sessions" "$RUNNER_TEMP/watch-fixture.db"

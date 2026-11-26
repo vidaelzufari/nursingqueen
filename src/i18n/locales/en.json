@@ -459,6 +459,8 @@
     "logEarlier": "Log an earlier sleep"
   },
   "apple": {
+    "startNursing": "Nursing",
+    "stopNursing": "Finish feed",
     "refresh": "Refresh",
     "phoneRequired": "Open Nursing Queen on your iPhone, then try again.",
     "notConfirmed": "Action not confirmed. Refresh before trying again.",
