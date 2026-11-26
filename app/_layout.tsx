@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { I18nextProvider, useTranslation } from "react-i18next";
+import { recoverProfilePhotos } from "@/services/profilePhotoRecovery";
 import { initializeDatabase } from "@/db/client";
 import i18n, { initI18n } from "@/i18n";
 import { initSentry } from "@/services/sentry";
@@ -43,7 +44,8 @@ function Bootstrap({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    void initializeDatabase().then(() => {
+    void initializeDatabase().then(async () => {
+      await recoverProfilePhotos();
       if (cancelled) return;
       initI18n(language === "system" ? undefined : language);
       refreshBabies();
@@ -101,6 +103,7 @@ export default function RootLayout() {
                 <Stack.Screen name="profile/edit" options={{ presentation: "modal", headerShown: false, title: t("profile.addBaby") }} />
                 <Stack.Screen name="settings/index" />
                 <Stack.Screen name="modals/pump-details" options={{ presentation: "modal", headerShown: false }} />
+                <Stack.Screen name="modals/meal-entry" options={{ presentation: "modal", headerShown: false }} />
                 <Stack.Screen name="modals/bottle-entry" options={{ presentation: "modal", headerShown: false }} />
                 <Stack.Screen name="modals/nursing-duration" options={{ presentation: "modal", headerShown: false }} />
                 <Stack.Screen name="paywall" options={{ presentation: "modal", headerShown: false }} />

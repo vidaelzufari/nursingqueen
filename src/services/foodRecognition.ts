@@ -5,7 +5,7 @@ const publishable=process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY??'';
 const sessionKey='nq-food-ai-session';
 type Session={access_token:string;refresh_token:string;expires_at:number};
 let pending:Promise<Session>|undefined;
-export function foodRecognitionConfigured(){return /^https:\/\/[^/]+\.supabase\.co$/.test(base)&&Boolean(publishable);}
+export function foodRecognitionConfigured(){return process.env.EXPO_PUBLIC_FOOD_AI_ENABLED==='true'&&/^https:\/\/[^/]+\.supabase\.co$/.test(base)&&Boolean(publishable);}
 async function session():Promise<Session>{
  if(pending)return pending;
  pending=(async()=>{

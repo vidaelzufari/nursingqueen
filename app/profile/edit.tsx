@@ -70,7 +70,7 @@ export default function EditProfileScreen() {
       useLogStore.getState().refresh(baby.id);
       useSleepStore.getState().refresh(baby.id);
       if (loggingIntent) {
-        if (loggingIntent === "solids") { router.replace("/foods"); }
+        if (loggingIntent === "solids") { router.replace("/modals/meal-entry"); }
         else if (loggingIntent === "nurse") { useLogStore.getState().startNursing(); router.replace("/"); }
         else if (loggingIntent === "sleep") { useSleepStore.getState().start(); router.replace("/"); }
         else if (loggingIntent === "bottle") router.replace("/modals/bottle-entry");
