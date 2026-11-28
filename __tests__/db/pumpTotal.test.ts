@@ -144,3 +144,22 @@ it("keeps legacy sleep records readable after the period migration", () => {
   expect(entry.period).toBeNull();
   expect(sleepPeriod(entry)).toBe("night");
 });
+
+it("edits a running sleep start without completing it or creating a second entry", () => {
+ sleepRepository.start("baby-a", "night");
+ const active=sleepRepository.list("baby-a")[0]!;
+ const start=new Date(Date.parse(active.startedAt)-20*60000);
+ sleepRepository.updateRunning("baby-a",active.id,start,"nap");
+ expect(sleepRepository.list("baby-a")).toEqual([expect.objectContaining({id:active.id,startedAt:start.toISOString(),endedAt:null,period:"nap"})]);
+ sleepRepository.stop(active.id);
+ expect(sleepRepository.list("baby-a")[0]?.endedAt).not.toBeNull();
+ expect(()=>sleepRepository.updateRunning("baby-a",active.id,start,"night")).toThrow("Sleep is no longer running");
+});
+it("rejects future, overlapping or cross-profile running sleep edits", () => {
+ sleepRepository.save("baby-a",new Date("2026-01-01T10:00Z"),new Date("2026-01-01T11:00Z"));
+ sleepRepository.start("baby-a","nap");const active=sleepRepository.list("baby-a")[0]!;
+ expect(()=>sleepRepository.updateRunning("baby-b",active.id,new Date("2026-01-01T12:00Z"),"nap")).toThrow();
+ expect(()=>sleepRepository.updateRunning("baby-a",active.id,new Date("2099-01-01"),"nap")).toThrow();
+ expect(()=>sleepRepository.updateRunning("baby-a",active.id,new Date("2026-01-01T10:30Z"),"nap")).toThrow("Overlapping sleep");
+ expect(sleepRepository.list("baby-a")[0]?.endedAt).toBeNull();
+});

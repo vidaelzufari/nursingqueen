@@ -2,7 +2,7 @@ import { Screen } from "@/components/Screen";
 import { goBackOrHome } from "@/navigation/back";
 import { ScreenBack } from "@/components/ScreenBack";
 import React, { useRef, useState } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -24,13 +24,15 @@ export default function BottleEntryModal() {
   const events = useLogStore(s => s.bottleEvents);
   const [milkType, setMilkType] = useState<MilkType>(events[0]?.milkType ?? "breast_milk");
   const committed = useRef(false);
+  const [saveError, setSaveError] = useState(false);
   const last = events.find(event => event.milkType === milkType && event.ml != null);
   const commit = (ml: number | null) => {
     if (!babyId) { router.replace("/profile/edit"); return; }
     if (committed.current) return;
     committed.current = true;
+    setSaveError(false);
     try { logBottle(ml, milkType); goBackOrHome(router); }
-    catch (error) { committed.current = false; throw error; }
+    catch { committed.current = false; setSaveError(true); }
   };
   return <Screen>
       <ScreenBack dismiss />
@@ -39,6 +41,7 @@ export default function BottleEntryModal() {
       {(["breast_milk", "formula"] as const).map(type => <Button key={type} testID={`bottle-entry-type-${type.replace("_", "-")}`} label={t(type === "breast_milk" ? "bottleEntry.milkTypeBreastMilk" : "bottleEntry.milkTypeFormula")} tone="bottle" variant={milkType === type ? "solid" : "outline"} active={milkType === type} icon={milkType === type ? <Icon name="check" size={16} color={theme.colors.accentContrast} /> : undefined} onPress={() => setMilkType(type)} style={{ flex: 1, minHeight: 48, paddingHorizontal: 10 }} />)}
     </View>
     <QuickAmount unit={unit} color={theme.colors.bottle} lastMl={last?.ml} onSave={commit} />
+    {saveError ? <Text accessibilityRole="alert" style={{color:theme.colors.danger}}>{t("entryQA.saveError")}</Text> : null}
     <Button label={t("bottleEntry.skipAmount")} tone="neutral" variant="ghost" onPress={() => commit(null)} />
   </Screen>;
 }

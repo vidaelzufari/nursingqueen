@@ -1182,5 +1182,58 @@
     "fr": "Cumin",
     "ar": "كمون",
     "wiki": "Cumin"
+  },
+  {
+    "id": "rice_cereal",
+    "category": "grains",
+    "en": "Rice cereal",
+    "fr": "Céréales de riz",
+    "ar": "حبوب الأرز",
+    "wiki": "Rice cereal",
+    "aliases": [
+      "baby rice",
+      "rice porridge",
+      "cereales de riz",
+      "سيريلاك الأرز"
+    ]
+  },
+  {
+    "id": "oat_cereal",
+    "category": "grains",
+    "en": "Oat cereal",
+    "fr": "Céréales d’avoine",
+    "ar": "حبوب الشوفان",
+    "wiki": "Oatmeal",
+    "aliases": [
+      "oatmeal",
+      "baby oats",
+      "cereales avoine",
+      "porridge"
+    ]
+  },
+  {
+    "id": "wheat_cereal",
+    "category": "grains",
+    "en": "Wheat cereal",
+    "fr": "Céréales de blé",
+    "ar": "حبوب القمح",
+    "wiki": "Wheat",
+    "aliases": [
+      "baby wheat",
+      "cereales ble",
+      "سيريلاك القمح"
+    ]
+  },
+  {
+    "id": "barley_cereal",
+    "category": "grains",
+    "en": "Barley cereal",
+    "fr": "Céréales d’orge",
+    "ar": "حبوب الشعير",
+    "wiki": "Barley",
+    "aliases": [
+      "baby barley",
+      "cereales orge"
+    ]
   }
 ]

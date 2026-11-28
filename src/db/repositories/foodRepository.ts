@@ -1,11 +1,12 @@
+import { AllergenId, parseAllergens, validateAllergens } from "@/domain/allergens";
 import { getDatabase } from "../client";
 import { generateId } from "../id";
 import { FOOD_CATALOG, normalizeFoodName } from "@/domain/foods";
-export interface Food { id:string; name:string|null; catalogKey:string|null; photoUri:string|null; firstAt:string|null; lastAt:string|null; times:number; planned:boolean }
+export interface Food { allergens?:AllergenId[]; id:string; name:string|null; catalogKey:string|null; photoUri:string|null; firstAt:string|null; lastAt:string|null; times:number; planned:boolean }
 export const MEAL_TYPES = ["breakfast","lunch","snack","dinner"] as const;
 export type MealType = typeof MEAL_TYPES[number];
 export interface SolidMeal { mealType:MealType|null; id:string; babyId:string; occurredAt:string; note:string|null; spoons:number|null; ml:number|null; foodIds:string[] }
-type FoodRow={id:string;name:string|null;catalog_key:string|null;photo_uri:string|null;first_at:string|null;last_at:string|null;times:number;planned:number};
+type FoodRow={allergens_json?:string;id:string;name:string|null;catalog_key:string|null;photo_uri:string|null;first_at:string|null;last_at:string|null;times:number;planned:number};
 function seed() {
  const db=getDatabase();
  const count=db.getFirstSync<{count:number}>("SELECT COUNT(*) AS count FROM foods WHERE catalog_key IS NOT NULL")?.count ?? 0;
@@ -16,16 +17,17 @@ function ensureFood(foodId:string,babyId:string) { if(!getDatabase().getFirstSyn
 export const foodRepository={
  list(babyId:string):Food[] {
   seed();
-  return getDatabase().getAllSync<FoodRow>(`SELECT f.*,s.first_at,s.last_at,COALESCE(s.times,0) AS times,EXISTS(SELECT 1 FROM food_plans p WHERE p.food_id=f.id AND p.baby_id=?) AS planned FROM foods f LEFT JOIN (SELECT mf.food_id,MIN(m.occurred_at) AS first_at,MAX(m.occurred_at) AS last_at,COUNT(*) AS times FROM meal_foods mf JOIN solid_meals m ON m.id=mf.meal_id WHERE m.baby_id=? GROUP BY mf.food_id) s ON s.food_id=f.id WHERE f.baby_id IS NULL OR f.baby_id=?`,[babyId,babyId,babyId]).map(r=>({id:r.id,name:r.name,catalogKey:r.catalog_key,photoUri:r.photo_uri,firstAt:r.first_at,lastAt:r.last_at,times:r.times,planned:Boolean(r.planned)}));
+  return getDatabase().getAllSync<FoodRow>(`SELECT f.*,s.first_at,s.last_at,COALESCE(s.times,0) AS times,EXISTS(SELECT 1 FROM food_plans p WHERE p.food_id=f.id AND p.baby_id=?) AS planned FROM foods f LEFT JOIN (SELECT mf.food_id,MIN(m.occurred_at) AS first_at,MAX(m.occurred_at) AS last_at,COUNT(*) AS times FROM meal_foods mf JOIN solid_meals m ON m.id=mf.meal_id WHERE m.baby_id=? GROUP BY mf.food_id) s ON s.food_id=f.id WHERE f.baby_id IS NULL OR f.baby_id=?`,[babyId,babyId,babyId]).map(r=>({allergens:parseAllergens(r.allergens_json),id:r.id,name:r.name,catalogKey:r.catalog_key,photoUri:r.photo_uri,firstAt:r.first_at,lastAt:r.last_at,times:r.times,planned:Boolean(r.planned)}));
  },
  plan(babyId:string,foodId:string,planned:boolean) {seed();ensureFood(foodId,babyId);getDatabase().runSync(planned?"INSERT OR IGNORE INTO food_plans(baby_id,food_id) VALUES(?,?)":"DELETE FROM food_plans WHERE baby_id=? AND food_id=?",[babyId,foodId]);},
- custom(babyId:string,name:string,photoUri:string|null=null):string {
+ custom(babyId:string,name:string,photoUri:string|null=null,allergens?:AllergenId[]):string {
+  if(allergens)validateAllergens(allergens);
   seed();const clean=name.trim().replace(/\s+/g," ");const normalized=normalizeFoodName(clean);
   if(!normalized||clean.length>80)throw new Error("Invalid food name");
   const known=FOOD_CATALOG.find(f=>[f.en,f.fr,f.ar,f.wiki].some(n=>normalizeFoodName(n)===normalized));
   if(known)return known.id;
-  const existing=getDatabase().getFirstSync<{id:string}>("SELECT id FROM foods WHERE baby_id=? AND normalized_name=?",[babyId,normalized]);if(existing)return existing.id;
-  const id=generateId();getDatabase().runSync("INSERT INTO foods(id,baby_id,name,normalized_name,photo_uri,created_at) VALUES(?,?,?,?,?,?)",[id,babyId,clean,normalized,photoUri,new Date().toISOString()]);return id;
+  const existing=getDatabase().getFirstSync<{id:string}>("SELECT id FROM foods WHERE baby_id=? AND normalized_name=?",[babyId,normalized]);if(existing){if(allergens)getDatabase().runSync("UPDATE foods SET allergens_json=? WHERE id=? AND baby_id=?",[JSON.stringify(validateAllergens(allergens)),existing.id,babyId]);return existing.id;}
+  const id=generateId();getDatabase().runSync("INSERT INTO foods(id,baby_id,name,normalized_name,photo_uri,created_at,allergens_json) VALUES(?,?,?,?,?,?,?)",[id,babyId,clean,normalized,photoUri,new Date().toISOString(),JSON.stringify(allergens??[])]);return id;
  },
  meals(babyId:string):SolidMeal[] {
   const db=getDatabase();const rows=db.getAllSync<{id:string;baby_id:string;occurred_at:string;note:string|null;spoons:number|null;ml:number|null;meal_type:MealType|null}>("SELECT * FROM solid_meals WHERE baby_id=? ORDER BY occurred_at DESC,created_at DESC",[babyId]);

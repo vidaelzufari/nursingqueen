@@ -148,4 +148,8 @@ export const FOOD_PHOTOS: Record<string, number> = {
   "parsley": require("../../assets/foods/parsley.jpg"),
   "apricot": require("../../assets/foods/apricot.jpg"),
   "kidney_bean": require("../../assets/foods/kidney_bean.jpg"),
+  "rice_cereal": require("../../assets/foods/rice.jpg"),
+  "oat_cereal": require("../../assets/foods/oat.jpg"),
+  "wheat_cereal": require("../../assets/foods/wheat.jpg"),
+  "barley_cereal": require("../../assets/foods/barley.jpg"),
 };

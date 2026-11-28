@@ -69,3 +69,43 @@ export function evaluateForecast(times: Date[]): { samples: number; attempted: n
   }
   return { samples, attempted, meanAbsoluteErrorMinutes: samples ? error / samples : null, withinWindow };
 }
+
+export interface ProjectedWindow extends Forecast { step: number }
+/** Later windows reuse observed intervals only; simulated events never become training data. */
+export function projectFeedWindows(times: Date[], now: Date, count = 3): ProjectedWindow[] {
+  if (count < 1) return [];
+  const first = forecastNext(times, now);
+  if (!first || first.latest < now || first.at <= now) return [];
+  const sorted = [...new Set(times.filter(t => Number.isFinite(t.getTime()) && t<=now && now.getTime()-t.getTime()<=7*DAY).map(t=>t.getTime()))].sort((a,b)=>a-b);
+  const intervals = sorted.slice(1).map((time,i)=>({gap:time-sorted[i]!,hour:new Date(sorted[i]!).getHours()}));
+  const result:ProjectedWindow[]=[{...first,step:1}];
+  for(let step=2;step<=Math.min(3,count);step++) {
+    // Farther projections need a stronger history than a single next-event estimate.
+    if(first.samples<5)break;
+    const previous=result[result.length-1]!;
+    const next=estimate(previous.at,intervals);
+    if(!next || next.at.getTime()-now.getTime()>12*3600000)break;
+    const spread=Math.max(15*60000,(next.latest.getTime()-next.earliest.getTime())/2)*step;
+    result.push({...next,step,earliest:new Date(next.at.getTime()-spread),latest:new Date(next.at.getTime()+spread),confidence:"early"});
+  }
+  return result;
+}
+/** Alternates awake and sleep intervals from completed daytime logs. No extrapolated bedtime. */
+export function projectSleepWindows(sessions: {startedAt:string;endedAt:string|null;period?:string|null}[], first:Forecast|null, now:Date):ProjectedWindow[] {
+  if(!first || first.at<=now || first.latest<now || sessions.some(s=>!s.endedAt))return [];
+  const result:ProjectedWindow[]=[{...first,step:1}];
+  const naps=sessions.filter(s=>s.endedAt && s.period==="nap" && new Date(s.endedAt)<=now && new Date(s.startedAt)<new Date(s.endedAt) && now.getTime()-new Date(s.startedAt).getTime()<=7*DAY).sort((a,b)=>Date.parse(a.startedAt)-Date.parse(b.startedAt));
+  if(naps.length<6 || new Set(naps.map(s=>new Date(s.startedAt).toDateString())).size<3)return result;
+  const durations=naps.map(s=>Date.parse(s.endedAt!)-Date.parse(s.startedAt)).filter(d=>d>0&&d<=4*3600000);
+  const gaps=naps.slice(1).map((s,i)=>Date.parse(s.startedAt)-Date.parse(naps[i]!.endedAt!)).filter(g=>g>=15*60000&&g<=6*3600000);
+  if(durations.length<5||gaps.length<4)return result;
+  const cycle=quantile(durations,.5)+quantile(gaps,.5);
+  for(let step=2;step<=3;step++) {
+    const at=new Date(first.at.getTime()+(step-1)*cycle);
+    // Avoid turning a daytime nap pattern into a nighttime prediction.
+    if(at.getHours()<7||at.getHours()>=19||at.getTime()-now.getTime()>12*3600000)break;
+    const spread=Math.max(20*60000,(quantile(gaps,.75)-quantile(gaps,.25))/2)*step;
+    result.push({...first,at,step,earliest:new Date(at.getTime()-spread),latest:new Date(at.getTime()+spread),confidence:"early"});
+  }
+  return result;
+}

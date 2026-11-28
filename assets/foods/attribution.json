@@ -1330,5 +1330,41 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Kidney_beans.jpg/330px-Kidney_beans.jpg"
+  },
+  {
+    "id": "rice_cereal",
+    "file": "rice.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg",
+    "author": "China News Service",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg/330px-20201102.Hengnan.Hybrid_rice_Sanyou-1.6.jpg"
+  },
+  {
+    "id": "oat_cereal",
+    "file": "oat.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:AvenaSativa3.jpg",
+    "author": "Christian Fischer",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/AvenaSativa3.jpg/330px-AvenaSativa3.jpg"
+  },
+  {
+    "id": "wheat_cereal",
+    "file": "wheat.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Vehn%C3%A4pelto_6.jpg",
+    "author": "kallerna",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Vehn%C3%A4pelto_6.jpg/330px-Vehn%C3%A4pelto_6.jpg"
+  },
+  {
+    "id": "barley_cereal",
+    "file": "barley.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Barley_%28Hordeum_vulgare%29_-_United_States_National_Arboretum_-_24_May_2009.jpg",
+    "author": "Cliff from Arlington, Virginia, USA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Barley_%28Hordeum_vulgare%29_-_United_States_National_Arboretum_-_24_May_2009.jpg/330px-Barley_%28Hordeum_vulgare%29_-_United_States_National_Arboretum_-_24_May_2009.jpg"
   }
 ]

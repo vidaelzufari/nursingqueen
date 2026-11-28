@@ -10,7 +10,7 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { EntryHeading } from "@/components/EntryHeading";
 import { Button } from "@/components";
 import { QuickAmount } from "@/components/QuickAmount";
-import { parseAmount } from "@/domain/units";
+import { mlToDisplay, parseAmount } from "@/domain/units";
 import { useLogStore } from "@/store/useLogStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
@@ -25,21 +25,23 @@ export default function PumpDetailsModal() {
   const addTotal = useLogStore(s => s.addPumpTotal);
   const event = id ? events.find(item => item.id === id) : events[0];
   const last = events.find(item => item.id !== event?.id && item.totalMl != null && item.totalMl > 0);
-  const [split, setSplit] = useState(false);
-  const [left, setLeft] = useState("");
-  const [right, setRight] = useState("");
+  const [split, setSplit] = useState(event?.leftMl != null || event?.rightMl != null);
+  const [left, setLeft] = useState(event?.leftMl != null ? String(mlToDisplay(event.leftMl, unit)) : "");
+  const [right, setRight] = useState(event?.rightMl != null ? String(mlToDisplay(event.rightMl, unit)) : "");
   const committed = useRef(false);
-  const leftMl = left.trim() ? parseAmount(left, unit) : 0;
-  const rightMl = right.trim() ? parseAmount(right, unit) : 0;
-  const validSplit = leftMl !== null && rightMl !== null && leftMl + rightMl > 0;
+  const [saveError, setSaveError] = useState(false);
+  const leftMl = event?.leftMl != null && left.trim() === String(mlToDisplay(event.leftMl, unit)) ? event.leftMl : left.trim() ? parseAmount(left, unit, true) : null;
+  const rightMl = event?.rightMl != null && right.trim() === String(mlToDisplay(event.rightMl, unit)) ? event.rightMl : right.trim() ? parseAmount(right, unit, true) : null;
+  const validSplit = (!left.trim() || leftMl !== null) && (!right.trim() || rightMl !== null) && (leftMl ?? 0) + (rightMl ?? 0) > 0 && (leftMl ?? 0) + (rightMl ?? 0) <= Number.MAX_SAFE_INTEGER;
   const save = (total?: number) => {
-    if (!event || committed.current) return;
+    if (!event || committed.current || (total === undefined && !validSplit)) return;
+    setSaveError(false);
     committed.current = true;
     try {
       if (total !== undefined) addTotal(event.id, total);
-      else if (validSplit) addDetail(event.id, leftMl || null, rightMl || null);
+      else if (validSplit) addDetail(event.id, leftMl, rightMl);
       goBackOrHome(router);
-    } catch (error) { committed.current = false; throw error; }
+    } catch { committed.current = false; setSaveError(true); }
   };
   return <Screen>
       <ScreenBack dismiss />
@@ -49,6 +51,7 @@ export default function PumpDetailsModal() {
       <View style={{ flexDirection: "row", gap: 12 }}>{(["left", "right"] as const).map(side => <View key={side} style={{ flex: 1 }}><Field label={t(side === "left" ? "pumpDetail.leftMl" : "pumpDetail.rightMl", { unit })} amount testID={`pump-detail-${side}-input`} value={side === "left" ? left : right} onChangeText={side === "left" ? setLeft : setRight} keyboardType="decimal-pad" placeholder="0" /></View>)}</View>
       <Button testID="pump-detail-save" disabled={!validSplit || !event} label={t("pumpDetail.save")} tone="pumping" onPress={() => save()} />
     </View>}
+    {saveError ? <Text accessibilityRole="alert" style={{color:theme.colors.danger}}>{t("entryQA.saveError")}</Text> : null}
     <Button label={t(split ? "quick.totalOnly" : "quick.bySide")} tone="neutral" variant="ghost" onPress={() => setSplit(!split)} />
     <Button testID="pump-detail-dismiss" label={t("quick.doneLater")} tone="neutral" variant="ghost" onPress={() => goBackOrHome(router)} />
   </Screen>;

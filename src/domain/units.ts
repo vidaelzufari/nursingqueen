@@ -18,10 +18,10 @@ export function formatVolume(ml: number, unit: VolumeUnit): string {
   return `${value} ${unit}`;
 }
 
-export function parseAmount(text: string, unit: VolumeUnit): number | null {
+export function parseAmount(text: string, unit: VolumeUnit, allowZero = false): number | null {
   const normalized = text.trim().replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632)).replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776)).replace(/[،٫,]/g, ".");
   if (!/^\d+(?:\.\d+)?$/.test(normalized)) return null;
   const amount = displayToMl(Number(normalized), unit);
-  return Number.isFinite(amount) && amount > 0 ? amount : null;
+  return Number.isSafeInteger(amount) && (allowZero ? amount >= 0 : amount > 0) ? amount : null;
 }
 

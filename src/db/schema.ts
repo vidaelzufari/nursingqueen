@@ -120,6 +120,11 @@ export const migrations: Migration[] = [
 
   { version: 8, statements: [`ALTER TABLE solid_meals ADD COLUMN meal_type TEXT CHECK(meal_type IS NULL OR meal_type IN ('breakfast','lunch','snack','dinner'));`] },
 
+  { version: 9, statements: [
+    `CREATE TABLE moments (id TEXT PRIMARY KEY NOT NULL, baby_id TEXT NOT NULL REFERENCES babies(id) ON DELETE CASCADE, kind TEXT NOT NULL, title TEXT NOT NULL, occurred_at TEXT NOT NULL, note TEXT, photo_uri TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);`,
+    `CREATE INDEX idx_moments_baby_time ON moments(baby_id, occurred_at);`
+  ] },
+  { version: 10, statements: [`ALTER TABLE foods ADD COLUMN allergens_json TEXT NOT NULL DEFAULT '[]';`] },
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations[migrations.length - 1]?.version ?? 0;

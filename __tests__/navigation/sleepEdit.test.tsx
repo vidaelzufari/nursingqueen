@@ -1,0 +1,34 @@
+import React from "react";
+import {TextInput} from "react-native";
+import {render,fireEvent} from "@testing-library/react-native";
+import {format} from "date-fns";
+import SleepScreen from "../../app/sleep";
+import {palettes,spacing,radii,typeScale,shadows} from "@/theme/tokens";
+const MockTextInput=TextInput;
+const mockTheme={colors:palettes.light,spacing,radii,type:typeScale,shadows};
+const mockRouter={back:jest.fn(),canGoBack:()=>true,replace:jest.fn(),push:jest.fn()};
+const mockUpdate=jest.fn(),mockStop=jest.fn(),mockSave=jest.fn();
+const mockStarted="2026-11-20T08:00:37Z";
+const mockState={sessions:[{id:"s",babyId:"b",startedAt:mockStarted,endedAt:null,period:"nap"}],babyId:"b",updateRunning:mockUpdate,save:mockSave,stop:mockStop};
+jest.mock("expo-router",()=>({useRouter:()=>mockRouter,useLocalSearchParams:()=>({id:"s"})}));
+jest.mock("react-i18next",()=>({useTranslation:()=>({t:(key:string)=>key,i18n:{language:"en"}})}));
+jest.mock("react-native-safe-area-context",()=>({useSafeAreaInsets:()=>({top:0,bottom:0,left:0,right:0})}));
+jest.mock("@/theme/ThemeProvider",()=>({useTheme:()=>mockTheme}));
+jest.mock("@/store/useSleepStore",()=>({useSleepStore:()=>mockState}));
+jest.mock("@/components/ScreenBack",()=>({ScreenBack:()=>null}));
+jest.mock("@/components/SleepInsights",()=>({SleepInsights:()=>null}));
+jest.mock("@/components/DateTimeField",()=>({DateTimeField:({label,value,onChange}:{label:string;value:string;onChange:(s:string)=>void})=><MockTextInput testID={label} value={value} onChangeText={onChange}/>}));
+jest.mock("expo-haptics",()=>({impactAsync:jest.fn(async()=>{}),ImpactFeedbackStyle:{Light:"light"}}));
+beforeEach(()=>jest.clearAllMocks());
+it("saves a revised start while the sleep remains active",()=>{
+ const screen=render(<SleepScreen/>);
+ expect(screen.queryByTestId("sleep.to")).toBeNull();
+ fireEvent.changeText(screen.getByTestId("sleep.from"),format(new Date(Date.parse(mockStarted)-600000),"yyyy-MM-dd HH:mm"));
+ fireEvent.press(screen.getByTestId("sleep-edit-save"));
+ expect(mockUpdate).toHaveBeenCalledWith("s",expect.any(Date),"nap");
+ expect(mockSave).not.toHaveBeenCalled();expect(mockStop).not.toHaveBeenCalled();
+});
+it("stops only when the dedicated stop button is pressed",()=>{
+ const screen=render(<SleepScreen/>);fireEvent.press(screen.getByTestId("sleep-edit-stop"));
+ expect(mockStop).toHaveBeenCalledWith("s");expect(mockUpdate).not.toHaveBeenCalled();
+});

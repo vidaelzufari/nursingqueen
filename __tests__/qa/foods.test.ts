@@ -11,7 +11,7 @@ beforeAll(async()=>{SQL=await initSqlJs();});
 beforeEach(()=>{db=new SQL.Database();db.run('PRAGMA foreign_keys=ON');for(const m of migrations)for(const s of m.statements)db.run(s);for(const id of ['qa','other'])db.run("INSERT INTO babies VALUES (?, 'QA',NULL,'2026-06-01',0,'2026-06-01')",[id]);const query=(sql:string,args:unknown[]=[])=>{const s=db.prepare(sql);try{s.bind(args);const rows=[];while(s.step())rows.push(s.getAsObject());return rows;}finally{s.free();}};mockDatabase={runSync:(sql:string,args:unknown[])=>db.run(sql,args),getFirstSync:(sql:string,args:unknown[])=>query(sql,args)[0]??null,getAllSync:query,withTransactionSync:(fn:()=>void)=>{db.run('BEGIN');try{fn();db.run('COMMIT');}catch(e){db.run('ROLLBACK');throw e;}}};});
 afterEach(()=>db.close());
 const meal=(foodIds=['sweet_potato'],occurredAt=new Date('2026-01-02T12:15Z'))=>({foodIds,occurredAt});
-it('provides 148 unique foods with searchable names in all three languages',()=>{expect(FOOD_CATALOG).toHaveLength(148);expect(new Set(FOOD_CATALOG.map(f=>f.id)).size).toBe(148);for(const f of FOOD_CATALOG)for(const lang of ['en','fr','ar']){expect(foodName(f,lang).trim()).not.toBe('');expect(matchesFood(f,foodName(f,lang))).toBe(true);}});
+it('provides at least 152 unique foods with searchable names in all three languages',()=>{expect(FOOD_CATALOG.length).toBeGreaterThanOrEqual(152);expect(new Set(FOOD_CATALOG.map(f=>f.id)).size).toBe(FOOD_CATALOG.length);for(const f of FOOD_CATALOG)for(const lang of ['en','fr','ar']){expect(foodName(f,lang).trim()).not.toBe('');expect(matchesFood(f,foodName(f,lang))).toBe(true);}});
 it('searches accents, ligatures, custom text and Arabic names',()=>{expect(matchesFood({id:'egg_as_food'},'oeuf')).toBe(true);expect(matchesFood({id:'sweet_potato'},'بطاطا')).toBe(true);expect(normalizeFoodName('  PÊCHE   mûre ')).toBe('peche mure');expect(foodName({id:'custom',name:'Mon plat'},'fr')).toBe('Mon plat');expect(matchesFood({id:'custom',name:'Mon plat'},'PLAT')).toBe(true);expect(matchesFood({id:'custom'},'xxx')).toBe(false);});
 it('moves a planned food to tasted and derives first/last from meal dates',()=>{foodRepository.plan('qa','sweet_potato',true);expect(foodRepository.list('qa').find(f=>f.id==='sweet_potato')).toMatchObject({planned:true,firstAt:null});foodRepository.save('qa',meal());foodRepository.save('qa',meal(['sweet_potato'],new Date('2026-01-01T10:00Z')));expect(foodRepository.list('qa').find(f=>f.id==='sweet_potato')).toMatchObject({firstAt:'2026-01-01T10:00:00.000Z',lastAt:'2026-01-02T12:15:00.000Z',times:2});});
 it('saves multiple foods, spoon count, ml and note in a single meal without duplicate foods',()=>{foodRepository.save('qa',{...meal(['sweet_potato','zucchini','sweet_potato']),spoons:3.5,ml:45,note:'  Smooth texture  '});expect(foodRepository.meals('qa')).toEqual([expect.objectContaining({foodIds:['sweet_potato','zucchini'],spoons:3.5,ml:45,note:'Smooth texture'})]);});
@@ -39,4 +39,31 @@ it.each(['breakfast','lunch','snack','dinner'] as const)('persists %s and allows
 });
 it('rejects an unknown meal type without writing',()=>{
  expect(()=>foodRepository.save('qa',{...meal(),mealType:'invalid' as never})).toThrow('Invalid meal type');expect(foodRepository.meals('qa')).toEqual([]);
+});
+
+it('finds baby cereals by everyday names and records them as distinct foods',()=>{
+ expect(matchesFood({id:'rice_cereal'},'baby rice')).toBe(true);
+ expect(matchesFood({id:'rice_cereal'},'céréales de riz')).toBe(true);
+ expect(matchesFood({id:'oat_cereal'},'oatmeal')).toBe(true);
+ foodRepository.list('qa');
+ foodRepository.save('qa',meal(['rice_cereal','oat_cereal']));
+ expect(foodRepository.list('qa').find(f=>f.id==='rice_cereal')?.times).toBe(1);
+ expect(foodRepository.list('qa').find(f=>f.id==='rice')?.times).toBe(0);
+});
+
+it('stores explicitly selected allergens for a custom recipe and derives checklist dates from real meals',()=>{
+ const {allergenChecklist,foodAllergens}=jest.requireActual('@/domain/allergens');
+ const id=foodRepository.custom('qa','Homemade sesame yogurt',null,['milk','sesame']);
+ expect(foodAllergens(foodRepository.list('qa').find(f=>f.id===id))).toEqual(['milk','sesame']);
+ const mealId=foodRepository.save('qa',meal([id]));
+ expect(allergenChecklist(foodRepository.list('qa')).find((row:{id:string})=>row.id==='sesame')).toMatchObject({firstAt:'2026-01-02T12:15:00.000Z'});
+ expect(foodRepository.list('other').find(f=>f.id===id)).toBeUndefined();
+ foodRepository.remove('qa',mealId);
+ expect(allergenChecklist(foodRepository.list('qa')).find((row:{id:string})=>row.id==='sesame')).toMatchObject({firstAt:null,lastAt:null});
+});
+it('reuses a custom recipe without discarding its recorded history when its allergen ingredients are corrected',()=>{
+ const id=foodRepository.custom('qa','Family cereal',null,['milk']);foodRepository.save('qa',meal([id]));
+ expect(foodRepository.custom('qa','Family cereal',null,['soy'])).toBe(id);
+ expect(foodRepository.list('qa').find(f=>f.id===id)).toMatchObject({allergens:['soy'],times:1});
+ expect(()=>foodRepository.custom('qa','Bad recipe',null,['invalid'] as never)).toThrow('Unknown allergen group');
 });

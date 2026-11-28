@@ -31,6 +31,17 @@ export const sleepRepository = {
     if (overlap) throw new Error("Overlapping sleep");
     db.runSync("UPDATE sleep_sessions SET started_at = ?, updated_at = ? WHERE id = ?;", [proposed.toISOString(), new Date().toISOString(), id]);
   },
+  updateRunning(babyId: string, id: string, start: Date, period: SleepPeriod): void {
+    const now = new Date();
+    if (!Number.isFinite(start.getTime()) || start > now) throw new Error("Invalid sleep range");
+    const db = getDatabase();
+    const row = db.getFirstSync<Row>("SELECT * FROM sleep_sessions WHERE id = ? AND baby_id = ?;", [id, babyId]);
+    // Do not reopen a session that was stopped on another surface while editing.
+    if (!row || row.ended_at) throw new Error("Sleep is no longer running");
+    const overlap = db.getFirstSync<{ id: string }>("SELECT id FROM sleep_sessions WHERE baby_id = ? AND id != ? AND (ended_at IS NULL OR ended_at > ?) LIMIT 1;", [babyId, id, start.toISOString()]);
+    if (overlap) throw new Error("Overlapping sleep");
+    db.runSync("UPDATE sleep_sessions SET started_at = ?, period = ?, updated_at = ? WHERE id = ? AND baby_id = ? AND ended_at IS NULL;", [start.toISOString(), period, now.toISOString(), id, babyId]);
+  },
   save(babyId: string, start: Date, end: Date, id?: string, period: SleepPeriod = defaultSleepPeriod(start)): void {
     if (!validSleepRange(start, end)) throw new Error("Invalid sleep range");
     const db = getDatabase();

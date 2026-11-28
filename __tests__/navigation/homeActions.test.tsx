@@ -149,3 +149,10 @@ it("keeps a hidden nursing timer accessible until it finishes", () => {
   try { const screen=render(<HomeScreen />); expect(screen.getByTestId("home-button-stop-nursing")).toBeTruthy(); expect(screen.queryByTestId("home-button-pump")).toBeNull(); }
   finally { mockState.nursingSessions=[];mockState.openNursingSession=()=>null; }
 });
+
+it("does not create two pumping events from a double tap while opening details",()=>{
+ mockState.logPump.mockReturnValue({id:"pump-double-tap"});
+ const s=render(<HomeScreen/>);fireEvent.press(s.getByTestId("home-button-pump"));fireEvent.press(s.getByTestId("home-button-pump"));
+ expect(mockState.logPump).toHaveBeenCalledTimes(1);
+ expect(mockPush).toHaveBeenCalledTimes(1);
+});

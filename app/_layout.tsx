@@ -1,3 +1,4 @@
+import { useMomentStore } from "@/store/useMomentStore";
 import { useFoodStore } from "@/store/useFoodStore";
 import { useMinimumLaunchTime } from "@/hooks/useMinimumLaunchTime";
 import { AppleSurfaces } from "@/components/AppleSurfaces";
@@ -70,6 +71,7 @@ function Bootstrap({ children }: { children: React.ReactNode }) {
       refreshStash(baby.id);
       refreshSleep(baby.id);
       useFoodStore.getState().refresh(baby.id);
+      useMomentStore.getState().refresh(baby.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, babies, activeBabyId]);

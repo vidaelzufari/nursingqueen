@@ -1,14 +1,14 @@
 {
   "en": {
-    "NSPhotoLibraryUsageDescription": "Choose a photo for your baby’s profile or a custom food. Photos are stored only on this device.",
+    "NSPhotoLibraryUsageDescription": "Choose a photo for your baby's profile, a food or a special moment. Photos are stored only on this device.",
     "NSCameraUsageDescription": "The Nursing Queen uses the camera only if you choose to take a new photo for your baby's profile."
   },
   "fr": {
-    "NSPhotoLibraryUsageDescription": "Choisissez une photo pour le profil de votre bébé ou un aliment personnalisé. Les photos restent uniquement sur cet appareil.",
+    "NSPhotoLibraryUsageDescription": "Choisissez une photo pour le profil de bébé, un aliment ou un souvenir. Les photos restent sur cet appareil.",
     "NSCameraUsageDescription": "The Nursing Queen n'utilise l'appareil photo que si vous choisissez de prendre une nouvelle photo pour le profil de votre bébé."
   },
   "ar": {
-    "NSPhotoLibraryUsageDescription": "اختاري صورة لملف طفلك أو لطعام خاص. تُحفظ الصور على هذا الجهاز فقط.",
+    "NSPhotoLibraryUsageDescription": "اختاري صورة لملف طفلك أو لطعام أو لذكرى مميزة. تُحفظ الصور على هذا الجهاز فقط.",
     "NSCameraUsageDescription": "يستخدم The Nursing Queen الكاميرا فقط إذا اخترتِ التقاط صورة جديدة لملف طفلك الشخصي."
   }
 }

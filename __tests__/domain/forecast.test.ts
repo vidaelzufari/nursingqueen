@@ -48,3 +48,19 @@ it("evaluates predictions without letting the target leak into the input", () =>
   expect(evaluateForecast(times)).toEqual({samples:1,attempted:1,meanAbsoluteErrorMinutes:60,withinWindow:0});
   expect(evaluateForecast(times.slice(0,3)).meanAbsoluteErrorMinutes).toBeNull();
 });
+
+it("projects several feed windows with widening uncertainty without inventing observations",()=>{
+ const {projectFeedWindows}=jest.requireActual("@/domain/forecast");
+ const anchor=new Date("2026-11-20T12:00Z"),times=Array.from({length:8},(_,i)=>new Date(anchor.getTime()-(7-i)*2*3600000));
+ const before=times.map(t=>t.toISOString());const rows=projectFeedWindows(times,anchor);
+ expect(rows).toHaveLength(3);expect(rows[1].at>rows[0].at).toBe(true);
+ expect(rows[2].latest-rows[2].earliest).toBeGreaterThan(rows[1].latest-rows[1].earliest);
+ expect(rows[2].confidence).toBe("early");expect(times.map(t=>t.toISOString())).toEqual(before);
+ expect(projectFeedWindows(times,new Date("2026-11-25T12:00Z"))).toEqual([]);
+});
+it("does not invent additional sleep windows with sparse history or an active timer",()=>{
+ const {projectSleepWindows}=jest.requireActual("@/domain/forecast");
+ const at=new Date("2026-11-20T14:00Z"),n=new Date("2026-11-20T12:00Z"),first={at,earliest:at,latest:at,samples:2,confidence:"early"};
+ expect(projectSleepWindows([],first,n)).toHaveLength(1);
+ expect(projectSleepWindows([{startedAt:n.toISOString(),endedAt:null}],first,n)).toEqual([]);
+});

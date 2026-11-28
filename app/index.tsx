@@ -1,3 +1,4 @@
+import { useFeedbackStore } from "@/store/useFeedbackStore";
 import { BabyAvatar } from "@/components/BabyAvatar";
 import { formatAge } from "@/i18n/formatAge";
 import { useFoodStore } from "@/store/useFoodStore";
@@ -7,7 +8,7 @@ import { useDurationFormatter } from "@/i18n/useDurationFormatter";
 import { dateLocale } from "@/domain/dateLocale";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { format, isSameDay } from "date-fns";
 import { AppShell } from "@/navigation/AppShell";
@@ -18,7 +19,7 @@ import { ActivityArtwork } from "@/components/ActivityArtwork";
 import { BrandMark } from "@/components/BrandMark";
 import { RecentActivities } from "@/components/RecentActivities";
 import { WeeklySummary } from "@/components/WeeklySummary";
-import { Forecasts } from "@/components/Forecasts";
+import { RoutineOutlook } from "@/components/RoutineOutlook";
 import { useSleepStore } from "@/store/useSleepStore";
 import { sleepSecondsToday } from "@/domain/sleep";
 import { parseBirthDate, validBirthDate } from "@/domain/birthDate";
@@ -38,6 +39,9 @@ export default function HomeScreen() {
   const [showSessionDock, setShowSessionDock] = useState(false);
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
+  const pumpOpening = useRef(false);
+  useEffect(() => { if (pathname === "/") pumpOpening.current = false; }, [pathname]);
   const { t, i18n } = useTranslation();
   const locale = dateLocale(i18n?.resolvedLanguage ?? i18n?.language);
   const [now, setNow] = useState(() => new Date());
@@ -105,8 +109,9 @@ export default function HomeScreen() {
   };
   const handlePump = () => {
     if (!prepareLogging()) { router.push({ pathname: "/profile/edit", params: { intent: "pump" } }); return; }
-    const event = logPump();
-    router.push({ pathname: "/modals/pump-details", params: { id: event.id } });
+    if (pumpOpening.current) return;
+    pumpOpening.current = true;
+    try { const event = logPump(); router.push({ pathname: "/modals/pump-details", params: { id: event.id } }); } catch { pumpOpening.current = false; useFeedbackStore.getState().show(t("entryQA.saveError")); }
   };
   const handleSleep = () => {
     if (!prepareLogging()) { router.push({ pathname: "/profile/edit", params: { intent: "sleep" } }); return; }
@@ -136,15 +141,19 @@ export default function HomeScreen() {
           {show("nursing") ? <ActionCard hint={t("refresh.nursingHint")} testID={openNursingSession ? "home-button-stop-nursing" : "home-button-start-nursing"} subLabel={openNursingSession ? elapsedClock(openNursingSession.startedAt, now) : undefined} icon="heart" label={t("refresh.feed")} actionLabel={openNursingSession ? t("design.finish") : t("refresh.start")} color={theme.colors.nursing} active={Boolean(openNursingSession)} onEdit={() => openNursingSession && router.push(`/entry/nursing/${openNursingSession.id}`)} onPress={openNursingSession ? handleStop : handleStart} /> : null}
           {show("pump") ? <ActionCard hint={t("refresh.pumpHint")} actionLabel={t("refresh.add")} testID="home-button-pump" icon="pump" label={t("refresh.pump")} color={theme.colors.pumping} onPress={handlePump} /> : null}
           {show("bottle") ? <ActionCard hint={t("refresh.bottleHint")} actionLabel={t("refresh.add")} testID="home-button-bottle" icon="bottle" label={t("home.bottle")} color={theme.colors.bottle} onPress={handleBottle} /> : null}
-          {show("sleep") ? <ActionCard hint={t(`sleep.${openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)}`)} actionLabel={t(activeSleep ? "sleep.stop" : "refresh.start")} testID="home-button-sleep" icon={((openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)) === "nap") ? "sun" : "moon"} label={t("sleep.title")} color={(openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)) === "nap" ? theme.colors.nap : theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} onEdit={() => router.push("/sleep")} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} /> : null}
+          {show("sleep") ? <ActionCard hint={t(`sleep.${openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)}`)} actionLabel={t(activeSleep ? "sleep.stop" : "refresh.start")} testID="home-button-sleep" icon={((openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)) === "nap") ? "sun" : "moon"} label={t("sleep.title")} color={(openSleepSession ? sleepPeriod(openSleepSession) : defaultSleepPeriod(now)) === "nap" ? theme.colors.nap : theme.colors.sleep} active={activeSleep} statusLabel={activeSleep ? t("sleep.sleeping") : undefined} onEdit={() => openSleepSession && router.push({ pathname: "/sleep", params: { id: openSleepSession.id } })} subLabel={openSleepSession ? elapsedClock(openSleepSession.startedAt, now) : undefined} onPress={handleSleep} /> : null}
           {show("solids") ? <ActionCard hint={t("solids.homeHint")} actionLabel={t("refresh.add")} testID="home-button-solids" icon="solids" label={t("solids.title")} color={theme.colors.nap} onPress={() => router.push("/modals/meal-entry")} /> : null}
         </View>
         <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: 20, marginTop: 2, marginBottom: 18 }}>
           {show("nursing") && !openNursingSession ? <Pressable accessibilityRole="button" onPress={() => router.push(activeBaby ? "/modals/nursing-duration" : { pathname: "/profile/edit", params: { intent: "earlier" } })} style={{ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44 }}><Icon name="history" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t("design.earlierFeed")}</Text></Pressable> : null}
           {show("sleep") ? <Pressable accessibilityRole="button" onPress={() => router.push("/sleep")} style={{ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44 }}><Icon name="moon" size={15} color={theme.colors.accent} /><Text style={[theme.type.caption, { color: theme.colors.accent }]}>{t(activeSleep ? "sleep.adjust" : "sleepAI.open")}</Text><Icon name="arrow" size={14} color={theme.colors.accent} /></Pressable> : null}
         </View>
+        <View style={{flexDirection:"row",gap:12,marginBottom:24}}>
+          <Pressable testID="home-day" accessibilityRole="button" onPress={()=>router.push("/analytics")} style={{flex:1}}><Card style={{gap:8,height:"100%"}}><Icon name="analytics" color={theme.colors.accent}/><Text style={[theme.type.bodyStrong,{color:theme.colors.textPrimary}]}>{t("day.homeTitle")}</Text><Text style={[theme.type.caption,{color:theme.colors.textSecondary}]}>{t("day.homeHint")}</Text><Icon name="arrow" size={18} color={theme.colors.accent}/></Card></Pressable>
+          <Pressable testID="home-moments" accessibilityRole="button" onPress={()=>router.push("/moments")} style={{flex:1}}><Card style={{gap:8,height:"100%"}}><Icon name="sparkles" color={theme.colors.nursing}/><Text style={[theme.type.bodyStrong,{color:theme.colors.textPrimary}]}>{t("moments.title")}</Text><Text style={[theme.type.caption,{color:theme.colors.textSecondary}]}>{t("moments.homeHint")}</Text><Icon name="arrow" size={18} color={theme.colors.nursing}/></Card></Pressable>
+        </View>
         <RecentActivities now={now} activities={visible} />
-        {visible.some(key=>key!=="solids") ? <Forecasts now={now} activities={visible} compact onAddSession={() => scroll.current?.scrollTo({ y: 0, animated: true })} /> : null}
+        {visible.some(key=>key!=="solids") ? <RoutineOutlook now={now} compact /> : null}
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("design.atGlance")}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}><Icon name="clock" size={14} color={theme.colors.textMuted} /><Text style={[theme.type.caption, { color: theme.colors.textMuted }]}>{format(now, "EEE, d MMM", { locale })}</Text></View>

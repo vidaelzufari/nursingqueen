@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-env node */
+/* eslint-disable @typescript-eslint/no-var-requires -- Node asset generation script. */
 /**
  * Rasterizes assets/brand/icon-source.svg into every PNG asset app.config.ts
  * references. Run after any change to the source SVG:
@@ -17,7 +19,7 @@ const TARGETS = [
   { file: "icon.png", size: 1024 },
   { file: "adaptive-icon-foreground.png", size: 1024, source: "adaptive-source.svg" },
   { file: "splash.png", size: 1284, source: "splash-source.svg" },
-  { file: "favicon.png", size: 196 },
+  { file: "favicon.png", size: 196, source: "favicon-source.svg" },
 ];
 
 async function main() {
@@ -39,7 +41,7 @@ async function main() {
     const rendered = sharp(svg, { density: 384 })
       .resize(target.size, target.size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } });
     // App Store icons must be opaque; foreground and splash retain transparency.
-    if (target.file === "icon.png" || target.file === "favicon.png") rendered.removeAlpha();
+    if (target.file === "icon.png") rendered.removeAlpha();
     await rendered.png().toFile(outPath);
     console.log(`wrote ${path.relative(process.cwd(), outPath)} (${target.size}x${target.size})`);
   }

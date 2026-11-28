@@ -25,8 +25,8 @@ export function QuickAmount({ unit, color, lastMl, onSave, disabled = false }: {
     </View>
     <Button label={t("quick.custom")} tone="neutral" variant="ghost" onPress={() => setCustom(!custom)} />
     {custom ? <View style={{ gap: 12 }}>
-      <Field label={t("quick.customAmount", { unit })} amount value={text} onChangeText={setText} keyboardType="decimal-pad" placeholder={`0 ${unit}`} />
-      <Button disabled={disabled || parsed === null} label={t("common.save")} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} onPress={() => { if (parsed !== null) onSave(parsed); }} />
+      <Field testID="quick-amount-input" label={t("quick.customAmount", { unit })} amount value={text} onChangeText={setText} keyboardType="decimal-pad" placeholder={`0 ${unit}`} />
+      <Button testID="quick-amount-save" disabled={disabled || parsed === null} label={t("common.save")} icon={<Icon name="check" size={18} color={theme.colors.accentContrast} />} onPress={() => { if (parsed !== null) onSave(parsed); }} />
     </View> : null}
   </View>;
 }

@@ -32,7 +32,7 @@ export default function SleepScreen() {
   const dialSize = Math.min(250, width - 100);
   const scroll = useRef<ScrollView>(null);
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { sessions, babyId, start, stop, save, remove, adjustStart, setPeriod: updatePeriod } = useSleepStore();
+  const { sessions, babyId, start, stop, save, remove, adjustStart, updateRunning, setPeriod: updatePeriod } = useSleepStore();
   const existing = sessions.find(s => s.id === id);
   const active = sessions.find(s => !s.endedAt);
   const [period, setPeriod] = useState<SleepPeriod>(existing ? sleepPeriod(existing) : active ? sleepPeriod(active) : defaultSleepPeriod(new Date()));
@@ -53,7 +53,10 @@ export default function SleepScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [existing?.id]);
   const startDate = parse(from, DATE_FORMAT, new Date()); const endDate = parse(to, DATE_FORMAT, new Date());
-  const valid = validSleepRange(startDate, endDate, now);
+  const editingActive = Boolean(existing && !existing.endedAt);
+  const actualStart = existing && from === format(new Date(existing.startedAt), DATE_FORMAT) ? new Date(existing.startedAt) : startDate;
+  const actualEnd = existing?.endedAt && to === format(new Date(existing.endedAt), DATE_FORMAT) ? new Date(existing.endedAt) : endDate;
+  const valid = editingActive ? Number.isFinite(actualStart.getTime()) && actualStart <= now : validSleepRange(actualStart, actualEnd, now);
   const shiftStart = (seconds: number) => {
     if (!active) return;
     try { adjustStart(active.id, seconds); setError(false); } catch { setError(true); }
@@ -87,17 +90,18 @@ export default function SleepScreen() {
           </View>
           {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
         </> : null}
-        <Button fullWidth label={t(active ? "sleep.stop" : "sleep.start")} icon={<Icon name={active ? "stop" : selectedPeriod === "nap" ? "nap" : "moon"} color={theme.colors.accentContrast} />} onPress={() => { if (!babyId) { router.push("/profile/edit"); return; } if (active) stop(active.id); else start(period); }} />
+        <Button fullWidth label={t(active ? "sleep.stop" : "sleep.start")} icon={<Icon name={active ? "stop" : selectedPeriod === "nap" ? "nap" : "moon"} color={theme.colors.accentContrast} />} onPress={() => { if (!babyId) { router.push("/profile/edit"); return; } if (active) stop(active.id); else start(period); setNow(new Date()); }} />
       </Card>
       <Button label={t("sleepAI.logEarlier")} tone="neutral" variant="outline" onPress={() => { setManual(true); scroll.current?.scrollTo({ y: 0, animated: true }); }} />
       <SleepInsights now={now} onReview={() => { const entry = active ?? sessions[0]; if (entry) router.push({ pathname: "/sleep", params: { id: entry.id } }); else setManual(true); }} />
     </> : <Card style={{ gap: 14 }}>
-      <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t("sleep.dateHint")}</Text>
+      <Text style={[theme.type.body, { color: theme.colors.textSecondary }]}>{t(editingActive ? "sleep.editRunningHint" : "sleep.dateHint")}</Text>
       {periodPicker}
       <DateTimeField label={t("sleep.from")} value={from} onChange={setFrom} />
-      <DateTimeField label={t("sleep.to")} value={to} onChange={setTo} />
+      {!editingActive ? <DateTimeField label={t("sleep.to")} value={to} onChange={setTo} /> : null}
       {error ? <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{t("sleep.invalid")}</Text> : null}
-      <Button label={t("common.save")} disabled={!valid} onPress={() => { if (!babyId) { router.push("/profile/edit"); return; } try { save(startDate, endDate, existing?.id, period); goBackOrHome(router); } catch { setError(true); } }} />
+      <Button testID="sleep-edit-save" label={t("common.save")} disabled={!valid} onPress={() => { if (!babyId) { router.push("/profile/edit"); return; } try { if (editingActive && existing) updateRunning(existing.id, actualStart, period); else save(actualStart, actualEnd, existing?.id, period); goBackOrHome(router); } catch { setError(true); } }} />
+      {editingActive && existing ? <Button testID="sleep-edit-stop" label={t("sleep.stop")} variant="soft" onPress={() => { stop(existing.id); setNow(new Date()); goBackOrHome(router); }} /> : null}
       {existing ? <Button label={t(confirmDelete ? "sleep.confirmDelete" : "common.delete")} tone="danger" variant="ghost" onPress={() => { if (!confirmDelete) setConfirmDelete(true); else { remove(existing.id); goBackOrHome(router); } }} /> : <Button label={t("common.cancel")} tone="neutral" variant="ghost" onPress={() => setManual(false)} />}
     </Card>}
     {!manual ? <><Text style={[theme.type.subtitle, { color: theme.colors.textPrimary }]}>{t("sleep.recent")}</Text>{sessions.length === 0 ? <EmptyState icon="moon" title={t("sleep.empty")} /> : sessions.slice(0, 20).map(session => <EntryRow key={session.id} kind="sleep" title={t(`sleep.${sleepPeriod(session)}`)} sleepPeriod={sleepPeriod(session)} timeLabel={format(new Date(session.startedAt), "PPp", { locale })} detailLabel={session.endedAt ? formatDurationShort(Math.round((new Date(session.endedAt).getTime() - new Date(session.startedAt).getTime()) / 60000)) : t("sleep.sleeping")} onPress={() => router.push({ pathname: "/sleep", params: { id: session.id } })} />)}</> : null}

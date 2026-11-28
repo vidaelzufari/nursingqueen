@@ -1,3 +1,4 @@
+import { socialSignInConfigured } from "@/services/socialAuth";
 import { MULTILINGUAL_ENABLED } from "@/config/release";
 import { BILLING_ENABLED } from "@/config/monetization";
 import { Linking } from "react-native";
@@ -81,6 +82,7 @@ export default function SettingsScreen() {
     <AppShell>
       <ScrollView contentInsetAdjustmentBehavior="never" automaticallyAdjustContentInsets={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={{ padding: theme.spacing.lg, paddingTop: 24, paddingBottom: 32, gap: theme.spacing.md }}>
         <PageHeader title={t("settings.title")} subtitle={t("refresh.settingsSubtitle")} />
+        {socialSignInConfigured() ? <Card><Button label={t("account.title")} variant="soft" onPress={()=>router.push("/account")} /></Card> : null}
         <Card style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
           <View style={{ width: 44, height: 44, borderRadius: 16, backgroundColor: theme.colors.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="baby" color={theme.colors.accent} /></View>
           <View style={{ flex: 1, minWidth: 100, gap: 4 }}><Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{t("profile.title")}</Text><Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>{baby?.name ?? t("profile.addBaby")}</Text></View>

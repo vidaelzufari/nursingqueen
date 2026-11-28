@@ -1,3 +1,4 @@
+import { validLoggedDate, validVolume } from "@/domain/logValidation";
 import { getDatabase } from "../client";
 import { generateId } from "../id";
 import { PumpEvent } from "../types";
@@ -31,16 +32,17 @@ function fromRow(row: PumpRow): PumpEvent {
 }
 
 export const pumpRepository = {
-  listByBaby(babyId: string, limit = 200): PumpEvent[] {
+  listByBaby(babyId: string, limit?: number): PumpEvent[] {
     const rows = getDatabase().getAllSync<PumpRow>(
-      "SELECT * FROM pump_events WHERE baby_id = ? ORDER BY started_at DESC LIMIT ?;",
-      [babyId, limit]
+      `SELECT * FROM pump_events WHERE baby_id = ? ORDER BY started_at DESC${limit === undefined ? "" : " LIMIT ?"};`,
+      limit === undefined ? [babyId] : [babyId, limit]
     );
     return rows.map(fromRow);
   },
 
   /** Instant save with no ml yet — the detail screen is always dismissible. */
   logPending(babyId: string, startedAt: Date = new Date()): PumpEvent {
+    if (!validLoggedDate(startedAt)) throw new Error("Invalid pump date");
     const db = getDatabase();
     const now = new Date().toISOString();
     const event: PumpEvent = {
@@ -65,6 +67,7 @@ export const pumpRepository = {
   addDetail(id: string, leftMl: number | null, rightMl: number | null): void {
     const db = getDatabase();
     const totalMl = (leftMl ?? 0) + (rightMl ?? 0);
+    if (!validVolume(leftMl, true) || !validVolume(rightMl, true) || !validVolume(totalMl) || totalMl === 0) throw new Error("Invalid pump amount");
     const updatedAt = new Date().toISOString();
     db.runSync(
       "UPDATE pump_events SET left_ml = ?, right_ml = ?, total_ml = ?, needs_detail = 0, updated_at = ? WHERE id = ?;",
@@ -74,7 +77,7 @@ export const pumpRepository = {
 
   /** A total amount never implies which breast it came from. */
   addTotal(id: string, totalMl: number): void {
-    if (!Number.isFinite(totalMl) || totalMl <= 0) throw new Error("Invalid pump amount");
+    if (totalMl === null || !validVolume(totalMl)) throw new Error("Invalid pump amount");
     getDatabase().runSync(
       "UPDATE pump_events SET left_ml = NULL, right_ml = NULL, total_ml = ?, needs_detail = 0, updated_at = ? WHERE id = ?;",
       [totalMl, new Date().toISOString(), id]
@@ -83,7 +86,7 @@ export const pumpRepository = {
 
   update(
     id: string,
-    patch: Partial<Pick<PumpEvent, "startedAt" | "leftMl" | "rightMl" | "note">>
+    patch: Partial<Pick<PumpEvent, "startedAt" | "leftMl" | "rightMl" | "totalMl" | "note">>
   ): void {
     const db = getDatabase();
     const row = db.getFirstSync<PumpRow>("SELECT * FROM pump_events WHERE id = ?;", [id]);
@@ -91,9 +94,14 @@ export const pumpRepository = {
     const current = fromRow(row);
     const next = { ...current, ...patch };
     const sideChanged = "leftMl" in patch || "rightMl" in patch;
-    const totalMl = next.leftMl !== null || next.rightMl !== null
+    const totalChanged = "totalMl" in patch;
+    if (totalChanged && sideChanged) throw new Error("Conflicting pump amounts");
+    if (totalChanged) { next.leftMl = null; next.rightMl = null; }
+    const totalMl = totalChanged ? next.totalMl : next.leftMl !== null || next.rightMl !== null
       ? (next.leftMl ?? 0) + (next.rightMl ?? 0)
       : sideChanged ? null : current.totalMl;
+    if (!validLoggedDate(next.startedAt)) throw new Error("Invalid pump date");
+    if (!validVolume(next.leftMl, true) || !validVolume(next.rightMl, true) || !validVolume(totalMl)) throw new Error("Invalid pump amount");
     const needsDetail = totalMl === null;
     const updatedAt = new Date().toISOString();
     db.runSync(

@@ -8,7 +8,7 @@ export function foodName(food: {id:string;name?:string|null;catalogKey?:string|n
 }
 export function matchesFood(food:{id:string;name?:string|null;catalogKey?:string|null},query:string):boolean {
  const entry=catalog.find(f=>f.id===(food.catalogKey ?? food.id));const needle=normalizeFoodName(query);
- return [food.name,entry?.en,entry?.fr,entry?.ar].some(value=>value && normalizeFoodName(value).includes(needle));
+ return [food.name,entry?.en,entry?.fr,entry?.ar,...(entry && "aliases" in entry ? entry.aliases ?? [] : [])].some(value=>value && normalizeFoodName(value).includes(needle));
 }
 export function parseMealQuantity(input:string):number|null {
  const normalized=input.trim().replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632)).replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-1776)).replace(/[٫،,]/g,".");
