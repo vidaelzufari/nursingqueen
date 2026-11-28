@@ -156,3 +156,11 @@ it("does not create two pumping events from a double tap while opening details",
  expect(mockState.logPump).toHaveBeenCalledTimes(1);
  expect(mockPush).toHaveBeenCalledTimes(1);
 });
+
+it("opens the day summary and Moments independently from their Home shortcuts", () => {
+  const screen = render(<HomeScreen />);
+  fireEvent.press(screen.getByTestId("home-day"));
+  expect(mockPush).toHaveBeenLastCalledWith("/analytics");
+  fireEvent.press(screen.getByTestId("home-moments"));
+  expect(mockPush).toHaveBeenLastCalledWith("/moments");
+});
